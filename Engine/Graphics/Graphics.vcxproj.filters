@@ -11,4 +11,71 @@
       <UniqueIdentifier>{1388f40c-c893-4246-804a-b93282cdecd5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Windows\ExternalLibraries.win.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL\Includes.h">
+      <Filter>OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct3D\Includes.h">
+      <Filter>Direct3D</Filter>
+    </ClInclude>
+    <ClInclude Include="cConstantBuffer.h" />
+    <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ConstantBufferFormats.h" />
+    <ClInclude Include="cRenderState.h" />
+    <ClInclude Include="cSamplerState.h" />
+    <ClInclude Include="cShader.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="sContext.h" />
+    <ClInclude Include="VertexFormats.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\cRenderState.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\cSamplerState.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\cShader.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\Graphics.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL\sContext.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\cConstantBuffer.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\cRenderState.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\cSamplerState.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\cShader.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\Graphics.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Direct3D\sContext.d3d.cpp">
+      <Filter>Direct3D</Filter>
+    </ClCompile>
+    <ClCompile Include="cConstantBuffer.cpp" />
+    <ClCompile Include="cRenderState.cpp" />
+    <ClCompile Include="cSamplerState.cpp" />
+    <ClCompile Include="cShader.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="sContext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cRenderState.inl" />
+  </ItemGroup>
 </Project>

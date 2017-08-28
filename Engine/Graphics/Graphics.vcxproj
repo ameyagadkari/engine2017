@@ -59,15 +59,23 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\EngineDefaults.props" />
+    <Import Project="..\OpenGL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\EngineDefaults.props" />
+    <Import Project="..\OpenGL.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\EngineDefaults.props" />
+    <Import Project="..\Direct3D.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\EngineDefaults.props" />
+    <Import Project="..\Direct3D.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -147,6 +155,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cConstantBuffer.h" />
+    <ClInclude Include="Configuration.h" />
+    <ClInclude Include="ConstantBufferFormats.h" />
+    <ClInclude Include="cRenderState.h" />
+    <ClInclude Include="cSamplerState.h" />
+    <ClInclude Include="cShader.h" />
+    <ClInclude Include="Direct3D\Includes.h" />
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="OpenGL\Includes.h" />
+    <ClInclude Include="sContext.h" />
+    <ClInclude Include="VertexFormats.h" />
+    <ClInclude Include="Windows\ExternalLibraries.win.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cConstantBuffer.cpp" />
+    <ClCompile Include="cRenderState.cpp" />
+    <ClCompile Include="cSamplerState.cpp" />
+    <ClCompile Include="cShader.cpp" />
+    <ClCompile Include="Direct3D\cConstantBuffer.d3d.cpp" />
+    <ClCompile Include="Direct3D\cRenderState.d3d.cpp" />
+    <ClCompile Include="Direct3D\cSamplerState.d3d.cpp" />
+    <ClCompile Include="Direct3D\cShader.d3d.cpp" />
+    <ClCompile Include="Direct3D\Graphics.d3d.cpp" />
+    <ClCompile Include="Direct3D\sContext.d3d.cpp" />
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp" />
+    <ClCompile Include="OpenGL\cRenderState.gl.cpp" />
+    <ClCompile Include="OpenGL\cSamplerState.gl.cpp" />
+    <ClCompile Include="OpenGL\cShader.gl.cpp" />
+    <ClCompile Include="OpenGL\Graphics.gl.cpp" />
+    <ClCompile Include="OpenGL\sContext.gl.cpp" />
+    <ClCompile Include="sContext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cRenderState.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
