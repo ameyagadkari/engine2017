@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Direct3D">
+      <UniqueIdentifier>{f974652c-fd57-4d43-97ca-32c016fb4060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OpenGL">
+      <UniqueIdentifier>{f66175b2-27d2-4de9-a88d-55aa8384dfb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{1388f40c-c893-4246-804a-b93282cdecd5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
