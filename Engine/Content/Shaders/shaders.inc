@@ -47,3 +47,22 @@
 	#define DeclareConstantBuffer( i_name, i_id ) layout( std140, binding = i_id ) uniform i_name
 
 #endif
+
+DeclareConstantBuffer( g_constantBuffer_perFrame, 0)
+{
+	float g_elapsedSecondCount_systemTime;
+	float g_elapsedSecondCount_simulationTime;
+	// For float4 alignment
+	float2 g_padding;
+};
+
+DeclareConstantBuffer( g_constantBuffer_perMaterial, 1)
+{
+	float4 g_color;
+};
+
+DeclareConstantBuffer( g_constantBuffer_perDrawCall, 2)
+{
+	// This is a placeholder to prevent an empty constant buffer declaration
+	float4 DUMMY;
+};

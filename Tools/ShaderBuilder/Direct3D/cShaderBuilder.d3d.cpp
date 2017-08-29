@@ -13,7 +13,7 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments )
+eae6320::cResult eae6320::Assets::cShaderBuilder::Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments)
 {
 	auto result = Results::Success;
 
@@ -29,13 +29,14 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 				std::string path_sdk;
 				{
 					std::string errorMessage;
-					if ( !( result = Platform::GetEnvironmentVariable( "WindowsSDKDir", path_sdk, &errorMessage ) ) )
+					if (!(result = Platform::GetEnvironmentVariable("WindowsSDKDir", path_sdk, &errorMessage)))
 					{
-						OutputErrorMessageWithFileInfo( __FILE__, "Failed to get the path to the Windows SDK: %s", errorMessage.c_str() );
+						OutputErrorMessageWithFileInfo(__FILE__, "Failed to get the path to the Windows SDK: %s", errorMessage.c_str());
 						goto OnExit;
 					}
 				}
-				path_fxc = path_sdk + "/bin/" +
+
+				path_fxc = path_sdk + "bin/10.0.15063.0/" +
 #ifndef _WIN64
 					"x86"
 #else
@@ -46,7 +47,7 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 			commandToBuild << "\"" << path_fxc << "\"";
 		}
 		// Target profile
-		switch ( i_shaderType )
+		switch (i_shaderType)
 		{
 		case Graphics::ShaderTypes::Vertex:
 			commandToBuild << " /Tvs_4_0";
@@ -61,15 +62,15 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 			std::string errorMessage;
 
 			// EngineSourceContentDir
-			if ( !( result = Platform::GetEnvironmentVariable( "EngineSourceContentDir", EngineSourceContentDir, &errorMessage ) ) )
+			if (!(result = Platform::GetEnvironmentVariable("EngineSourceContentDir", EngineSourceContentDir, &errorMessage)))
 			{
-				OutputErrorMessage( "Failed to get the engine's source content directory: %s", errorMessage.c_str() );
+				OutputErrorMessage("Failed to get the engine's source content directory: %s", errorMessage.c_str());
 				goto OnExit;
 			}
 			// GameSourceContentDir
-			if ( !( result = Platform::GetEnvironmentVariable( "GameSourceContentDir", GameSourceContentDir, &errorMessage ) ) )
+			if (!(result = Platform::GetEnvironmentVariable("GameSourceContentDir", GameSourceContentDir, &errorMessage)))
 			{
-				OutputErrorMessage( "Failed to get the game's source content directory: %s", errorMessage.c_str() );
+				OutputErrorMessage("Failed to get the game's source content directory: %s", errorMessage.c_str());
 				goto OnExit;
 			}
 		}
@@ -95,20 +96,20 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderT
 			<< " /nologo"
 			// Source file
 			<< " \"" << m_path_source << "\""
-		;
+			;
 		command = commandToBuild.str();
 	}
 	// Execute the command
 	{
 		int exitCode;
 		std::string errorMessage;
-		if ( result = Platform::ExecuteCommand( command.c_str(), &exitCode, &errorMessage ) )
+		if (result = Platform::ExecuteCommand(command.c_str(), &exitCode, &errorMessage))
 		{
-			result = ( exitCode == EXIT_SUCCESS ) ? Results::Success : Results::Failure;
+			result = (exitCode == EXIT_SUCCESS) ? Results::Success : Results::Failure;
 		}
 		else
 		{
-			OutputErrorMessageWithFileInfo( m_path_source, errorMessage.c_str() );
+			OutputErrorMessageWithFileInfo(m_path_source, errorMessage.c_str());
 			goto OnExit;
 		}
 	}

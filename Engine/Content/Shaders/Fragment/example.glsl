@@ -4,22 +4,6 @@
 
 #include <Shaders/shaders.inc>
 
-// Constant Buffers
-//=================
-
-layout( std140, binding = 0 ) uniform g_constantBuffer_perFrame
-{
-	float g_elapsedSecondCount_systemTime;
-	float g_elapsedSecondCount_simulationTime;
-	// For vec4 alignment
-	vec2 g_padding;
-};
-
-layout( std140, binding = 1 ) uniform g_constantBuffer_perMaterial
-{
-	vec4 g_color;
-};
-
 // Output
 //=======
 

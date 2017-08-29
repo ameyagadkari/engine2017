@@ -7,9 +7,14 @@
     <ClInclude Include="Windows\ExternalLibraries.win.h">
       <Filter>Windows</Filter>
     </ClInclude>
+    <ClInclude Include="cbReferenceCountedAsset.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cManager.inl" />
+    <None Include="Windows\cbReferenceCountedAsset.win.inl">
+      <Filter>Windows</Filter>
+    </None>
+    <None Include="cbReferenceCountedAsset.inl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Windows">

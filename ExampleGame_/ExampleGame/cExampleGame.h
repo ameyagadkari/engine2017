@@ -71,6 +71,7 @@ namespace eae6320
 		//----
 
 		virtual void UpdateBasedOnInput() override;
+		//virtual void UpdateSimulationBasedOnInput() override;
 
 		// Initialization / Clean Up
 		//--------------------------

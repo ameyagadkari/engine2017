@@ -4,22 +4,6 @@
 
 #include <Shaders/shaders.inc>
 
-// Constant Buffers
-//=================
-
-cbuffer g_constantBuffer_perFrame : register( b0 )
-{
-	float g_elapsedSecondCount_systemTime;
-	float g_elapsedSecondCount_simulationTime;
-	// For float4 alignment
-	float2 g_padding;
-}
-
-cbuffer g_constantBuffer_perMaterial : register( b1 )
-{
-	float4 g_color;
-}
-
 // Entry Point
 //============
 

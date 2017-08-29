@@ -19,13 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cbReferenceCountedAsset.h" />
     <ClInclude Include="cHandle.h" />
     <ClInclude Include="cManager.h" />
     <ClInclude Include="ReferenceCountedAssets.h" />
     <ClInclude Include="Windows\ExternalLibraries.win.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cbReferenceCountedAsset.inl" />
     <None Include="cManager.inl" />
+    <None Include="Windows\cbReferenceCountedAsset.win.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Asserts\Asserts.vcxproj">

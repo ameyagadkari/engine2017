@@ -6,6 +6,11 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
 
+namespace 
+{
+	bool isPaused = false;
+}
+
 // Inherited Implementation
 //=========================
 
@@ -20,6 +25,36 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 		// Exit the application
 		const auto result = Exit( EXIT_SUCCESS );
 		EAE6320_ASSERT( result );
+	}
+
+	// Is the user pressing the P key?
+	if (UserInput::IsKeyPressedOnce(UserInput::KeyCodes::P))
+	{
+		if (!isPaused)
+		{
+			// Pause the application
+			SetSimulationRate(0.0f);
+			isPaused = true;
+		}
+		else
+		{
+			// UnPause the application
+			SetSimulationRate(1.0f);
+			isPaused = false;
+		}
+	}
+
+	// Game is not paused
+	if (!isPaused)
+	{
+		if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
+		{
+			SetSimulationRate(0.5f);
+		}
+		else
+		{
+			SetSimulationRate(1.0f);
+		}
 	}
 }
 
