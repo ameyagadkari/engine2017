@@ -3,9 +3,47 @@
 
 #include "../cShaderBuilder.h"
 
+#include <d3dcommon.h>
+#include <d3dcompiler.h>
 #include <Engine/Platform/Platform.h>
-#include <sstream>
+#include <iostream>
 #include <Tools/AssetBuildLibrary/Functions.h>
+
+// Helper Class Declaration
+//=========================
+
+namespace
+{
+	class cIncludeHelper : public ID3DInclude
+	{
+		// Interface
+		//----------
+
+	public:
+
+		eae6320::cResult Initialize();
+		cIncludeHelper( const std::string& i_shaderSourcePath );
+
+		// Inherited Interface
+		//--------------------
+
+	private:
+
+		virtual HRESULT Open( D3D_INCLUDE_TYPE i_includeType, const char* i_path, const void* i_parentData,
+			const void** o_dataFromFile, unsigned int* o_dataSize ) override;
+		virtual HRESULT Close( const void* i_data ) override;
+
+		// Data
+		//-----
+
+	private:
+
+		const std::string m_shaderSourcePath;
+		std::string m_shaderSourceDirectory;
+		std::string m_engineSourceContentDirectory;
+		std::string m_gameSourceContentDirectory;
+	};
+}
 
 // Interface
 //==========
@@ -13,108 +51,253 @@
 // Build
 //------
 
-eae6320::cResult eae6320::Assets::cShaderBuilder::Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments)
+eae6320::cResult eae6320::Assets::cShaderBuilder::Build( const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments )
 {
 	auto result = Results::Success;
 
-	// Create the command to run
-	std::string command;
-	{
-		std::ostringstream commandToBuild;
-		// Get the path to the shader compiler
-		{
-			std::string path_fxc;
-			{
-				// Get the path to the Windows SDK
-				std::string path_sdk;
-				{
-					std::string errorMessage;
-					if (!(result = Platform::GetEnvironmentVariable("WindowsSDKDir", path_sdk, &errorMessage)))
-					{
-						OutputErrorMessageWithFileInfo(__FILE__, "Failed to get the path to the Windows SDK: %s", errorMessage.c_str());
-						goto OnExit;
-					}
-				}
+	Platform::sDataFromFile dataFromFile;
+	ID3DBlob* compiledCode = nullptr;
 
-				path_fxc = path_sdk + "bin/10.0.15063.0/" +
-#ifndef _WIN64
-					"x86"
-#else
-					"x64"
-#endif
-					+ "/fxc.exe";
-			}
-			commandToBuild << "\"" << path_fxc << "\"";
+	// Load the source code
+	{
+		std::string errorMessage;
+		if ( !( result = Platform::LoadBinaryFile( m_path_source, dataFromFile, &errorMessage ) ) )
+		{
+			OutputErrorMessageWithFileInfo( m_path_source, "Failed to load shader source file: %s", errorMessage.c_str() );
+			goto OnExit;
 		}
-		// Target profile
-		switch (i_shaderType)
+	}
+	// Compile it
+	{
+		const D3D_SHADER_MACRO defines[] =
+		{
+			{ "EAE6320_PLATFORM_D3D" },
+			{}
+		};
+		cIncludeHelper includeHelper( m_path_source );
+		if ( !( result = includeHelper.Initialize() ) )
+		{
+			goto OnExit;
+		}
+		constexpr auto entryPoint = "main";
+		const char* targetProfile;
+		switch ( i_shaderType )
 		{
 		case Graphics::ShaderTypes::Vertex:
-			commandToBuild << " /Tvs_4_0";
+			targetProfile = "vs_4_0";
 			break;
 		case Graphics::ShaderTypes::Fragment:
-			commandToBuild << " /Tps_4_0";
+			targetProfile = "ps_4_0";
 			break;
 		}
-		// Get the content directories to use as #include search paths
-		std::string EngineSourceContentDir, GameSourceContentDir;
-		{
-			std::string errorMessage;
-
-			// EngineSourceContentDir
-			if (!(result = Platform::GetEnvironmentVariable("EngineSourceContentDir", EngineSourceContentDir, &errorMessage)))
-			{
-				OutputErrorMessage("Failed to get the engine's source content directory: %s", errorMessage.c_str());
-				goto OnExit;
-			}
-			// GameSourceContentDir
-			if (!(result = Platform::GetEnvironmentVariable("GameSourceContentDir", GameSourceContentDir, &errorMessage)))
-			{
-				OutputErrorMessage("Failed to get the game's source content directory: %s", errorMessage.c_str());
-				goto OnExit;
-			}
-		}
-		// Entry point
-		commandToBuild << " /Emain"
-			// #define the platform
-			<< " /DEAE6320_PLATFORM_D3D"
+		constexpr unsigned int compileConstants = 0
 #ifdef EAE6320_GRAPHICS_AREDEBUGSHADERSENABLED
-			// Disable optimizations so that debugging is easier
-			<< " /Od"
-			// Enable debugging
-			<< " /Zi"
+			// Include debugging information
+			| D3DCOMPILE_DEBUG
+			// Disable optimizations
+			| D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_OPTIMIZATION_LEVEL0
+#else
+			// Optimize as much as possible
+			| D3DCOMPILE_OPTIMIZATION_LEVEL3
 #endif
-			// Target file
-			<< " /Fo\"" << m_path_target << "\""
-			// Additional #include paths
-			// (list the game's content path before the engine's
-			// so that if there are identically-named files
-			// the game-specific one will be used)
-			<< " /I\"" << GameSourceContentDir << ".\""	// FXC doesn't like the trailing slash, and so a dot is added
-			<< " /I\"" << EngineSourceContentDir << ".\""
-			// Don't output the logo
-			<< " /nologo"
-			// Source file
-			<< " \"" << m_path_source << "\""
+			// Treat warnings as errors
+			| D3DCOMPILE_WARNINGS_ARE_ERRORS
 			;
-		command = commandToBuild.str();
-	}
-	// Execute the command
-	{
-		int exitCode;
-		std::string errorMessage;
-		if (result = Platform::ExecuteCommand(command.c_str(), &exitCode, &errorMessage))
+		constexpr unsigned int notAnFxFile = 0;
+		ID3DBlob* errorMessages = nullptr;
+		const auto d3dResult = D3DCompile( dataFromFile.data, dataFromFile.size, m_path_source, defines, &includeHelper, entryPoint,
+			targetProfile, compileConstants, notAnFxFile, &compiledCode, &errorMessages );
+		if ( errorMessages )
 		{
-			result = (exitCode == EXIT_SUCCESS) ? Results::Success : Results::Failure;
+			std::cerr << static_cast<char*>( errorMessages->GetBufferPointer() );
+			errorMessages->Release();
+			errorMessages = nullptr;
 		}
-		else
+		else if ( FAILED( d3dResult ) )
 		{
-			OutputErrorMessageWithFileInfo(m_path_source, errorMessage.c_str());
+			OutputErrorMessageWithFileInfo( m_path_source, "Shader compiling failed for unknown reason" );
+		}
+		if ( FAILED( d3dResult ) )
+		{
+			result = Results::Failure;
 			goto OnExit;
+		}
+	}
+	// Write the compiled shader to disk
+	{
+		std::string errorMessage;
+		if ( !( result = eae6320::Platform::WriteBinaryFile( m_path_target, compiledCode->GetBufferPointer(), compiledCode->GetBufferSize(), &errorMessage ) ) )
+		{
+			eae6320::Assets::OutputErrorMessageWithFileInfo( m_path_source, errorMessage.c_str() );
 		}
 	}
 
 OnExit:
 
+	if ( compiledCode )
+	{
+		compiledCode->Release();
+		compiledCode = nullptr;
+	}
+	dataFromFile.Free();
+
 	return result;
+}
+
+// Helper Class Definition
+//========================
+
+namespace
+{
+	// Interface
+	//----------
+
+	eae6320::cResult cIncludeHelper::Initialize()
+	{
+		auto result = eae6320::Results::Success;
+
+		// Calculate the directory of the source file
+		{
+			const auto pos_lastSlash = m_shaderSourcePath.find_last_of( "/\\" );
+			if ( pos_lastSlash != m_shaderSourcePath.npos )
+			{
+				m_shaderSourceDirectory = m_shaderSourcePath.substr( 0, pos_lastSlash + 1 );
+			}
+			else
+			{
+				m_shaderSourceDirectory = "";
+			}
+		}
+		// Get the content directories to use as #include search paths
+		{
+			std::string errorMessage;
+
+			// EngineSourceContentDir
+			{
+				if ( !( result = eae6320::Platform::GetEnvironmentVariable(
+					"EngineSourceContentDir", m_engineSourceContentDirectory, &errorMessage ) ) )
+				{
+					eae6320::Assets::OutputErrorMessage( "Failed to get the engine's source content directory: %s", errorMessage.c_str() );
+					goto OnExit;
+				}
+			}
+			// GameSourceContentDir
+			{
+				if ( !( result = eae6320::Platform::GetEnvironmentVariable(
+					"GameSourceContentDir", m_gameSourceContentDirectory, &errorMessage ) ) )
+				{
+					eae6320::Assets::OutputErrorMessage( "Failed to get the game's source content directory: %s", errorMessage.c_str() );
+					goto OnExit;
+				}
+			}
+		}
+
+	OnExit:
+
+		return result;
+	}
+
+	cIncludeHelper::cIncludeHelper( const std::string& i_shaderSourcePath )
+		:
+		m_shaderSourcePath( i_shaderSourcePath )
+	{
+
+	}
+
+	// Inherited Interface
+	//--------------------
+
+	HRESULT cIncludeHelper::Open( D3D_INCLUDE_TYPE i_includeType, const char* i_path, const void* i_parentData,
+		const void** o_dataFromFile, unsigned int* o_dataSize )
+	{
+		auto result = S_OK;
+
+		eae6320::Platform::sDataFromFile dataFromFile;
+
+		EAE6320_ASSERT( o_dataFromFile );
+		EAE6320_ASSERT( o_dataSize );
+
+		// Calculate the path to open
+		std::string pathToOpen;
+		{
+			// BUG WARNING!
+			// The code below assumes that the #include path is relative,
+			// and it will not work correctly for absolute paths
+			switch ( i_includeType )
+			{
+			case D3D_INCLUDE_LOCAL:
+				{
+					pathToOpen = m_shaderSourceDirectory + i_path;
+					if ( !eae6320::Platform::DoesFileExist( pathToOpen.c_str() ) )
+					{
+						result = ERROR_PATH_NOT_FOUND;
+						eae6320::Assets::OutputErrorMessageWithFileInfo( m_shaderSourcePath.c_str(),
+							"The file %s doesn't exist (from the requested #include path \"%s\"", pathToOpen.c_str(), i_path );
+						goto OnExit;
+					}
+				}
+				break;
+			case D3D_INCLUDE_SYSTEM:
+				{
+					// Files in the game source content directory take precedence over those in the engine source content directory
+					pathToOpen = m_gameSourceContentDirectory + i_path;
+					if ( !eae6320::Platform::DoesFileExist( pathToOpen.c_str() ) )
+					{
+						pathToOpen = m_engineSourceContentDirectory + i_path;
+						if ( !eae6320::Platform::DoesFileExist( pathToOpen.c_str() ) )
+						{
+							result = ERROR_PATH_NOT_FOUND;
+							eae6320::Assets::OutputErrorMessageWithFileInfo( m_shaderSourcePath.c_str(),
+								"The file %s doesn't exist (from the requested #include path \"%s\"", pathToOpen.c_str(), i_path );
+							goto OnExit;
+						}
+					}
+				}
+				break;
+			}
+		}
+
+		{
+			std::string errorMessage;
+			const auto localResult = eae6320::Platform::LoadBinaryFile( pathToOpen.c_str(), dataFromFile, &errorMessage );
+			if ( localResult )
+			{
+				*o_dataFromFile = dataFromFile.data;
+				EAE6320_ASSERT( dataFromFile.size < ( uint64_t( 1 ) << ( sizeof( *o_dataSize ) * 8 ) ) );
+				*o_dataSize = static_cast<unsigned int>( dataFromFile.size );
+			}
+			else
+			{
+				eae6320::Assets::OutputErrorMessageWithFileInfo( __FILE__, __LINE__,
+					"Failed to open requested #include path: %s",
+					errorMessage.c_str() );
+				goto OnExit;
+			}
+		}
+
+	OnExit:
+
+		if ( FAILED( result ) )
+		{
+			dataFromFile.Free();
+			*o_dataFromFile = nullptr;
+			*o_dataSize = 0;
+		}
+
+		return result;
+	}
+
+	HRESULT cIncludeHelper::Close( const void* i_data )
+	{
+		EAE6320_ASSERT( i_data );
+
+		// This data should be from the Open() function:
+		// Assign it bad to the platform data structure
+		// so that it can be deallocated consistently
+		eae6320::Platform::sDataFromFile dataFromFile;
+		dataFromFile.data = const_cast<void*>( i_data );
+		dataFromFile.Free();
+
+		return S_OK;
+	}
 }
