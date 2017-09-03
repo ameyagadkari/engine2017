@@ -23,6 +23,8 @@
 	#define mat2 float2x2
 	#define mat3 float3x3
 	#define mat4 float4x4
+	
+	#define gl_Position o_position
 
 #elif defined( EAE6320_PLATFORM_GL )
 
@@ -32,6 +34,8 @@
 	#define float2x2 mat2
 	#define float3x3 mat3
 	#define float4x4 mat4
+	
+	#define o_position gl_Position
 
 #endif
 

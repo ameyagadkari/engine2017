@@ -54,13 +54,7 @@ int main( int i_argumentCount, char** i_arguments )
 		std::string errorMessage;
 		int exitCode;
 		{
-			const auto shader_authored = engineSourceContentDir + "Shaders/Vertex/example."
-#if defined( EAE6320_PLATFORM_D3D )
-				"hlsl"
-#elif defined( EAE6320_PLATFORM_GL )
-				"glsl"
-#endif
-				;
+			const auto shader_authored = engineSourceContentDir + "Shaders/Vertex/example.shd";
 			const auto shader_built = gameInstallDir + "data/Shaders/Vertex/example.shd";
 			if ( result = eae6320::Platform::CreateDirectoryIfItDoesntExist( shader_built, &errorMessage) )
 			{
@@ -86,13 +80,7 @@ int main( int i_argumentCount, char** i_arguments )
 			}
 		}
 		{
-			const auto shader_authored = engineSourceContentDir + "Shaders/Fragment/example."
-#if defined( EAE6320_PLATFORM_D3D )
-				"hlsl"
-#elif defined( EAE6320_PLATFORM_GL )
-				"glsl"
-#endif
-				;
+			const auto shader_authored = engineSourceContentDir + "Shaders/Fragment/example.shd";
 			const auto shader_built = gameInstallDir + "data/Shaders/Fragment/example.shd";
 			if ( result = eae6320::Platform::CreateDirectoryIfItDoesntExist( shader_built, &errorMessage ) )
 			{
