@@ -1,7 +1,7 @@
 /*
 	A shader is a program that runs on the GPU (graphics hardware)
 
-	This class encapsulates a platform-specific graphics API objec
+	This class encapsulates a platform-specific graphics API object
 	that can be loaded and refered to on the CPU.
 */
 

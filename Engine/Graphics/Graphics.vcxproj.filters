@@ -30,6 +30,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="sContext.h" />
     <ClInclude Include="VertexFormats.h" />
+    <ClInclude Include="cEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp">
@@ -74,6 +75,10 @@
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="sContext.cpp" />
+    <ClCompile Include="cEffect.cpp" />
+    <ClCompile Include="OpenGL\cEffect.gl.cpp">
+      <Filter>OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />

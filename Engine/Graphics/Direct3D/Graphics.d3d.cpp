@@ -6,9 +6,8 @@
 #include "Includes.h"
 #include "../cConstantBuffer.h"
 #include "../ConstantBufferFormats.h"
-#include "../cRenderState.h"
+#include "../cEffect.h"
 #include "../cSamplerState.h"
-#include "../cShader.h"
 #include "../sContext.h"
 #include "../VertexFormats.h"
 
@@ -62,13 +61,10 @@ namespace
 	// (the application loop thread waits for the signal)
 	eae6320::Concurrency::cEvent s_whenDataForANewFrameCanBeSubmittedFromApplicationThread;
 
-	// Shading Data
+	// Effect
 	//-------------
 
-	eae6320::Graphics::cShader::Handle s_vertexShader;
-	eae6320::Graphics::cShader::Handle s_fragmentShader;
-
-	eae6320::Graphics::cRenderState s_renderState;
+	eae6320::Graphics::cEffect s_effect;
 
 	// Geometry Data
 	//--------------
@@ -86,7 +82,6 @@ namespace
 namespace
 {
 	eae6320::cResult InitializeGeometry();
-	eae6320::cResult InitializeShadingData();
 	eae6320::cResult InitializeViews( const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight );
 }
 
@@ -171,27 +166,9 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update( &constantData_perFrame );
 	}
 
-	// Bind the shading data
+	// Bind the effect
 	{
-		{
-			ID3D11ClassInstance* const* noInterfaces = nullptr;
-			constexpr unsigned int interfaceCount = 0;
-			// Vertex shader
-			{
-				EAE6320_ASSERT( s_vertexShader );
-				auto* const shader = cShader::s_manager.Get( s_vertexShader );
-				EAE6320_ASSERT( shader && shader->m_shaderObject.vertex );
-				direct3dImmediateContext->VSSetShader( shader->m_shaderObject.vertex, noInterfaces, interfaceCount );
-			}
-			// Fragment shader
-			{
-				EAE6320_ASSERT( s_fragmentShader );
-				auto* const shader = cShader::s_manager.Get( s_fragmentShader );
-				EAE6320_ASSERT( shader && shader->m_shaderObject.fragment );
-				direct3dImmediateContext->PSSetShader( shader->m_shaderObject.fragment, noInterfaces, interfaceCount );
-			}
-		}
-		s_renderState.Bind();
+		s_effect.Bind();
 	}
 	// Draw the geometry
 	{
@@ -322,9 +299,9 @@ eae6320::cResult eae6320::Graphics::Initialize( const sInitializationParameters&
 			goto OnExit;
 		}
 	}
-	// Initialize the shading data
+	// Initialize the effect
 	{
-		if ( !( result = InitializeShadingData() ) )
+		if ( !( result = s_effect.Initialize() ) )
 		{
 			EAE6320_ASSERT( false );
 			goto OnExit;
@@ -368,42 +345,17 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		s_vertexInputLayout->Release();
 		s_vertexInputLayout = nullptr;
 	}
-	if ( s_vertexShader )
 	{
-		const auto localResult = cShader::s_manager.Release( s_vertexShader );
-		if ( !localResult )
+		const auto localResult = s_effect.CleanUp();
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
 		}
 	}
-	if ( s_fragmentShader )
-	{
-		const auto localResult = cShader::s_manager.Release( s_fragmentShader );
-		if ( !localResult )
-		{
-			EAE6320_ASSERT( false );
-			if ( result )
-			{
-				result = localResult;
-			}
-		}
-	}
-	{
-		const auto localResult = s_renderState.CleanUp();
-		if ( !localResult )
-		{
-			EAE6320_ASSERT( false );
-			if ( result )
-			{
-				result = localResult;
-			}
-		}
-	}
-
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
 		if ( !localResult )
@@ -559,36 +511,6 @@ namespace
 				result = eae6320::Results::Failure;
 				EAE6320_ASSERTF( false, "Geometry vertex buffer creation failed (HRESULT %#010x)", d3dResult );
 				eae6320::Logging::OutputError( "Direct3D failed to create a geometry vertex buffer (HRESULT %#010x)", d3dResult );
-				goto OnExit;
-			}
-		}
-
-	OnExit:
-
-		return result;
-	}
-
-	eae6320::cResult InitializeShadingData()
-	{
-		auto result = eae6320::Results::Success;
-
-		if ( !( result = eae6320::Graphics::cShader::s_manager.Load( "data/Shaders/Vertex/example.shd",
-			s_vertexShader, eae6320::Graphics::ShaderTypes::Vertex ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-		if ( !( result = eae6320::Graphics::cShader::s_manager.Load( "data/Shaders/Fragment/example.shd",
-			s_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment ) ) )
-		{
-			EAE6320_ASSERT( false );
-			goto OnExit;
-		}
-		{
-			constexpr uint8_t defaultRenderState = 0;
-			if ( !( result = s_renderState.Initialize( defaultRenderState ) ) )
-			{
-				EAE6320_ASSERT( false );
 				goto OnExit;
 			}
 		}
