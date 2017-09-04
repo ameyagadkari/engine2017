@@ -28,7 +28,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize()
 		// Load the compiled binary vertex shader for the input layout
 		eae6320::Platform::sDataFromFile vertexShaderDataFromFile;
 		std::string errorMessage;
-		if (result = eae6320::Platform::LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_geometry.shd", vertexShaderDataFromFile, &errorMessage))
+		if (result = eae6320::Platform::LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_sprite.shd", vertexShaderDataFromFile, &errorMessage))
 		{
 			// Create the vertex layout
 
