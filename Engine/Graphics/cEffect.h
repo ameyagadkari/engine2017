@@ -35,7 +35,7 @@ namespace eae6320
 			// Data
 			//=====
 
-		public:
+		private:
 
 			cShader::Handle m_vertexShader;
 			cShader::Handle m_fragmentShader;
