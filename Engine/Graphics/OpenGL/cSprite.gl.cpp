@@ -74,26 +74,21 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize()
 	{
 		constexpr unsigned int triangleCount = 2;
 		constexpr unsigned int vertexCountPerTriangle = 3;
-		const auto vertexCount = triangleCount * vertexCountPerTriangle;
+		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
+		const auto vertexCount = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
 		eae6320::Graphics::VertexFormats::sSprite vertexData[vertexCount];
 		{
-			vertexData[0].x = 0.0f;
+			vertexData[0].x = 1.0f;
 			vertexData[0].y = 0.0f;
 
 			vertexData[1].x = 1.0f;
-			vertexData[1].y = 0.0f;
+			vertexData[1].y = 1.0f;
 
-			vertexData[2].x = 1.0f;
-			vertexData[2].y = 1.0f;
+			vertexData[2].x = 0.0f;
+			vertexData[2].y = 0.0f;
 
-			vertexData[3].x = 1.0f;
+			vertexData[3].x = 0.0f;
 			vertexData[3].y = 1.0f;
-
-			vertexData[4].x = 0.0f;
-			vertexData[4].y = 1.0f;
-
-			vertexData[5].x = 0.0f;
-			vertexData[5].y = 0.0f;
 		}
 		const auto bufferSize = vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
 		EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(GLsizeiptr) * 8)));
@@ -225,14 +220,15 @@ void eae6320::Graphics::cSprite::Draw() const
 		// The mode defines how to interpret multiple vertices as a single "primitive";
 		// a triangle list is defined
 		// (meaning that every primitive is a triangle and will be defined by three vertices)
-		constexpr GLenum mode = GL_TRIANGLES;
+		constexpr GLenum mode = GL_TRIANGLE_STRIP;
 		// It's possible to start rendering primitives in the middle of the stream
 		constexpr GLint indexOfFirstVertexToRender = 0;
 		// As of this comment we are only drawing a single triangle
 		// (you will have to update this code in future assignments!)
 		constexpr unsigned int triangleCount = 2;
 		constexpr unsigned int vertexCountPerTriangle = 3;
-		constexpr auto vertexCountToRender = triangleCount * vertexCountPerTriangle;
+		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
+		const auto vertexCountToRender = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
 		glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
 		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
