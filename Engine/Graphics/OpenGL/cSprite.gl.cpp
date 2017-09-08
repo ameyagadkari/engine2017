@@ -6,13 +6,22 @@
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
+#include <Engine/Transform/sRectTransform.h>
+
+// Static Data Initialization
+//===========================
+
+namespace
+{
+	constexpr unsigned int s_vertexCount = 4;
+}
 
 // Implementation
 //===============
 
 // Initialization / Clean Up
 
-eae6320::cResult eae6320::Graphics::cSprite::Initialize()
+eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
 {
 	auto result = eae6320::Results::Success;
 
@@ -72,25 +81,34 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize()
 	}
 	// Assign the data to the buffer
 	{
-		constexpr unsigned int triangleCount = 2;
-		constexpr unsigned int vertexCountPerTriangle = 3;
-		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
-		const auto vertexCount = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
-		eae6320::Graphics::VertexFormats::sSprite vertexData[vertexCount];
+		eae6320::Graphics::VertexFormats::sSprite vertexData[s_vertexCount];
 		{
-			vertexData[0].x = 1.0f;
-			vertexData[0].y = 0.0f;
-
-			vertexData[1].x = 1.0f;
-			vertexData[1].y = 1.0f;
-
-			vertexData[2].x = 0.0f;
-			vertexData[2].y = 0.0f;
-
-			vertexData[3].x = 0.0f;
-			vertexData[3].y = 1.0f;
+			Transform::ScreenPosition screenPosition;
+			i_rectTransform.GetScreenPosition(screenPosition);
+			{
+				// Bottom Right
+				{
+					vertexData[0].x = screenPosition.right;
+					vertexData[0].y = screenPosition.bottom;
+				}
+				// Top Right
+				{
+					vertexData[1].x = screenPosition.right;
+					vertexData[1].y = screenPosition.top;
+				}
+				// Bottom Left
+				{
+					vertexData[2].x = screenPosition.left;
+					vertexData[2].y = screenPosition.bottom;
+				}
+				// Top Left
+				{
+					vertexData[3].x = screenPosition.left;
+					vertexData[3].y = screenPosition.top;
+				}
+			}
 		}
-		const auto bufferSize = vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
+		const auto bufferSize = s_vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
 		EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(GLsizeiptr) * 8)));
 		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(vertexData),
 			// In our class we won't ever read from the buffer
@@ -225,11 +243,7 @@ void eae6320::Graphics::cSprite::Draw() const
 		constexpr GLint indexOfFirstVertexToRender = 0;
 		// As of this comment we are only drawing a single triangle
 		// (you will have to update this code in future assignments!)
-		constexpr unsigned int triangleCount = 2;
-		constexpr unsigned int vertexCountPerTriangle = 3;
-		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
-		const auto vertexCountToRender = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
-		glDrawArrays(mode, indexOfFirstVertexToRender, vertexCountToRender);
+		glDrawArrays(mode, indexOfFirstVertexToRender, s_vertexCount);
 		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 }

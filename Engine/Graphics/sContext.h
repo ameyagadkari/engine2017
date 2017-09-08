@@ -5,8 +5,8 @@
 	and it is globally accessible.
 */
 
-#ifndef EAE6320_GRAPHICS_CCONTEXT_H
-#define EAE6320_GRAPHICS_CCONTEXT_H
+#ifndef EAE6320_GRAPHICS_SCONTEXT_H
+#define EAE6320_GRAPHICS_SCONTEXT_H
 
 // Include Files
 //==============
@@ -115,4 +115,4 @@ namespace eae6320
 	}
 }
 
-#endif	// EAE6320_GRAPHICS_CCONTEXT_H
+#endif	// EAE6320_GRAPHICS_SCONTEXT_H

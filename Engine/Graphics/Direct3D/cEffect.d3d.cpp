@@ -18,7 +18,17 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 	return eae6320::Results::Success;
 }
 
-void eae6320::Graphics::cEffect::BindInternalPlatformSpecific() const
+eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
+{
+	// Nothing Special is required to be done here.
+
+	return eae6320::Results::Success;
+}
+
+// Render
+//-------
+
+void eae6320::Graphics::cEffect::BindPlatformSpecific() const
 {
 	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
 	EAE6320_ASSERT(direct3dImmediateContext);

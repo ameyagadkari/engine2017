@@ -53,11 +53,12 @@ namespace eae6320
 			//--------------------------
 
 			cResult InitializePlatformSpecific();
+			cResult CleanUpPlatformSpecific();
 
 			// Render
 			//-------
 
-			void BindInternalPlatformSpecific() const;
+			void BindPlatformSpecific() const;
 
 		};
 	}

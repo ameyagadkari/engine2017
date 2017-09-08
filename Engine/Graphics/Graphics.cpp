@@ -17,6 +17,7 @@
 #include <Engine/Platform/Platform.h>
 #include <Engine/Time/Time.h>
 #include <Engine/UserOutput/UserOutput.h>
+#include <Engine/Transform/sRectTransform.h>
 #include <utility>
 
 
@@ -235,7 +236,8 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the geometry
 	{
-		if (!(result = s_sprite.Initialize()))
+		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::BottomCentre);
+		if (!(result = s_sprite.Initialize(spriteLocation)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;

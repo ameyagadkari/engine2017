@@ -10,13 +10,22 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
+#include <Engine/Transform/sRectTransform.h>
+
+// Static Data Initialization
+//===========================
+
+namespace
+{
+	constexpr unsigned int s_vertexCount = 4;
+}
 
 // Implementation
 //===============
 
 // Initialization / Clean Up
 
-eae6320::cResult eae6320::Graphics::cSprite::Initialize()
+eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
 {
 	auto result = eae6320::Results::Success;
 
@@ -79,27 +88,34 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize()
 	}
 	// Vertex Buffer
 	{
-		constexpr unsigned int triangleCount = 2;
-		constexpr unsigned int vertexCountPerTriangle = 3;
-		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
-		const auto vertexCount = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
-		eae6320::Graphics::VertexFormats::sSprite vertexData[vertexCount];
+		eae6320::Graphics::VertexFormats::sSprite vertexData[s_vertexCount];
+		Transform::ScreenPosition screenPosition;
+		i_rectTransform.GetScreenPosition(screenPosition);
 		{
-			vertexData[0].x = 1.0f;
-			vertexData[0].y = 0.0f;
-
-			vertexData[1].x = 0.0f;
-			vertexData[1].y = 0.0f;
-
-			vertexData[2].x = 1.0f;
-			vertexData[2].y = 1.0f;
-
-			vertexData[3].x = 0.0f;
-			vertexData[3].y = 1.0f;
+			// Bottom Right
+			{
+				vertexData[0].x = screenPosition.right;
+				vertexData[0].y = screenPosition.bottom;
+			}
+			// Bottom Left
+			{
+				vertexData[1].x = screenPosition.left;
+				vertexData[1].y = screenPosition.bottom;
+			}
+			// Top Right
+			{
+				vertexData[2].x = screenPosition.right;
+				vertexData[2].y = screenPosition.top;
+			}
+			// Top Left
+			{
+				vertexData[3].x = screenPosition.left;
+				vertexData[3].y = screenPosition.top;
+			}
 		}
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
+			const auto bufferSize = s_vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -163,27 +179,22 @@ void eae6320::Graphics::cSprite::Draw() const
 		direct3dImmediateContext->IASetVertexBuffers(startingSlot, vertexBufferCount, &m_vertexBuffer, &bufferStride, &bufferOffset);
 	}
 	// Specify what kind of data the vertex buffer holds
+	// Set the layout (which defines how to interpret a single vertex)
 	{
-		// Set the layout (which defines how to interpret a single vertex)
-		{
-			EAE6320_ASSERT(m_vertexInputLayout);
-			direct3dImmediateContext->IASetInputLayout(m_vertexInputLayout);
-		}
-		// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
-		// the vertex buffer was defined as a triangle list
-		// (meaning that every primitive is a triangle and will be defined by three vertices)
-		direct3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		EAE6320_ASSERT(m_vertexInputLayout);
+		direct3dImmediateContext->IASetInputLayout(m_vertexInputLayout);
 	}
+	// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
+	// the vertex buffer was defined as a triangle list
+	// (meaning that every primitive is a triangle and will be defined by three vertices)
+	direct3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
 	// Render triangles from the currently-bound vertex buffer
 	{
 		// As of this comment only a single triangle is drawn
 		// (you will have to update this code in future assignments!)
-		constexpr unsigned int triangleCount = 2;
-		constexpr unsigned int vertexCountPerTriangle = 3;
-		constexpr unsigned int sharedVertexCountPerTriangleOtherThanFirst = 2;
-		const auto vertexCountToRender = triangleCount * vertexCountPerTriangle - (triangleCount - 1) * sharedVertexCountPerTriangleOtherThanFirst;
 		// It's possible to start rendering primitives in the middle of the stream
 		constexpr unsigned int indexOfFirstVertexToRender = 0;
-		direct3dImmediateContext->Draw(vertexCountToRender, indexOfFirstVertexToRender);
+		direct3dImmediateContext->Draw(s_vertexCount, indexOfFirstVertexToRender);
 	}
 }

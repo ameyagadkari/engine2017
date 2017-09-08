@@ -17,6 +17,14 @@ struct ID3D11Buffer;
 struct ID3D11InputLayout;
 #endif
 
+namespace eae6320
+{
+	namespace Transform
+	{
+		struct sRectTransform;
+	}
+}
+
 // Class Declaration
 //==================
 
@@ -34,7 +42,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize();
+			cResult Initialize(const Transform::sRectTransform& i_rectTransform);
 			cResult CleanUp();
 
 			// Render

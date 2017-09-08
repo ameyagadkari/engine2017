@@ -167,8 +167,33 @@ OnExit:
 	return result;
 }
 
+eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
+{
+	auto result = eae6320::Results::Success;
+	// Program clean up
+	if (m_programId != 0)
+	{
+		glDeleteProgram(m_programId);
+		const auto errorCode = glGetError();
+		if (errorCode != GL_NO_ERROR)
+		{
+			if (result)
+			{
+				result = eae6320::Results::Failure;
+			}
+			EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			eae6320::Logging::OutputError("OpenGL failed to delete the program: %s",
+				reinterpret_cast<const char*>(gluErrorString(errorCode)));
+		}
+		m_programId = 0;
+	}
+	return result;
+}
 
-void eae6320::Graphics::cEffect::BindInternalPlatformSpecific() const
+// Render
+//-------
+
+void eae6320::Graphics::cEffect::BindPlatformSpecific() const
 {
 	EAE6320_ASSERT(m_programId != 0);
 	glUseProgram(m_programId);
