@@ -2,6 +2,7 @@
 //==============
 
 #include "../sContext.h"
+#include "../ColorFormats.h"
 
 #include "Includes.h"
 
@@ -86,7 +87,7 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 // Render
 //-------
 
-void eae6320::Graphics::sContext::ClearImageBuffer() const
+void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_color) const
 {
 	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
 	EAE6320_ASSERT(direct3dImmediateContext);
@@ -94,7 +95,7 @@ void eae6320::Graphics::sContext::ClearImageBuffer() const
 		EAE6320_ASSERT(renderTargetView);
 
 		// Black is usually used
-		constexpr float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		const float clearColor[4] = { i_color.r(), i_color.g(), i_color.b(), i_color.a() };
 		direct3dImmediateContext->ClearRenderTargetView(renderTargetView, clearColor);
 	}
 }

@@ -36,6 +36,17 @@
 	struct ID3D11DepthStencilView;
 #endif
 
+	namespace eae6320
+	{
+		namespace Graphics
+		{
+			namespace ColorFormats
+			{
+				struct sColor;
+			}
+		}
+	}
+
 // Class Declaration
 //==================
 
@@ -91,7 +102,7 @@ namespace eae6320
 			// Render
 			//-------
 
-			void ClearImageBuffer() const;
+			void ClearImageBuffer(const ColorFormats::sColor i_color) const;
 			void BufferSwap() const;
 
 			// Implementation

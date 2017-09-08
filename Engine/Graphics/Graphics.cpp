@@ -9,6 +9,7 @@
 #include "sContext.h"
 #include "cSprite.h"
 #include "cEffect.h"
+#include "ColorFormats.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Concurrency/cEvent.h>
@@ -65,6 +66,9 @@ namespace
 
 	eae6320::Graphics::cSprite s_sprite;
 
+	// Clear Color
+	//--------------
+	eae6320::Graphics::ColorFormats::sColor s_clearColor;
 }
 
 // Interface
@@ -127,7 +131,8 @@ void eae6320::Graphics::RenderFrame()
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
-	g_context.ClearImageBuffer();
+	g_context.ClearImageBuffer(s_clearColor);
+	
 
 	EAE6320_ASSERT(s_dataBeingRenderedByRenderThread);
 
@@ -140,7 +145,7 @@ void eae6320::Graphics::RenderFrame()
 
 	// Bind the effect
 	s_effect.Bind();
-	
+
 	// Draw the geometry
 	s_sprite.Draw();
 
@@ -237,6 +242,14 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 		}
 	}
 
+	// Set Clear Color
+	{
+		if (!(result = s_clearColor.SetColor(0.0f, 0.0f, 0.0f, 1.0f)))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+	}
 OnExit:
 
 	return result;

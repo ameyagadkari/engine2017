@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="cConstantBuffer.h" />
     <ClInclude Include="cEffect.h" />
+    <ClInclude Include="ColorFormats.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ConstantBufferFormats.h" />
     <ClInclude Include="cRenderState.h" />
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClCompile Include="cConstantBuffer.cpp" />
     <ClCompile Include="cEffect.cpp" />
+    <ClCompile Include="ColorFormats.cpp" />
     <ClCompile Include="cRenderState.cpp" />
     <ClCompile Include="cSamplerState.cpp" />
     <ClCompile Include="cShader.cpp" />

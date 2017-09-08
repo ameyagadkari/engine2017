@@ -2,6 +2,7 @@
 //==============
 
 #include "../sContext.h"
+#include "../ColorFormats.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
@@ -99,11 +100,11 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 // Render
 //-------
 
-void eae6320::Graphics::sContext::ClearImageBuffer() const
+void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_color) const
 {
 	// Black is usually used
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(i_color.r(), i_color.g(), i_color.b(), i_color.a());
 		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	{

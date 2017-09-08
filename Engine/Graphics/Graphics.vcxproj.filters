@@ -32,6 +32,7 @@
     <ClInclude Include="VertexFormats.h" />
     <ClInclude Include="cEffect.h" />
     <ClInclude Include="cSprite.h" />
+    <ClInclude Include="ColorFormats.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp">
@@ -83,6 +84,7 @@
     <ClCompile Include="Direct3D\cEffect.d3d.cpp">
       <Filter>Direct3D</Filter>
     </ClCompile>
+    <ClCompile Include="ColorFormats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />
