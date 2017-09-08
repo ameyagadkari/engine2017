@@ -3,11 +3,6 @@
 
 #include "cEffect.h"
 
-#if defined( EAE6320_PLATFORM_D3D )
-	#include "sContext.h"
-	#include "Direct3D\Includes.h"
-#endif
-
 // Interface
 //==========
 
@@ -39,34 +34,13 @@ eae6320::cResult eae6320::Graphics::cEffect::Initialize()
 		}
 	}
 
-#if defined( EAE6320_PLATFORM_GL )
-	if (!(result = InitializeGL()))
+	if (!(result = InitializePlatformSpecific()))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-#endif
 
 OnExit:
-
-#if defined( EAE6320_PLATFORM_GL )
-	if (!result)
-	{
-		if (m_programId != 0)
-		{
-			glDeleteProgram(m_programId);
-			const auto errorCode = glGetError();
-			if (errorCode != GL_NO_ERROR)
-			{
-				result = eae6320::Results::Failure;
-				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				eae6320::Logging::OutputError("OpenGL failed to delete the program: %s",
-					reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			}
-			m_programId = 0;
-		}
-	}
-#endif
 
 	return result;
 }
@@ -143,33 +117,6 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 
 void eae6320::Graphics::cEffect::Bind() const
 {
-#if defined( EAE6320_PLATFORM_D3D )
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
-	EAE6320_ASSERT(direct3dImmediateContext);
-	{
-		ID3D11ClassInstance* const* noInterfaces = nullptr;
-		constexpr unsigned int interfaceCount = 0;
-		// Vertex shader
-		{
-			EAE6320_ASSERT(m_vertexShader);
-			auto* const shader = cShader::s_manager.Get(m_vertexShader);
-			EAE6320_ASSERT(shader && shader->m_shaderObject.vertex);
-			direct3dImmediateContext->VSSetShader(shader->m_shaderObject.vertex, noInterfaces, interfaceCount);
-		}
-		// Fragment shader
-		{
-			EAE6320_ASSERT(m_fragmentShader);
-			auto* const shader = cShader::s_manager.Get(m_fragmentShader);
-			EAE6320_ASSERT(shader && shader->m_shaderObject.fragment);
-			direct3dImmediateContext->PSSetShader(shader->m_shaderObject.fragment, noInterfaces, interfaceCount);
-		}
-	}
-#elif defined( EAE6320_PLATFORM_GL )
-	{
-		EAE6320_ASSERT(m_programId != 0);
-		glUseProgram(m_programId);
-		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
-	}
-#endif
+	BindInternalPlatformSpecific();
 	m_renderState.Bind();
 }

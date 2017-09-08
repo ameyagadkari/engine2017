@@ -9,7 +9,7 @@
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::InitializeGL()
+eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 {
 	auto result = eae6320::Results::Success;
 
@@ -147,5 +147,30 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializeGL()
 
 OnExit:
 
+	if (!result)
+	{
+		if (m_programId != 0)
+		{
+			glDeleteProgram(m_programId);
+			const auto errorCode = glGetError();
+			if (errorCode != GL_NO_ERROR)
+			{
+				result = eae6320::Results::Failure;
+				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				eae6320::Logging::OutputError("OpenGL failed to delete the program: %s",
+					reinterpret_cast<const char*>(gluErrorString(errorCode)));
+			}
+			m_programId = 0;
+		}
+	}
+
 	return result;
+}
+
+
+void eae6320::Graphics::cEffect::BindInternalPlatformSpecific() const
+{
+	EAE6320_ASSERT(m_programId != 0);
+	glUseProgram(m_programId);
+	EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 }

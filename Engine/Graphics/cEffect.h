@@ -52,9 +52,12 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-#if defined( EAE6320_PLATFORM_GL )
-			cResult InitializeGL();
-#endif
+			cResult InitializePlatformSpecific();
+
+			// Render
+			//-------
+
+			void BindInternalPlatformSpecific() const;
 
 		};
 	}

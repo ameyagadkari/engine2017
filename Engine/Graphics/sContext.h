@@ -32,6 +32,8 @@
 	struct ID3D11Device;
 	struct ID3D11DeviceContext;
 	struct IDXGISwapChain;
+	struct ID3D11RenderTargetView;
+	struct ID3D11DepthStencilView;
 #endif
 
 // Class Declaration
@@ -60,6 +62,11 @@ namespace eae6320
 			// that are rendered to in sequence,
 			// with a single one being currently displayed
 			IDXGISwapChain* swapChain = nullptr;
+			// In Direct3D "views" are objects that allow a texture to be used a particular way:
+			// A render target view allows a texture to have color rendered to it
+			ID3D11RenderTargetView* renderTargetView = nullptr;
+			// A depth/stencil view allows a texture to have depth rendered to it
+			ID3D11DepthStencilView* depthStencilView = nullptr;
 #elif defined( EAE6320_PLATFORM_GL )
 			HDC deviceContext = NULL;
 			HGLRC openGlRenderingContext = NULL;
@@ -80,6 +87,12 @@ namespace eae6320
 			cResult CleanUp();
 
 			~sContext();
+
+			// Render
+			//-------
+
+			void ClearImageBuffer() const;
+			void BufferSwap() const;
 
 			// Implementation
 			//===============
