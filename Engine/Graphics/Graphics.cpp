@@ -57,15 +57,17 @@ namespace
 	// (the application loop thread waits for the signal)
 	eae6320::Concurrency::cEvent s_whenDataForANewFrameCanBeSubmittedFromApplicationThread;
 
-	// Effect
+	// Effects
 	//-------------
 
-	eae6320::Graphics::cEffect s_effect;
+	eae6320::Graphics::cEffect s_effect1;
+	eae6320::Graphics::cEffect s_effect2;
 
-	// Geometry Data
+	// Sprites
 	//--------------
 
-	eae6320::Graphics::cSprite s_sprite;
+	eae6320::Graphics::cSprite s_sprite1;
+	eae6320::Graphics::cSprite s_sprite2;
 
 	// Clear Color
 	//--------------
@@ -133,7 +135,7 @@ void eae6320::Graphics::RenderFrame()
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
 	g_context.ClearImageBuffer(s_clearColor);
-	
+
 
 	EAE6320_ASSERT(s_dataBeingRenderedByRenderThread);
 
@@ -144,11 +146,12 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update(&constantData_perFrame);
 	}
 
-	// Bind the effect
-	s_effect.Bind();
-
-	// Draw the geometry
-	s_sprite.Draw();
+	// Bind the effects
+	// Draw the sprites
+	s_effect1.Bind();
+	s_sprite1.Draw();
+	s_effect2.Bind();
+	s_sprite2.Draw();
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
 	// In order to display it the contents of the back buffer must be "presented"
@@ -226,21 +229,36 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 			goto OnExit;
 		}
 	}
-	// Initialize the effect
+	// Initialize the effects
 	{
-		if (!(result = s_effect.Initialize()))
+		if (!(result = s_effect1.Initialize("data/Shaders/Vertex/sprite.shd","data/Shaders/Fragment/sprite_white.shd")))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		if (!(result = s_effect2.Initialize("data/Shaders/Vertex/sprite.shd","data/Shaders/Fragment/sprite_color.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 	}
-	// Initialize the geometry
+	// Initialize the sprites
 	{
-		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::BottomCentre);
-		if (!(result = s_sprite.Initialize(spriteLocation)))
 		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
+			Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::BottomCentre);
+			if (!(result = s_sprite1.Initialize(spriteLocation)))
+			{
+				EAE6320_ASSERT(false);
+				goto OnExit;
+			}
+		}
+		{
+			Transform::sRectTransform spriteLocation(-20, -20, 50, 50, Transform::TopRight);
+			if (!(result = s_sprite2.Initialize(spriteLocation)))
+			{
+				EAE6320_ASSERT(false);
+				goto OnExit;
+			}
 		}
 	}
 
@@ -262,7 +280,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::Success;
 
 	{
-		const auto localResult = s_sprite.CleanUp();
+		const auto localResult = s_sprite1.CleanUp();
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -273,7 +291,29 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 	{
-		const auto localResult = s_effect.CleanUp();
+		const auto localResult = s_sprite2.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
+		const auto localResult = s_effect1.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
+		const auto localResult = s_effect2.CleanUp();
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);

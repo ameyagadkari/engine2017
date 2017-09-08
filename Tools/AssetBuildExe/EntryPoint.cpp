@@ -80,8 +80,8 @@ int main( int i_argumentCount, char** i_arguments )
 			}
 		}
 		{
-			const auto shader_authored = engineSourceContentDir + "Shaders/Fragment/sprite.shd";
-			const auto shader_built = gameInstallDir + "data/Shaders/Fragment/sprite.shd";
+			const auto shader_authored = engineSourceContentDir + "Shaders/Fragment/sprite_color.shd";
+			const auto shader_built = gameInstallDir + "data/Shaders/Fragment/sprite_color.shd";
 			if ( result = eae6320::Platform::CreateDirectoryIfItDoesntExist( shader_built, &errorMessage ) )
 			{
 				if ( result = eae6320::Platform::ExecuteCommand( ( std::string( "\"" ) + path_shaderBuilder
@@ -102,6 +102,32 @@ int main( int i_argumentCount, char** i_arguments )
 			else
 			{
 				eae6320::Assets::OutputErrorMessageWithFileInfo( __FILE__, __LINE__, errorMessage.c_str() );
+				goto OnExit;
+			}
+		}
+		{
+			const auto shader_authored = engineSourceContentDir + "Shaders/Fragment/sprite_white.shd";
+			const auto shader_built = gameInstallDir + "data/Shaders/Fragment/sprite_white.shd";
+			if (result = eae6320::Platform::CreateDirectoryIfItDoesntExist(shader_built, &errorMessage))
+			{
+				if (result = eae6320::Platform::ExecuteCommand((std::string("\"") + path_shaderBuilder
+					+ "\" \"" + shader_authored + "\" \"" + shader_built + "\" fragment").c_str(),
+					&exitCode, &errorMessage))
+				{
+					if (exitCode != EXIT_SUCCESS)
+					{
+						return exitCode;
+					}
+				}
+				else
+				{
+					eae6320::Assets::OutputErrorMessageWithFileInfo(__FILE__, __LINE__, errorMessage.c_str());
+					goto OnExit;
+				}
+			}
+			else
+			{
+				eae6320::Assets::OutputErrorMessageWithFileInfo(__FILE__, __LINE__, errorMessage.c_str());
 				goto OnExit;
 			}
 		}

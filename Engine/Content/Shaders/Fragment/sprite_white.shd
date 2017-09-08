@@ -40,7 +40,7 @@ void main()
 	// Output solid white
 	o_color = float4(
 		// RGB
-		1.0, 0.0, 0.0,
+		1.0, 1.0, 1.0,
 		// Alpha
 		1.0 );
 
