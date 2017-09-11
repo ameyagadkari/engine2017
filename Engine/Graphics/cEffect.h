@@ -24,7 +24,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize(std::string vertexShaderPath, std::string fragmentShaderPath);
+			cResult Initialize(std::string vertexShaderPath, std::string fragmentShaderPath, uint8_t renderState = 0);
 			cResult CleanUp();
 
 			// Render

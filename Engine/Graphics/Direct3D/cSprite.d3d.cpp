@@ -17,6 +17,7 @@
 
 namespace
 {
+	// Since a sprite is always a quad
 	constexpr unsigned int s_vertexCount = 4;
 }
 

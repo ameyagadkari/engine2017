@@ -164,9 +164,17 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 	}
 	// Draw Both Triangle Sides
 	{
-		D3D11_RASTERIZER_DESC rasterizerStateDescription{};
-		// Draw solid geometry (i.e. not wireframe)
-		rasterizerStateDescription.FillMode = D3D11_FILL_SOLID;
+		D3D11_RASTERIZER_DESC rasterizerStateDescription{};	
+		if (IsWireFrameModeEnabled())
+		{
+			// Draw wireframe geometry (i.e. not solid)
+			rasterizerStateDescription.FillMode = D3D11_FILL_WIREFRAME;
+		}
+		else
+		{
+			// Draw solid geometry (i.e. not wireframe)
+			rasterizerStateDescription.FillMode = D3D11_FILL_SOLID;
+		}
 		// Triangles use left-handed winding order
 		// (opposite from OpenGL)
 		rasterizerStateDescription.FrontCounterClockwise = FALSE;

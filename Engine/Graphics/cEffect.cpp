@@ -9,7 +9,7 @@
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::Initialize(std::string vertexShaderPath, std::string fragmentShaderPath)
+eae6320::cResult eae6320::Graphics::cEffect::Initialize(std::string vertexShaderPath, std::string fragmentShaderPath, uint8_t renderState)
 {
 	auto result = eae6320::Results::Success;
 
@@ -26,8 +26,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Initialize(std::string vertexShader
 		goto OnExit;
 	}
 	{
-		constexpr uint8_t defaultRenderState = 0;
-		if (!(result = m_renderState.Initialize(defaultRenderState)))
+		if (!(result = m_renderState.Initialize(renderState)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;

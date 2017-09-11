@@ -69,6 +69,19 @@ void eae6320::Graphics::cRenderState::Bind() const
 		glFrontFace( GL_CCW );
 		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
 	}
+	// Draw Triangles In Wire Frame Mode
+	if (IsWireFrameModeEnabled())
+	{
+		// Do not fill polygons
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	else
+	{
+		// Fill polygons
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
 }
 
 // Initialization / Clean Up
