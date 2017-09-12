@@ -231,12 +231,12 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the effects
 	{
-		if (!(result = s_effect1.Initialize("data/Shaders/Vertex/sprite.shd","data/Shaders/Fragment/sprite_white.shd")))
+		if (!(result = s_effect1.Initialize("sprite.shd","sprite_white.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (!(result = s_effect2.Initialize("data/Shaders/Vertex/sprite.shd","data/Shaders/Fragment/sprite_color.shd")))
+		if (!(result = s_effect2.Initialize("sprite.shd","sprite_color.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;

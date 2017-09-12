@@ -3,30 +3,36 @@
 
 #include "cEffect.h"
 
+namespace
+{
+	const std::string s_relativeVertexShaderPath = "data/Shaders/Vertex/";
+	const std::string s_relativeFragmentShaderPath = "data/Shaders/Fragment/";
+}
+
 // Interface
 //==========
 
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::Initialize(std::string vertexShaderPath, std::string fragmentShaderPath, uint8_t renderState)
+eae6320::cResult eae6320::Graphics::cEffect::Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState)
 {
 	auto result = eae6320::Results::Success;
 
-	if (!(result = eae6320::Graphics::cShader::s_manager.Load(vertexShaderPath.c_str(),
+	if (!(result = eae6320::Graphics::cShader::s_manager.Load((s_relativeVertexShaderPath + i_vertexShaderName).c_str(),
 		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex)))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-	if (!(result = eae6320::Graphics::cShader::s_manager.Load(fragmentShaderPath.c_str(),
+	if (!(result = eae6320::Graphics::cShader::s_manager.Load((s_relativeFragmentShaderPath + i_fragmentShaderName).c_str(),
 		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment)))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	{
-		if (!(result = m_renderState.Initialize(renderState)))
+		if (!(result = m_renderState.Initialize(i_renderState)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
