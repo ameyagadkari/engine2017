@@ -264,7 +264,7 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 
 	// Set Clear Color
 	{
-		if (!(result = s_clearColor.SetColor(0.0f, 0.0f, 0.0f, 1.0f)))
+		if (!(result = s_clearColor.SetColor(0.0f, 0.0f, 1.0f, 1.0f)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;

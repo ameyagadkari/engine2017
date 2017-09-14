@@ -32,7 +32,7 @@ namespace eae6320
 			BottomRight = 1 << 7,
 		};
 		// Helper struct to store screen position
-		struct ScreenPosition
+		struct sScreenPosition
 		{
 			float left, right, top, bottom;
 		};
@@ -55,9 +55,9 @@ namespace eae6320
 				const uint16_t i_width,
 				const uint16_t i_height,
 				const eAnchor i_anchor);
-			void GetScreenPosition(ScreenPosition& o_screenPosition) const { o_screenPosition = screenPosition; }
+			void GetScreenPosition(sScreenPosition& o_screenPosition) const { o_screenPosition = screenPosition; }
 		private:
-			ScreenPosition screenPosition;
+			sScreenPosition screenPosition;
 			struct
 			{
 				int16_t x, y;

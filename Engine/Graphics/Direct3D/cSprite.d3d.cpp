@@ -90,7 +90,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	// Vertex Buffer
 	{
 		eae6320::Graphics::VertexFormats::sSprite vertexData[s_vertexCount];
-		Transform::ScreenPosition screenPosition;
+		Transform::sScreenPosition screenPosition;
 		i_rectTransform.GetScreenPosition(screenPosition);
 		{
 			// Bottom Right
