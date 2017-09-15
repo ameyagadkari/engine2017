@@ -49,86 +49,104 @@ eae6320::Transform::sRectTransform::sRectTransform(
 
 void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 {
-	const auto widthMultiplier = 2.0f / s_screenWidth;
-	const auto heightMultiplier = 2.0f / s_screenHeight;
+	const float widthMultiplier = 2.0f / s_screenWidth;
+	const float heightMultiplier = 2.0f / s_screenHeight;
 
 	// Calculate screen coordinates according to anchor
 
-#define EAE6320_CALCULATE_SCREEN_COORDINATES( i_xOffset, i_yOffset )												\
-		screenPosition.left = ((pixelCoordinates.x - static_cast<int16_t>(width))*widthMultiplier) + i_xOffset;		\
-		screenPosition.top = (pixelCoordinates.y*heightMultiplier) + i_yOffset;										\
-		screenPosition.right = (pixelCoordinates.x*widthMultiplier) + i_xOffset;									\
-		screenPosition.bottom = ((pixelCoordinates.y - static_cast<int16_t>(height))*heightMultiplier) + i_yOffset;
+#define EAE6320_CALCULATE_SCREEN_COORDINATES( i_xOffset, i_yOffset, i_widthModifier, i_heightModifier )		\
+	screenPosition.left = ((pixelCoordinates.x - (width * i_widthModifier))*widthMultiplier) + i_xOffset;	\
+	screenPosition.top = (pixelCoordinates.y + (height * i_heightModifier))*heightMultiplier + i_yOffset;
+	
 
 	switch (anchor)
 	{
 	case TopLeft:
 	{
-		constexpr float xOffset = 0.0f;
+		constexpr float xOffset = -1.0f;
 		constexpr float yOffset = 1.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float widthModifier = 0.0f;
+		constexpr float heightModifier = 0.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case TopCentre:
 	{
-		constexpr float xOffset = 0.5f;
+		constexpr float xOffset = 0.0f;
 		constexpr float yOffset = 1.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float widthModifier = 0.5f;
+		constexpr float heightModifier = 0.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case TopRight:
 	{
 		constexpr float xOffset = 1.0f;
 		constexpr float yOffset = 1.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float widthModifier = 1.0f;
+		constexpr float heightModifier = 0.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case MidLeft:
 	{
-		constexpr float xOffset = 0.0f;
-		constexpr float yOffset = 0.5f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float xOffset = -1.0f;
+		constexpr float yOffset = 0.0f;
+		constexpr float widthModifier = 0.0f;
+		constexpr float heightModifier = 0.5f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case MidCentre:
 	{
-		constexpr float xOffset = 0.5f;
-		constexpr float yOffset = 0.5f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float xOffset = 0.0f;
+		constexpr float yOffset = 0.0f;
+		constexpr float widthModifier = 0.5f;
+		constexpr float heightModifier = 0.5f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case MidRight:
 	{
 		constexpr float xOffset = 1.0f;
-		constexpr float yOffset = 0.5f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float yOffset = 0.0f;
+		constexpr float widthModifier = 1.0f;
+		constexpr float heightModifier = 0.5f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case BottomLeft:
 	{
-		constexpr float xOffset = 0.0f;
-		constexpr float yOffset = 0.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float xOffset = -1.0f;
+		constexpr float yOffset = -1.0f;
+		constexpr float widthModifier = 0.0f;
+		constexpr float heightModifier = 1.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case BottomCentre:
 	{
-		constexpr float xOffset = 0.5f;
-		constexpr float yOffset = 0.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float xOffset = 0.0f;
+		constexpr float yOffset = -1.0f;
+		constexpr float widthModifier = 0.5f;
+		constexpr float heightModifier = 1.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	case BottomRight:
 	{
 		constexpr float xOffset = 1.0f;
-		constexpr float yOffset = 0.0f;
-		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset);
+		constexpr float yOffset = -1.0f;
+		constexpr float widthModifier = 1.0f;
+		constexpr float heightModifier = 1.0f;
+		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
 	default:
 		break;
 	}
-
+	screenPosition.right = screenPosition.left + (width*widthMultiplier);
+	screenPosition.bottom = screenPosition.top - (height*heightMultiplier);
 #undef EAE6320_CALCULATE_SCREEN_COORDINATES
 
 }

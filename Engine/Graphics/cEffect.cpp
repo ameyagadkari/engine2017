@@ -48,7 +48,6 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 			goto OnExit;
 		}
 	}
-	// Initialize the platform-specific graphics API shader object
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
 	if (!(result = newEffect->Initialize(i_vertexShaderName, i_fragmentShaderName, i_renderState)))
 	{

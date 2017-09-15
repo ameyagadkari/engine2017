@@ -45,7 +45,6 @@ eae6320::cResult eae6320::Graphics::cSprite::Load(const char* const i_path, cSpr
 			goto OnExit;
 		}
 	}
-	// Initialize the platform-specific graphics API shader object
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
 	if (!(result = newSprite->Initialize(i_rectTransform)))
 	{

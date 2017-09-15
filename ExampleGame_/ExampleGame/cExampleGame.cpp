@@ -89,14 +89,78 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("", effect, "sprite.shd", "sprite_white.shd")))
+		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite_white.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::BottomCentre);
-		if (!(result = Graphics::cSprite::s_manager.Load("", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::MidCentre);
+		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite1_path", sprite, spriteLocation)))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+	}
+	{
+		Graphics::cEffect::Handle effect;
+		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cSprite::Handle sprite;
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TopLeft);
+		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite2_path", sprite, spriteLocation)))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+	}
+	{
+		Graphics::cEffect::Handle effect;
+		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cSprite::Handle sprite;
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BottomRight);
+		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite3_path", sprite, spriteLocation)))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+	}
+	{
+		Graphics::cEffect::Handle effect;
+		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cSprite::Handle sprite;
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TopRight);
+		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite4_path", sprite, spriteLocation)))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+	}
+	{
+		Graphics::cEffect::Handle effect;
+		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cSprite::Handle sprite;
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BottomLeft);
+		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite5_path", sprite, spriteLocation)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
