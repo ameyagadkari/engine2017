@@ -185,7 +185,6 @@ void eae6320::Graphics::cEffect::Bind() const
 
 // Initialization / Clean Up
 //--------------------------
-eae6320::Graphics::cEffect::cEffect() {}
 
 eae6320::Graphics::cEffect::~cEffect()
 {

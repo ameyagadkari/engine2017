@@ -61,7 +61,7 @@ namespace eae6320
 			// Initialization / Clean Up Platform Independent
 			//-----------------------------------------------
 
-			cEffect();
+			cEffect() = default;
 			~cEffect();
 
 			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState);
