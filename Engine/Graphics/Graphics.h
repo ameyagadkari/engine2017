@@ -13,9 +13,11 @@
 #include <cstdint>
 #include <Engine/Results/Results.h>
 #include "ColorFormats.h"
+#include "cSprite.h"
+#include "cEffect.h"
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include <Engine/Windows/Includes.h>
+#include <Engine/Windows/Includes.h>
 #endif
 
 // Interface
@@ -34,14 +36,15 @@ namespace eae6320
 		// but the following is an example (that gets called automatically)
 		// of how the application submits the total elapsed times
 		// for the frame currently being submitted
-		void SubmitElapsedTime( const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime );
+		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor i_clearColor);
+		void SubmitEffectSpritePair(cEffect::Handle i_effectHandle, cSprite::Handle i_spriteHandle);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything
 		// (or, said another way, it is not safe to submit data for a new frame
 		// until this function returns successfully)
-		cResult WaitUntilDataForANewFrameCanBeSubmitted( const unsigned int i_timeToWait_inMilliseconds );
+		cResult WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds);
 		// When the application has finished submitting data for a frame
 		// it must call this function
 		cResult SignalThatAllDataForAFrameHasBeenSubmitted();
@@ -61,15 +64,15 @@ namespace eae6320
 		{
 #if defined( EAE6320_PLATFORM_WINDOWS )
 			HWND mainWindow = NULL;
-	#if defined( EAE6320_PLATFORM_D3D )
+#if defined( EAE6320_PLATFORM_D3D )
 			uint16_t resolutionWidth, resolutionHeight;
-	#elif defined( EAE6320_PLATFORM_GL )
+#elif defined( EAE6320_PLATFORM_GL )
 			HINSTANCE thisInstanceOfTheApplication = NULL;
-	#endif
+#endif
 #endif
 		};
 
-		cResult Initialize( const sInitializationParameters& i_initializationParameters );
+		cResult Initialize(const sInitializationParameters& i_initializationParameters);
 		cResult CleanUp();
 	}
 }
