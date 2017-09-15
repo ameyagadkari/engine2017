@@ -8,8 +8,8 @@
 
 namespace
 {
-	uint16_t s_screenWidth = 0;
-	uint16_t s_screenHeight = 0;
+	uint16_t s_screenWidth = 512;
+	uint16_t s_screenHeight = 512;
 }
 
 // Interface

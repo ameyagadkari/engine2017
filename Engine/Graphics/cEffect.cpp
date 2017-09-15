@@ -3,6 +3,11 @@
 
 #include "cEffect.h"
 
+// Static Data Initialization
+//===========================
+
+eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect::s_manager;
+
 namespace
 {
 	const std::string s_relativeVertexShaderPath = "data/Shaders/Vertex/";
@@ -14,6 +19,63 @@ namespace
 
 // Initialization / Clean Up
 //--------------------------
+
+eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState)
+{
+	auto result = Results::Success;
+
+	//Platform::sDataFromFile dataFromFile;
+	cEffect* newEffect = nullptr;
+
+	/*// Load the binary data
+	{
+		std::string errorMessage;
+		if (!(result = Platform::LoadBinaryFile(i_path, dataFromFile, &errorMessage)))
+		{
+			EAE6320_ASSERTF(false, errorMessage.c_str());
+			Logging::OutputError("Failed to load shader from file %s: %s", i_path, errorMessage.c_str());
+			goto OnExit;
+		}
+	}*/
+	// Allocate a new shader
+	{
+		newEffect = new (std::nothrow) cEffect();
+		if (!newEffect)
+		{
+			result = Results::OutOfMemory;
+			EAE6320_ASSERTF(false, "Couldn't allocate memory for the effect %s", i_path);
+			Logging::OutputError("Failed to allocate memory for the effect %s", i_path);
+			goto OnExit;
+		}
+	}
+	// Initialize the platform-specific graphics API shader object
+	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
+	if (!(result = newEffect->Initialize(i_vertexShaderName, i_fragmentShaderName, i_renderState)))
+	{
+		EAE6320_ASSERTF(false, "Initialization of new effect failed");
+		goto OnExit;
+	}
+
+OnExit:
+
+	if (result)
+	{
+		EAE6320_ASSERT(newEffect);
+		o_effect = newEffect;
+	}
+	else
+	{
+		if (newEffect)
+		{
+			newEffect->DecrementReferenceCount();
+			newEffect = nullptr;
+		}
+		o_effect = nullptr;
+	}
+	//dataFromFile.Free();
+
+	return result;
+}
 
 eae6320::cResult eae6320::Graphics::cEffect::Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState)
 {
@@ -116,4 +178,16 @@ void eae6320::Graphics::cEffect::Bind() const
 {
 	BindPlatformSpecific();
 	m_renderState.Bind();
+}
+
+// Implementation
+//===============
+
+// Initialization / Clean Up
+//--------------------------
+eae6320::Graphics::cEffect::cEffect() {}
+
+eae6320::Graphics::cEffect::~cEffect()
+{
+	CleanUp();
 }

@@ -60,14 +60,14 @@ namespace
 	// Effects
 	//-------------
 
-	eae6320::Graphics::cEffect s_effect1;
-	eae6320::Graphics::cEffect s_effect2;
+	eae6320::Graphics::cEffect::Handle s_effect1;
+	//eae6320::Graphics::cEffect s_effect2;
 
 	// Sprites
 	//--------------
 
 	eae6320::Graphics::cSprite s_sprite1;
-	eae6320::Graphics::cSprite s_sprite2;
+	//eae6320::Graphics::cSprite s_sprite2;
 }
 
 // Interface
@@ -149,10 +149,10 @@ void eae6320::Graphics::RenderFrame()
 
 	// Bind the effects
 	// Draw the sprites
-	s_effect1.Bind();
+	cEffect::s_manager.Get(s_effect1)->Bind();
 	s_sprite1.Draw();
-	s_effect2.Bind();
-	s_sprite2.Draw();
+	//s_effect2.Bind();
+	//s_sprite2.Draw();
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
 	// In order to display it the contents of the back buffer must be "presented"
@@ -232,16 +232,16 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the effects
 	{
-		if (!(result = s_effect1.Initialize("sprite.shd", "sprite_white.shd")))
+		if (!(result = cEffect::s_manager.Load("", s_effect1, "sprite.shd", "sprite_white.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (!(result = s_effect2.Initialize("sprite.shd", "sprite_color.shd")))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
+		//if (!(result = s_effect2.Initialize("sprite.shd", "sprite_color.shd")))
+		//{
+		//	EAE6320_ASSERT(false);
+		//	goto OnExit;
+		//}
 	}
 	// Initialize the sprites
 	{
@@ -253,14 +253,14 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 				goto OnExit;
 			}
 		}
-		{
-			Transform::sRectTransform spriteLocation(-20, -20, 50, 50, Transform::TopRight);
-			if (!(result = s_sprite2.Initialize(spriteLocation)))
-			{
-				EAE6320_ASSERT(false);
-				goto OnExit;
-			}
-		}
+		//{
+		//	Transform::sRectTransform spriteLocation(-20, -20, 50, 50, Transform::TopRight);
+		//	if (!(result = s_sprite2.Initialize(spriteLocation)))
+		//	{
+		//		EAE6320_ASSERT(false);
+		//		goto OnExit;
+		//	}
+		//}
 	}
 
 OnExit:
@@ -283,8 +283,19 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 		}
 	}
+	//{
+	//	const auto localResult = s_sprite2.CleanUp();
+	//	if (!localResult)
+	//	{
+	//		EAE6320_ASSERT(false);
+	//		if (result)
+	//		{
+	//			result = localResult;
+	//		}
+	//	}
+	//}
 	{
-		const auto localResult = s_sprite2.CleanUp();
+		const auto localResult = cEffect::s_manager.Release(s_effect1);
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -294,28 +305,17 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 		}
 	}
-	{
-		const auto localResult = s_effect1.CleanUp();
-		if (!localResult)
-		{
-			EAE6320_ASSERT(false);
-			if (result)
-			{
-				result = localResult;
-			}
-		}
-	}
-	{
-		const auto localResult = s_effect2.CleanUp();
-		if (!localResult)
-		{
-			EAE6320_ASSERT(false);
-			if (result)
-			{
-				result = localResult;
-			}
-		}
-	}
+	//{
+	//	const auto localResult = s_effect2.CleanUp();
+	//	if (!localResult)
+	//	{
+	//		EAE6320_ASSERT(false);
+	//		if (result)
+	//		{
+	//			result = localResult;
+	//		}
+	//	}
+	//}
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
 		if (!localResult)

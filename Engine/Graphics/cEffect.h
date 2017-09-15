@@ -20,12 +20,22 @@ namespace eae6320
 			//==========
 
 		public:
+			// Assets
+			//-------
+			using Handle = Assets::cHandle<cEffect>;
+			static Assets::cManager<cEffect> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState = 0);
-			cResult CleanUp();
+			static cResult Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState = 0);
+
+			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
+
+			// Reference Counting
+			//-------------------
+
+			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
 
 			// Render
 			//-------
@@ -36,21 +46,29 @@ namespace eae6320
 			//=====
 
 		private:
-
 			cShader::Handle m_vertexShader;
 			cShader::Handle m_fragmentShader;
 			cRenderState m_renderState;
 #if defined( EAE6320_PLATFORM_GL )
 			GLuint m_programId = 0;
 #endif
-
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 			// Implementation
 			//===============
 
 		private:
 
-			// Initialization / Clean Up
-			//--------------------------
+			// Initialization / Clean Up Platform Independent
+			//-----------------------------------------------
+
+			cEffect();
+			~cEffect();
+
+			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState);
+			cResult CleanUp();
+
+			// Initialization / Clean Up Platform Dependent
+			//---------------------------------------------
 
 			cResult InitializePlatformSpecific();
 			cResult CleanUpPlatformSpecific();
