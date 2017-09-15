@@ -4,7 +4,12 @@
 // Include Files
 //==============
 
+#include <Engine/Assets/ReferenceCountedAssets.h>
+
+#include <Engine/Assets/cHandle.h>
+#include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
+
 #ifdef EAE6320_PLATFORM_GL
 	#include "OpenGL/Includes.h"
 #endif
@@ -38,12 +43,22 @@ namespace eae6320
 			//==========
 
 		public:
+			// Assets
+			//-------
+			using Handle = Assets::cHandle<cSprite>;
+			static Assets::cManager<cSprite> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize(const Transform::sRectTransform& i_rectTransform);
-			cResult CleanUp();
+			static cResult Load(const char* const i_path, cSprite*& o_sprite, const Transform::sRectTransform& i_rectTransform);
+
+			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cSprite);
+
+			// Reference Counting
+			//-------------------
+
+			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
 
 			// Render
 			//-------
@@ -66,6 +81,20 @@ namespace eae6320
 			// A vertex array encapsulates the vertex data as well as the vertex input layout
 			GLuint m_vertexArrayId = 0;
 #endif
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+
+			// Implementation
+			//===============
+
+		private:
+			// Initialization / Clean Up
+			//--------------------------
+
+			cSprite() = default;
+			~cSprite();
+
+			cResult Initialize(const Transform::sRectTransform& i_rectTransform);
+			cResult CleanUp();
 
 		};
 	}

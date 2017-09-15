@@ -45,14 +45,16 @@ namespace eae6320
 			// Data
 			//=====
 
-		private:
-			cShader::Handle m_vertexShader;
-			cShader::Handle m_fragmentShader;
-			cRenderState m_renderState;
+		private:		
+
 #if defined( EAE6320_PLATFORM_GL )
 			GLuint m_programId = 0;
 #endif
+			cShader::Handle m_vertexShader;
+			cShader::Handle m_fragmentShader;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+			cRenderState m_renderState;
+
 			// Implementation
 			//===============
 

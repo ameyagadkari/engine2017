@@ -85,6 +85,7 @@
       <Filter>Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="ColorFormats.cpp" />
+    <ClCompile Include="cSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />
