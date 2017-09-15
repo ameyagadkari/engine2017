@@ -8,20 +8,18 @@
 
 namespace
 {
-	uint16_t s_screenHeight = 0;
 	uint16_t s_screenWidth = 0;
-	bool s_isInitialized = false;
+	uint16_t s_screenHeight = 0;
 }
 
-// Helper Function Declarations
-//=============================
-
-namespace
-{
-	void InitializeIfNecessary();
-}
 // Interface
 //==========
+
+void eae6320::Transform::SetCurrentResolution(const uint16_t i_width, const uint16_t i_height)
+{
+	s_screenWidth = i_width;
+	s_screenHeight = i_height;
+}
 
 eae6320::Transform::sRectTransform::sRectTransform() :
 	width(100),
@@ -51,7 +49,6 @@ eae6320::Transform::sRectTransform::sRectTransform(
 
 void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 {
-	InitializeIfNecessary();
 	const auto widthMultiplier = 2.0f / s_screenWidth;
 	const auto heightMultiplier = 2.0f / s_screenHeight;
 
@@ -134,18 +131,4 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 
 #undef EAE6320_CALCULATE_SCREEN_COORDINATES
 
-}
-
-// Helper Function Declarations
-//=============================
-
-namespace
-{
-	void InitializeIfNecessary()
-	{
-		if (s_isInitialized)return;
-		s_screenWidth = 512;
-		s_screenHeight = 512;
-		s_isInitialized = true;
-	}
 }

@@ -9,7 +9,6 @@
 #include "sContext.h"
 #include "cSprite.h"
 #include "cEffect.h"
-#include "ColorFormats.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Concurrency/cEvent.h>
@@ -39,6 +38,7 @@ namespace
 	struct sDataRequiredToRenderAFrame
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
+		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -68,10 +68,6 @@ namespace
 
 	eae6320::Graphics::cSprite s_sprite1;
 	eae6320::Graphics::cSprite s_sprite2;
-
-	// Clear Color
-	//--------------
-	eae6320::Graphics::ColorFormats::sColor s_clearColor;
 }
 
 // Interface
@@ -86,6 +82,12 @@ void eae6320::Graphics::SubmitElapsedTime(const float i_elapsedSecondCount_syste
 	auto& constantData_perFrame = s_dataBeingSubmittedByApplicationThread->constantData_perFrame;
 	constantData_perFrame.g_elapsedSecondCount_systemTime = i_elapsedSecondCount_systemTime;
 	constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
+}
+
+void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor i_clearColor)
+{
+	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -129,15 +131,14 @@ void eae6320::Graphics::RenderFrame()
 		}
 	}
 
+	EAE6320_ASSERT(s_dataBeingRenderedByRenderThread);
+
 	auto& g_context = sContext::g_context;
 
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
-	g_context.ClearImageBuffer(s_clearColor);
-
-
-	EAE6320_ASSERT(s_dataBeingRenderedByRenderThread);
+	g_context.ClearImageBuffer(s_dataBeingRenderedByRenderThread->clearColor_perFrame);
 
 	// Update the per-frame constant buffer
 	{
@@ -231,12 +232,12 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the effects
 	{
-		if (!(result = s_effect1.Initialize("sprite.shd","sprite_white.shd")))
+		if (!(result = s_effect1.Initialize("sprite.shd", "sprite_white.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (!(result = s_effect2.Initialize("sprite.shd","sprite_color.shd")))
+		if (!(result = s_effect2.Initialize("sprite.shd", "sprite_color.shd")))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -262,14 +263,6 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 		}
 	}
 
-	// Set Clear Color
-	{
-		if (!(result = s_clearColor.SetColor(0.0f, 0.0f, 1.0f, 1.0f)))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-	}
 OnExit:
 
 	return result;

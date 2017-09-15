@@ -9,7 +9,6 @@ This file manages the postion and orientation of 2D game entities such as sprite
 //==============
 
 #include <cstdint>
-//#include <Engine/Results/Results.h>
 
 // Anchor Types
 //=============
@@ -46,6 +45,7 @@ namespace eae6320
 {
 	namespace Transform
 	{
+		void SetCurrentResolution(const uint16_t i_width, const uint16_t i_height);
 		struct sRectTransform
 		{
 			explicit sRectTransform();

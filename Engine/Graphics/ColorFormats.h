@@ -24,7 +24,7 @@ namespace eae6320
 			struct sColor
 			{
 				sColor() :_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {}
-				cResult SetColor(const float i_r, const float i_g, const float i_b, const float i_a);
+				cResult SetColor(const float i_r, const float i_g, const float i_b, const float i_a = 1.0f);
 				float r() const { return _r; }
 				float g() const { return _g; }
 				float b() const { return _b; }
