@@ -12,9 +12,11 @@
 eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i_r, const float i_g, const float i_b, const float i_a)
 {
 	auto result = Results::Success;
+#define MIN_VAL 0.0f
+#define MAX_VAL 1.0f
 	// Check Red Component
 	{
-		const auto localResult = i_r >= 0.0f && i_r <= 1.0f;
+		const auto localResult = (i_r >= MIN_VAL) && (i_r <= MAX_VAL);
 		if (localResult)
 		{
 			_r = i_r;
@@ -30,7 +32,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 
 	// Check Green Component
 	{
-		const auto localResult = i_g >= 0.0f && i_g <= 1.0f;
+		const auto localResult = (i_g >= MIN_VAL) && (i_g <= MAX_VAL);
 		if (localResult)
 		{
 			_g = i_g;
@@ -46,7 +48,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 
 	// Check Blue Component
 	{
-		const auto localResult = i_b >= 0.0f && i_b <= 1.0f;
+		const auto localResult = (i_b >= MIN_VAL) && (i_b <= MAX_VAL);
 		if (localResult)
 		{
 			_b = i_b;
@@ -62,7 +64,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 
 	// Check Alpha Component
 	{
-		const auto localResult = i_a >= 0.0f && i_a <= 1.0f;
+		const auto localResult = (i_a >= MIN_VAL) && (i_a <= MAX_VAL);
 		if (localResult)
 		{
 			_a = i_a;
@@ -77,5 +79,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 	}
 
 OnExit:
+#undef MIN_VAL 
+#undef MAX_VAL 
 	return result;
 }
