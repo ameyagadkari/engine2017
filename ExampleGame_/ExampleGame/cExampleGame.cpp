@@ -33,31 +33,14 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 	// Is the user pressing the P key?
 	if (UserInput::IsKeyPressedOnce(UserInput::KeyCodes::P))
 	{
-		if (!isPaused)
-		{
-			// Pause the application
-			SetSimulationRate(0.0f);
-			isPaused = true;
-		}
-		else
-		{
-			// UnPause the application
-			SetSimulationRate(1.0f);
-			isPaused = false;
-		}
+		isPaused = !isPaused;
+		isPaused ? SetSimulationRate(0.0f) : SetSimulationRate(1.0f);
 	}
 
 	// Game is not paused
 	if (!isPaused)
 	{
-		if (UserInput::IsKeyPressed(UserInput::KeyCodes::S))
-		{
-			SetSimulationRate(0.5f);
-		}
-		else
-		{
-			SetSimulationRate(1.0f);
-		}
+		UserInput::IsKeyPressed(UserInput::KeyCodes::S) ? SetSimulationRate(0.5f) : SetSimulationRate(1.0f);
 	}
 }
 

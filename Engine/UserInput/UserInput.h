@@ -31,7 +31,7 @@ namespace eae6320
 		namespace KeyCodes
 		{
 			// These values are what the Windows-specific function expects, for simplicity
-			enum eKeyCodes
+			enum eKeyCodes : uint_fast8_t
 			{
 				Left = 0x25,
 				Up = 0x26,
