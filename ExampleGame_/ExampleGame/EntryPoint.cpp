@@ -9,6 +9,7 @@
 #include "cExampleGame.h"
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
+#undef _CRTDBG_MAP_ALLOC
 
 // Entry Point
 //============
