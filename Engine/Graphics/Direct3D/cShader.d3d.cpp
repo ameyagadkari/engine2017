@@ -18,40 +18,37 @@
 
 eae6320::cResult eae6320::Graphics::cShader::Initialize( const char* const i_path, const Platform::sDataFromFile& i_loadedShader )
 {
-	auto* const direct3dDevice = sContext::g_context.direct3dDevice;
+	auto* const direct3dDevice = sContext::g_context.direct3DDevice;
 	EAE6320_ASSERT( direct3dDevice );
 
 	// Create the vertex shader object
 	{
-		HRESULT d3dResult;
+		HRESULT d3DResult = 0;
 		ID3D11ClassLinkage* const noInterfaces = nullptr;
 		switch ( m_type )
 		{
 		case ShaderTypes::Vertex:
-			d3dResult = direct3dDevice->CreateVertexShader(i_loadedShader.data, i_loadedShader.size, noInterfaces, &m_shaderObject.vertex );
+			d3DResult = direct3dDevice->CreateVertexShader(i_loadedShader.data, i_loadedShader.size, noInterfaces, &m_shaderObject.vertex );
 			break;
 		case ShaderTypes::Fragment:
-			d3dResult = direct3dDevice->CreatePixelShader(i_loadedShader.data, i_loadedShader.size, noInterfaces, &m_shaderObject.fragment );
+			d3DResult = direct3dDevice->CreatePixelShader(i_loadedShader.data, i_loadedShader.size, noInterfaces, &m_shaderObject.fragment );
 			break;
 		default:
 			EAE6320_ASSERT( false );
 		}
-		if ( SUCCEEDED( d3dResult ) )
+		if ( SUCCEEDED( d3DResult ) )
 		{
-			return Results::Success;
+			return Results::success;
 		}
-		else
-		{
-			EAE6320_ASSERTF( false, "Shader %s object creation failed (HRESULT %#010x)", i_path, d3dResult );
-			eae6320::Logging::OutputError( "Direct3d failed to create the shader %s with HRESULT %#010x", i_path, d3dResult );
-			return Results::Failure;
-		}
+		EAE6320_ASSERTF( false, "Shader %s object creation failed (HRESULT %#010x)", i_path, d3DResult );
+		Logging::OutputError( "Direct3d failed to create the shader %s with HRESULT %#010x", i_path, d3DResult );
+		return Results::Failure;
 	}
 }
 
 eae6320::cResult eae6320::Graphics::cShader::CleanUp()
 {
-	auto result = Results::Success;
+	const auto result = Results::success;
 
 	switch ( m_type )
 	{

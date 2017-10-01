@@ -31,7 +31,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cShader::Initialize( const char* const i_path, const Platform::sDataFromFile& i_loadedShader )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	GLuint shaderId = 0;
 	const auto shaderType = ( m_type == eae6320::Graphics::ShaderTypes::Vertex ) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
@@ -190,7 +190,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cShader::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( m_shaderId != 0 )
 	{

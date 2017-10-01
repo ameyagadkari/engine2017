@@ -12,9 +12,7 @@
 #include <Engine/Concurrency/cEvent.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
-#include <Engine/Time/Time.h>
 #include <Engine/UserOutput/UserOutput.h>
-#include <Engine/Transform/sRectTransform.h>
 #include <utility>
 
 
@@ -90,7 +88,7 @@ void eae6320::Graphics::SubmitEffectSpritePair(cEffect::Handle i_effectHandle, c
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
 {
-	return Concurrency::WaitForEvent(s_whenDataForANewFrameCanBeSubmittedFromApplicationThread, i_timeToWait_inMilliseconds);
+	return WaitForEvent(s_whenDataForANewFrameCanBeSubmittedFromApplicationThread, i_timeToWait_inMilliseconds);
 }
 
 eae6320::cResult eae6320::Graphics::SignalThatAllDataForAFrameHasBeenSubmitted()
@@ -102,7 +100,7 @@ void eae6320::Graphics::RenderFrame()
 {
 	// Wait for the application loop to submit data to be rendered
 	{
-		const auto result = Concurrency::WaitForEvent(s_whenAllDataHasBeenSubmittedFromApplicationThread);
+		const auto result = WaitForEvent(s_whenAllDataHasBeenSubmittedFromApplicationThread);
 		if (result)
 		{
 			// Switch the render data pointers so that
@@ -177,7 +175,7 @@ void eae6320::Graphics::RenderFrame()
 
 eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& i_initializationParameters)
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Initialize the platform-specific context
 	if (!(result = sContext::g_context.Initialize(i_initializationParameters)))
@@ -223,13 +221,13 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the events
 	{
-		if (!(result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize(Concurrency::EventType::ResetAutomaticallyAfterBeingSignaled)))
+		if (!(result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (!(result = s_whenDataForANewFrameCanBeSubmittedFromApplicationThread.Initialize(Concurrency::EventType::ResetAutomaticallyAfterBeingSignaled,
-			Concurrency::EventState::Signaled)))
+		if (!(result = s_whenDataForANewFrameCanBeSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED,
+			Concurrency::EventState::SIGNALED)))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -243,7 +241,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 	{
 		if (!s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.empty())
 		{

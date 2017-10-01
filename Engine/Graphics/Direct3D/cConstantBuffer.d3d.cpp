@@ -19,7 +19,7 @@
 
 void eae6320::Graphics::cConstantBuffer::Bind( const uint_fast8_t i_shaderTypesToBindTo ) const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
 	EAE6320_ASSERT( direct3dImmediateContext );
 
 	EAE6320_ASSERT( m_buffer );
@@ -37,7 +37,7 @@ void eae6320::Graphics::cConstantBuffer::Bind( const uint_fast8_t i_shaderTypesT
 
 void eae6320::Graphics::cConstantBuffer::Update( const void* const i_data )
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
 	EAE6320_ASSERT( direct3dImmediateContext );
 
 	EAE6320_ASSERT( m_buffer );
@@ -86,7 +86,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( m_buffer )
 	{
@@ -105,7 +105,7 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific( const void* const i_initialData )
 {
-	auto* const direct3dDevice = sContext::g_context.direct3dDevice;
+	auto* const direct3dDevice = sContext::g_context.direct3DDevice;
 	EAE6320_ASSERT( direct3dDevice );
 
 	D3D11_BUFFER_DESC bufferDescription{};
@@ -113,7 +113,7 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific
 		EAE6320_ASSERTF( m_size < ( uint64_t( 1u ) << ( sizeof( unsigned int ) * 8 ) ),
 			"The constant buffer format's size (%u) is too large to fit into a D3D11_BUFFER_DESC", m_size );
 		// The byte width must be rounded up to a multiple of 16
-		bufferDescription.ByteWidth = Math::RoundUpToMultiple_powerOf2( static_cast<unsigned int>( m_size ), 16u );
+		bufferDescription.ByteWidth = Math::RoundUpToMultiplePowerOf2( static_cast<unsigned int>( m_size ), 16u );
 		bufferDescription.Usage = D3D11_USAGE_DYNAMIC;	// The CPU must be able to update the buffer
 		bufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		bufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// The CPU must write, but doesn't read
@@ -131,7 +131,7 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific
 		&m_buffer );
 	if ( SUCCEEDED( d3dResult ) )
 	{
-		return Results::Success;
+		return Results::success;
 	}
 	else
 	{

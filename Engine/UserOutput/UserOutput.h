@@ -36,7 +36,7 @@ namespace eae6320
 		struct sInitializationParameters
 		{
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HWND mainWindow = NULL;
+			HWND mainWindow = nullptr;
 #endif
 		};
 

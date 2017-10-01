@@ -25,8 +25,6 @@ namespace eae6320
 		// Inherited Implementation
 		//=========================
 
-	private:
-
 		// Configuration
 		//--------------
 
@@ -34,7 +32,7 @@ namespace eae6320
 		// The main window's name will be displayed as its caption (the text that is displayed in the title bar).
 		// You can make it anything that you want, but please keep the platform name and debug configuration at the end
 		// so that it's easy to tell at a glance what kind of build is running.
-		virtual const char* GetMainWindowName() const override
+		const char* GetMainWindowName() const override
 		{
 			return "Ameya Gadkari's EAE6320 Example Game"
 				" -- "
@@ -57,27 +55,27 @@ namespace eae6320
 		// You don't need to worry about this for our class,
 		// but if you ever ship a real project using this code as a base you should set this to something unique
 		// (a generated GUID would be fine since this string is never seen)
-		virtual const char* GetMainWindowClassName() const override { return "Ameya Gadkari's EAE6320 Example Main Window Class"; }
+		const char* GetMainWindowClassName() const override { return "Ameya Gadkari's EAE6320 Example Main Window Class"; }
 		// The following three icons are provided:
 		//	* IDI_EAEGAMEPAD
 		//	* IDI_EAEALIEN
 		//	* IDI_VSDEFAULT_LARGE / IDI_VSDEFAULT_SMALL
 		// If you want to try creating your own a convenient website that will help is: http://icoconvert.com/
-		virtual const WORD* GetLargeIconId() const override { static constexpr WORD iconId_large = IDI_EAEALIEN; return &iconId_large; }
-		virtual const WORD* GetSmallIconId() const override { static constexpr WORD iconId_small = IDI_EAEALIEN; return &iconId_small; }
+		const WORD* GetLargeIconId() const override { static constexpr WORD iconId_large = IDI_EAEALIEN; return &iconId_large; }
+		const WORD* GetSmallIconId() const override { static constexpr WORD iconId_small = IDI_EAEALIEN; return &iconId_small; }
 #endif
 
 		// Run
 		//----
 
-		virtual void UpdateBasedOnInput() override;
-		virtual void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
+		void UpdateBasedOnInput() override;
+		void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
 
 		// Initialization / Clean Up
 		//--------------------------
 
-		virtual cResult Initialize() override;
-		virtual cResult CleanUp() override;
+		cResult Initialize() override;
+		cResult CleanUp() override;
 
 	};
 }
@@ -98,7 +96,7 @@ namespace eae6320
 			//		or else you could have two different ones with equal IDs.
 			//	* Note that you can define multiple Success codes.
 			//		This can be used if the caller may want to know more about how a function succeeded.
-			constexpr cResult ExampleResult( IsFailure, System::Application, __LINE__, Severity::Default );
+			constexpr cResult exampleResult( IsFailure, System::Application, __LINE__, Severity::Default );
 		}
 	}
 }

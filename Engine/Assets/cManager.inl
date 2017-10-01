@@ -72,7 +72,7 @@ template <class tAsset> template <typename... tConstructorArguments>
 						auto *const existingAsset = assetRecord.asset;
 						existingAsset->IncrementReferenceCount();
 						o_handle = existingHandle;
-						return Results::Success;
+						return Results::success;
 					}
 				}
 				// If this code is reached it means that the existing entry is invalid
@@ -82,7 +82,7 @@ template <class tAsset> template <typename... tConstructorArguments>
 	}
 
 	// If the asset hasn't already been loaded load it now
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	tAsset* newAsset;
 	if ( result = tAsset::Load( i_path, newAsset, std::forward<tConstructorArguments>( i_constructorArguments )... ) )
@@ -112,7 +112,7 @@ template <class tAsset> template <typename... tConstructorArguments>
 				}
 				else
 				{
-					result = Results::OutOfMemory;
+					result = Results::outOfMemory;
 					EAE6320_ASSERTF( false, "Too many of this kind of asset have been created" );
 					Logging::OutputError( "A new asset couldn't be loaded because there were too many (%u)", assetRecordCount );
 				}
@@ -136,7 +136,7 @@ template <class tAsset> template <typename... tConstructorArguments>
 template <class tAsset>
 	eae6320::cResult eae6320::Assets::cManager<tAsset>::Release( cHandle<tAsset>& o_handle )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	EAE6320_ASSERTF( o_handle, "This handle is invalid (it has never been associated with a valid asset)" );
 	// Lock the collections
@@ -187,13 +187,13 @@ template <class tAsset>
 template <class tAsset>
 	eae6320::cResult eae6320::Assets::cManager<tAsset>::Initialize()
 {
-	return Results::Success;
+	return Results::success;
 }
 
 template <class tAsset>
 	eae6320::cResult eae6320::Assets::cManager<tAsset>::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	{
 		bool wereThereStillAssets = false;

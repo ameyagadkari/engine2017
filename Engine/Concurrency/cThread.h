@@ -60,7 +60,7 @@ namespace eae6320
 			//	* The specified time-out period elapses
 			//		* If the caller doesn't specify a time-out period then the function will never return until the thread stops
 			//		* If the caller specifies a time-out period of zero then the function will return immediately
-			friend cResult WaitForThreadToStop( cThread& io_thread, const unsigned int i_timeToWait_inMilliseconds = Constants::DontTimeOut );
+			friend cResult WaitForThreadToStop( cThread& io_thread, const unsigned int i_timeToWait_inMilliseconds = Constants::dontTimeOut );
 
 			// Initialization / Clean Up
 			//--------------------------
@@ -74,7 +74,7 @@ namespace eae6320
 		private:
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HANDLE m_handle = NULL;
+			HANDLE m_handle = nullptr;
 #endif
 
 			// Implementation

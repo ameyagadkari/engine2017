@@ -29,9 +29,9 @@ void eae6320::Graphics::cSamplerState::Bind() const
 
 eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
-	constexpr GLsizei samplerStateCount = 1;
+	constexpr auto samplerStateCount = 1;
 	glGenSamplers( samplerStateCount, &m_samplerStateId );
 	const auto errorCode = glGetError();
 	if ( errorCode == GL_NO_ERROR )
@@ -44,9 +44,9 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 				const auto errorCode = glGetError();
 				if ( errorCode != GL_NO_ERROR )
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-					eae6320::Logging::OutputError( "OpenGL failed to set the sampler state's minifying filter: %s",
+					Logging::OutputError( "OpenGL failed to set the sampler state's minifying filter: %s",
 						reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 					goto OnExit;
 				}
@@ -56,9 +56,9 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 				const auto errorCode = glGetError();
 				if ( errorCode != GL_NO_ERROR )
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-					eae6320::Logging::OutputError( "OpenGL failed to set the sampler state's magnifying filter: %s",
+					Logging::OutputError( "OpenGL failed to set the sampler state's magnifying filter: %s",
 						reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 					goto OnExit;
 				}
@@ -69,9 +69,9 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 				const auto errorCode = glGetError();
 				if ( errorCode != GL_NO_ERROR )
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-					eae6320::Logging::OutputError( "OpenGL failed to set the sampler state's horizontal wrapping behavior: %s",
+					Logging::OutputError( "OpenGL failed to set the sampler state's horizontal wrapping behavior: %s",
 						reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 					goto OnExit;
 				}
@@ -81,9 +81,9 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 				const auto errorCode = glGetError();
 				if ( errorCode != GL_NO_ERROR )
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-					eae6320::Logging::OutputError( "OpenGL failed to set the sampler state's vertical wrapping behavior: %s",
+					Logging::OutputError( "OpenGL failed to set the sampler state's vertical wrapping behavior: %s",
 						reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 					goto OnExit;
 				}
@@ -91,17 +91,17 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 		}
 		else
 		{
-			result = eae6320::Results::Failure;
+			result = Results::Failure;
 			EAE6320_ASSERT( false );
-			eae6320::Logging::OutputError( "OpenGL failed to create a sampler state" );
+			Logging::OutputError( "OpenGL failed to create a sampler state" );
 			goto OnExit;
 		}
 	}
 	else
 	{
-		result = eae6320::Results::Failure;
+		result = Results::Failure;
 		EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-		eae6320::Logging::OutputError( "OpenGL failed to create a sampler state: %s",
+		Logging::OutputError( "OpenGL failed to create a sampler state: %s",
 			reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 		goto OnExit;
 	}
@@ -113,11 +113,11 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cSamplerState::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( m_samplerStateId != 0 )
 	{
-		constexpr GLsizei samplerStateCount = 1;
+		constexpr auto samplerStateCount = 1;
 		glDeleteSamplers( samplerStateCount, &m_samplerStateId );
 		m_samplerStateId = 0;
 		const auto errorCode = glGetError();
@@ -128,7 +128,7 @@ eae6320::cResult eae6320::Graphics::cSamplerState::CleanUp()
 				result = Results::Failure;
 			}
 			EAE6320_ASSERTF( false, reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
-			eae6320::Logging::OutputError( "OpenGL failed to delete the sampler state: %s",
+			Logging::OutputError( "OpenGL failed to delete the sampler state: %s",
 				reinterpret_cast<const char*>( gluErrorString( errorCode ) ) );
 		}
 	}

@@ -19,7 +19,7 @@ eae6320::Assets::cManager<eae6320::Graphics::cSprite> eae6320::Graphics::cSprite
 
 eae6320::cResult eae6320::Graphics::cSprite::Load(const char* const i_path, cSprite*& o_sprite, const Transform::sRectTransform& i_rectTransform)
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	//Platform::sDataFromFile dataFromFile;
 	cSprite* newSprite = nullptr;
@@ -39,14 +39,14 @@ eae6320::cResult eae6320::Graphics::cSprite::Load(const char* const i_path, cSpr
 		newSprite = new (std::nothrow) cSprite();
 		if (!newSprite)
 		{
-			result = Results::OutOfMemory;
+			result = Results::outOfMemory;
 			EAE6320_ASSERTF(false, "Couldn't allocate memory for the sprite %s", i_path);
 			Logging::OutputError("Failed to allocate memory for the sprite %s", i_path);
 			goto OnExit;
 		}
 	}
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
-	if (!(result = newSprite->Initialize(i_rectTransform)))
+	if (!((result = newSprite->Initialize(i_rectTransform))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;

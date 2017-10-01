@@ -22,7 +22,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState)
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	//Platform::sDataFromFile dataFromFile;
 	cEffect* newEffect = nullptr;
@@ -42,14 +42,14 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		newEffect = new (std::nothrow) cEffect();
 		if (!newEffect)
 		{
-			result = Results::OutOfMemory;
+			result = Results::outOfMemory;
 			EAE6320_ASSERTF(false, "Couldn't allocate memory for the effect %s", i_path);
 			Logging::OutputError("Failed to allocate memory for the effect %s", i_path);
 			goto OnExit;
 		}
 	}
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
-	if (!(result = newEffect->Initialize(i_vertexShaderName, i_fragmentShaderName, i_renderState)))
+	if (!((result = newEffect->Initialize(i_vertexShaderName, i_fragmentShaderName, i_renderState))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;
@@ -78,29 +78,29 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cEffect::Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState)
 {
-	auto result = eae6320::Results::Success;
+	auto result = Results::success;
 
-	if (!(result = eae6320::Graphics::cShader::s_manager.Load((s_relativeVertexShaderPath + i_vertexShaderName).c_str(),
-		m_vertexShader, eae6320::Graphics::ShaderTypes::Vertex)))
+	if (!((result = cShader::s_manager.Load((s_relativeVertexShaderPath + i_vertexShaderName).c_str(),
+		m_vertexShader, ShaderTypes::Vertex))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-	if (!(result = eae6320::Graphics::cShader::s_manager.Load((s_relativeFragmentShaderPath + i_fragmentShaderName).c_str(),
-		m_fragmentShader, eae6320::Graphics::ShaderTypes::Fragment)))
+	if (!((result = cShader::s_manager.Load((s_relativeFragmentShaderPath + i_fragmentShaderName).c_str(),
+		m_fragmentShader, ShaderTypes::Fragment))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	{
-		if (!(result = m_renderState.Initialize(i_renderState)))
+		if (!((result = m_renderState.Initialize(i_renderState))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 	}
 
-	if (!(result = InitializePlatformSpecific()))
+	if (!((result = InitializePlatformSpecific())))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
@@ -113,7 +113,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cEffect::CleanUp()
 {
-	auto result = eae6320::Results::Success;
+	auto result = Results::success;
 
 	{
 		const auto localResult = CleanUpPlatformSpecific();

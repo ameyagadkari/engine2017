@@ -19,8 +19,8 @@ namespace eae6320
 {
 	namespace UserSettings
 	{
-		cResult GetDesiredInitialResolutionWidth( uint16_t& o_width );
-		cResult GetDesiredInitialResolutionHeight( uint16_t& o_height );
+		cResult GetDesiredInitialResolutionWidth(uint16_t& o_width);
+		cResult GetDesiredInitialResolutionHeight(uint16_t& o_height);
 	}
 }
 

@@ -13,9 +13,9 @@
 // Entry Point
 //============
 
-int main( int i_argumentCount, char** i_arguments )
+int main(const int i_argumentCount, char** i_arguments)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_crtBreakAlloc = 698;
-	return eae6320::Assets::Build<eae6320::Assets::cShaderBuilder>( i_arguments, i_argumentCount );
+	return eae6320::Assets::Build<eae6320::Assets::cShaderBuilder>(i_arguments, i_argumentCount);
 }

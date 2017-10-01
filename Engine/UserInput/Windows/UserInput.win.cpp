@@ -24,7 +24,7 @@ bool eae6320::UserInput::IsKeyPressed(const uint_fast8_t i_keyCode)
 
 bool eae6320::UserInput::IsKeyPressedOnce(const uint_fast8_t i_keyCode)
 {
-	const short keyState = GetAsyncKeyState(i_keyCode);
+	const auto keyState = GetAsyncKeyState(i_keyCode);
 	const short isKeyDownMask = ~1;
 	if ((keyState & isKeyDownMask) != 0 && !keyPress[i_keyCode])
 	{
@@ -38,7 +38,7 @@ bool eae6320::UserInput::IsKeyPressedOnce(const uint_fast8_t i_keyCode)
 
 bool eae6320::UserInput::IsKeyPressedAndReleased(const uint_fast8_t i_keyCode)
 {
-	const short keyState = GetAsyncKeyState(i_keyCode);
+	const auto keyState = GetAsyncKeyState(i_keyCode);
 	const short isKeyDownMask = ~1;
 	if ((keyState & isKeyDownMask) != 0 && !keyRelease[i_keyCode])
 	{

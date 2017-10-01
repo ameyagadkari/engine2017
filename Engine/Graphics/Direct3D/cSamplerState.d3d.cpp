@@ -18,8 +18,8 @@
 
 void eae6320::Graphics::cSamplerState::Bind() const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
-	EAE6320_ASSERT( direct3dImmediateContext );
+	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
+	EAE6320_ASSERT( direct3DImmediateContext );
 
 	// The register must match the ID defined in the shader;
 	// In our class we will only have a single sampler state
@@ -27,7 +27,7 @@ void eae6320::Graphics::cSamplerState::Bind() const
 	constexpr unsigned int samplerStateCount = 1;
 	// Only fragment shaders sample textures (in our class)
 	EAE6320_ASSERT( m_samplerState );
-	direct3dImmediateContext->PSSetSamplers( samplerStateRegister, samplerStateCount, &m_samplerState );
+	direct3DImmediateContext->PSSetSamplers( samplerStateRegister, samplerStateCount, &m_samplerState );
 }
 
 // Initialization / Clean Up
@@ -35,9 +35,9 @@ void eae6320::Graphics::cSamplerState::Bind() const
 
 eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
-	auto* const direct3dDevice = sContext::g_context.direct3dDevice;
+	auto* const direct3DDevice = sContext::g_context.direct3DDevice;
 
 	D3D11_SAMPLER_DESC samplerStateDescription{};
 	{
@@ -55,12 +55,12 @@ eae6320::cResult eae6320::Graphics::cSamplerState::Initialize()
 		samplerStateDescription.MinLOD = -FLT_MAX;
 		samplerStateDescription.MaxLOD = FLT_MAX;
 	}
-	const auto d3dResult = direct3dDevice->CreateSamplerState( &samplerStateDescription, &m_samplerState );
-	if ( FAILED( d3dResult ) )
+	const auto d3DResult = direct3DDevice->CreateSamplerState( &samplerStateDescription, &m_samplerState );
+	if ( FAILED( d3DResult ) )
 	{
 		result = Results::Failure;
-		EAE6320_ASSERTF( false, "CreateSamplerState() failed (HRESULT %#010x", d3dResult );
-		eae6320::Logging::OutputError( "Direct3D failed to create a sampler state with HRESULT %#010x", d3dResult );
+		EAE6320_ASSERTF( false, "CreateSamplerState() failed (HRESULT %#010x", d3DResult );
+		Logging::OutputError( "Direct3D failed to create a sampler state with HRESULT %#010x", d3DResult );
 		goto OnExit;
 	}
 
@@ -71,7 +71,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cSamplerState::CleanUp()
 {
-	auto result = Results::Success;
+	const auto result = Results::success;
 
 	if ( m_samplerState )
 	{

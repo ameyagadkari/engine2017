@@ -11,7 +11,7 @@ namespace eae6320
 	{
 		namespace Constants
 		{
-			constexpr auto DontTimeOut = ~unsigned int( 0u );
+			constexpr auto dontTimeOut = ~unsigned int( 0u );
 		}
 	}
 }

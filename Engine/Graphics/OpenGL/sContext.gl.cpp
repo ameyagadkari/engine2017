@@ -27,7 +27,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::sContext::Initialize(const sInitializationParameters& i_initializationParameters)
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	windowBeingRenderedTo = i_initializationParameters.mainWindow;
 
@@ -55,7 +55,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if (openGlRenderingContext != NULL)
 	{
@@ -116,7 +116,7 @@ void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_
 
 void eae6320::Graphics::sContext::BufferSwap() const
 {
-	const auto deviceContext = sContext::g_context.deviceContext;
+	const auto deviceContext = g_context.deviceContext;
 	EAE6320_ASSERT(deviceContext != NULL);
 	const auto glResult = SwapBuffers(deviceContext);
 	EAE6320_ASSERT(glResult != FALSE);
@@ -268,6 +268,6 @@ namespace
 			}
 		}
 
-		return eae6320::Results::Success;
+		return eae6320::Results::success;
 	}
 }

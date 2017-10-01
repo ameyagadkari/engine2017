@@ -27,7 +27,7 @@ eae6320::cResult eae6320::Windows::CopyFile( const char* const i_path_source, co
 	const bool i_shouldFunctionFailIfTargetAlreadyExists, const bool i_shouldTargetFileTimeBeModified,
 	std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	HANDLE fileHandle = INVALID_HANDLE_VALUE;
 
@@ -96,7 +96,7 @@ eae6320::cResult eae6320::Windows::CopyFile( const char* const i_path_source, co
 		{
 		case ERROR_FILE_NOT_FOUND:
 		case ERROR_PATH_NOT_FOUND:
-			result = Results::FileDoesntExist;
+			result = Results::fileDoesntExist;
 			break;
 		default:
 			result = Results::Failure;
@@ -133,7 +133,7 @@ OnExit:
 
 eae6320::cResult eae6320::Windows::CreateDirectoryIfItDoesntExist( const std::string& i_filePath, std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Manipulate the path into a form that SHCreateDirectoryEx() likes
 	std::string directory;
@@ -326,7 +326,7 @@ eae6320::cResult eae6320::Windows::ExecuteCommand( const char* const i_path, con
 	}
 	
 	// Start a new process
-	auto result = Results::Success;
+	auto result = Results::success;
 	constexpr SECURITY_ATTRIBUTES* useDefaultAttributes = nullptr;
 	constexpr BOOL dontInheritHandles = FALSE;
 	constexpr DWORD createDefaultProcess = 0;
@@ -430,9 +430,9 @@ eae6320::cResult eae6320::Windows::ExecuteCommand( const char* const i_path, con
 eae6320::cResult eae6320::Windows::GetFilesInDirectory( const std::string& i_path, std::vector<std::string>& o_paths,
 	const bool i_shouldSubdirectoriesBeSearchedRecursively, std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
-	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+	auto fileHandle = INVALID_HANDLE_VALUE;
 
 	// Transform the path to have a trailing slash
 	// (note that this code sacrifices robustness for simplicity;
@@ -472,7 +472,7 @@ eae6320::cResult eae6320::Windows::GetFilesInDirectory( const std::string& i_pat
 				{
 					if ( i_shouldSubdirectoriesBeSearchedRecursively )
 					{
-						if ( !( result = GetFilesInDirectory( path, o_paths, i_shouldSubdirectoriesBeSearchedRecursively, o_errorMessage ) ) )
+						if ( !( (result = GetFilesInDirectory( path, o_paths, i_shouldSubdirectoriesBeSearchedRecursively, o_errorMessage )) ) )
 						{
 							goto OnExit;
 						}
@@ -511,7 +511,7 @@ eae6320::cResult eae6320::Windows::GetFilesInDirectory( const std::string& i_pat
 		{
 		case ERROR_FILE_NOT_FOUND:
 		case ERROR_PATH_NOT_FOUND:
-			result = Results::FileDoesntExist;
+			result = Results::fileDoesntExist;
 			break;
 		default:
 			result = Results::Failure;
@@ -555,7 +555,7 @@ eae6320::cResult eae6320::Windows::GetEnvironmentVariable( const char* const i_k
 		if ( characterCount <= maxCharacterCount )
 		{
 			o_value = buffer;
-			return Results::Success;
+			return Results::success;
 		}
 		else
 		{
@@ -572,13 +572,12 @@ eae6320::cResult eae6320::Windows::GetEnvironmentVariable( const char* const i_k
 	}
 	else
 	{
-		auto result = Results::Failure;
 		{
 			DWORD errorCode;
 			const auto errorString = GetLastSystemError( &errorCode );
 			if ( errorCode == ERROR_ENVVAR_NOT_FOUND )
 			{
-				result = Results::Platform::EnvironmentVariableDoesntExist;
+				auto result = Results::Platform::environmentVariableDoesntExist;
 				if ( o_errorMessage )
 				{
 					// If you're seeing this error and the environment variable is spelled correctly
@@ -696,8 +695,7 @@ eae6320::cResult eae6320::Windows::GetLastWriteTime( const char* const i_path, u
 				{
 				case ERROR_FILE_NOT_FOUND:
 				case ERROR_PATH_NOT_FOUND:
-					return Results::FileDoesntExist;
-					break;
+					return Results::fileDoesntExist;
 				default:
 					return Results::Failure;
 				}
@@ -708,14 +706,14 @@ eae6320::cResult eae6320::Windows::GetLastWriteTime( const char* const i_path, u
 		lastWriteTime.LowPart = fileTime.dwLowDateTime;
 	}
 	o_lastWriteTime = static_cast<uint64_t>( lastWriteTime.QuadPart );
-	return Results::Success;
+	return Results::success;
 }
 
 eae6320::cResult eae6320::Windows::InvalidateLastWriteTime( const char* const i_path, std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
-	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+	auto fileHandle = INVALID_HANDLE_VALUE;
 	{
 		constexpr DWORD desiredAccess = FILE_WRITE_ATTRIBUTES;
 		constexpr DWORD otherProgramsCanStillReadTheFile = FILE_SHARE_READ;
@@ -737,7 +735,7 @@ eae6320::cResult eae6320::Windows::InvalidateLastWriteTime( const char* const i_
 			{
 			case ERROR_FILE_NOT_FOUND:
 			case ERROR_PATH_NOT_FOUND:
-				result = Results::FileDoesntExist;
+				result = Results::fileDoesntExist;
 				break;
 			default:
 				result = Results::Failure;
@@ -798,7 +796,7 @@ OnExit:
 
 eae6320::cResult eae6320::Windows::LoadBinaryFile( const char* const i_path, sDataFromFile& o_data, std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Initialize the output struct so that if there's an error during this function any existing garbage data isn't misinterpreted
 	{
@@ -807,7 +805,7 @@ eae6320::cResult eae6320::Windows::LoadBinaryFile( const char* const i_path, sDa
 	}
 
 	// Open the file
-	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+	auto fileHandle = INVALID_HANDLE_VALUE;
 	{
 		constexpr DWORD desiredAccess = FILE_GENERIC_READ;
 		constexpr DWORD otherProgramsCanStillReadTheFile = FILE_SHARE_READ;
@@ -825,7 +823,7 @@ eae6320::cResult eae6320::Windows::LoadBinaryFile( const char* const i_path, sDa
 			{
 			case ERROR_FILE_NOT_FOUND:
 			case ERROR_PATH_NOT_FOUND:
-				result = Results::FileDoesntExist;
+				result = Results::fileDoesntExist;
 				break;
 			default:
 				result = Results::Failure;
@@ -889,7 +887,7 @@ eae6320::cResult eae6320::Windows::LoadBinaryFile( const char* const i_path, sDa
 			errorMessage << "Failed to allocate " << o_data.size << " bytes to read in the file \"" << i_path << "\"";
 			*o_errorMessage = errorMessage.str();
 		}
-		result = Results::OutOfMemory;
+		result = Results::outOfMemory;
 		goto OnExit;
 	}
 
@@ -938,10 +936,10 @@ void eae6320::Windows::OutputWarningMessageForVisualStudio( const char* const i_
 
 eae6320::cResult eae6320::Windows::WriteBinaryFile( const char* const i_path, const void* const i_data, const size_t i_size, std::string* const o_errorMessage )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Open the file
-	HANDLE fileHandle = INVALID_HANDLE_VALUE;
+	auto fileHandle = INVALID_HANDLE_VALUE;
 	{
 		constexpr DWORD desiredAccess = FILE_GENERIC_WRITE;
 		constexpr DWORD noOtherProgramsCanShareAccess = 0;

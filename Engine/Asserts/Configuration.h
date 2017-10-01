@@ -9,14 +9,14 @@
 // By default asserts are only enabled for debug builds,
 // but you can #define it differently as necessary
 #ifdef _DEBUG
-	#define EAE6320_ASSERTS_AREENABLED
+	#define EAE6320_ASSERTS_ARE_ENABLED
 #endif
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 	// For platforms and debuggers that support it
 	// it can be useful to output the assert message to the debugger
 	// so that there's a record of the message
-	#define EAE6320_ASSERTS_SHOULDPRINTTODEBUGGER
+	#define EAE6320_ASSERTS_SHOULD_PRINT_TO_DEBUGGER
 
 #endif
 

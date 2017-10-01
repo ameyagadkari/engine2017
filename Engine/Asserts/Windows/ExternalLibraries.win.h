@@ -12,6 +12,6 @@
 // External Libraries
 //===================
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 	#pragma comment( lib, "User32.lib" )
 #endif

@@ -28,7 +28,7 @@ namespace eae6320
 {
 	namespace Concurrency
 	{
-		class cMutex_recursive
+		class cMutexRecursive
 		{
 			// Interface
 			//==========
@@ -42,12 +42,12 @@ namespace eae6320
 			{
 			public:
 
-				cScopeLock( cMutex_recursive& io_mutex ) : m_mutex( io_mutex ) { m_mutex.Lock(); }
+				explicit cScopeLock( cMutexRecursive& io_mutex ) : m_mutex( io_mutex ) { m_mutex.Lock(); }
 				~cScopeLock() { m_mutex.Unlock(); }
 
 			private:
 
-				cMutex_recursive& m_mutex;
+				cMutexRecursive& m_mutex;
 			};
 
 			// Calling this function will block the thread until the lock is acquired
@@ -64,8 +64,8 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			cMutex_recursive();
-			~cMutex_recursive();
+			cMutexRecursive();
+			~cMutexRecursive();
 
 			// Data
 			//=====

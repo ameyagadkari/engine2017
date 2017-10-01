@@ -6,17 +6,17 @@
 // Interface
 //==========
 
-void eae6320::Concurrency::cMutex_recursive::Lock()
+void eae6320::Concurrency::cMutexRecursive::Lock()
 {
 	EnterCriticalSection( &m_criticalSection );
 }
 
-eae6320::cResult eae6320::Concurrency::cMutex_recursive::LockIfPossible()
+eae6320::cResult eae6320::Concurrency::cMutexRecursive::LockIfPossible()
 {
-	return ( TryEnterCriticalSection( &m_criticalSection ) != FALSE ) ? Results::Success : Results::Failure;
+	return ( TryEnterCriticalSection( &m_criticalSection ) != FALSE ) ? Results::success : Results::Failure;
 }
 
-void eae6320::Concurrency::cMutex_recursive::Unlock()
+void eae6320::Concurrency::cMutexRecursive::Unlock()
 {
 	LeaveCriticalSection( &m_criticalSection );
 }
@@ -24,12 +24,12 @@ void eae6320::Concurrency::cMutex_recursive::Unlock()
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::Concurrency::cMutex_recursive::cMutex_recursive()
+eae6320::Concurrency::cMutexRecursive::cMutexRecursive()
 {
 	InitializeCriticalSection( &m_criticalSection );
 }
 
-eae6320::Concurrency::cMutex_recursive::~cMutex_recursive()
+eae6320::Concurrency::cMutexRecursive::~cMutexRecursive()
 {
 	DeleteCriticalSection( &m_criticalSection );
 }

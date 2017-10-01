@@ -39,7 +39,7 @@ namespace eae6320
 			{
 			public:
 
-				cScopeLock( cMutex& io_mutex ) : m_mutex( io_mutex ) { m_mutex.Lock(); }
+				explicit cScopeLock( cMutex& io_mutex ) : m_mutex( io_mutex ) { m_mutex.Lock(); }
 				~cScopeLock() { m_mutex.Unlock(); }
 
 			private:

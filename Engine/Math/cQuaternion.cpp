@@ -51,7 +51,7 @@ eae6320::Math::cQuaternion eae6320::Math::cQuaternion::GetInverse() const
 
 void eae6320::Math::cQuaternion::Normalize()
 {
-	const auto length = std::sqrt( ( m_w * m_w ) + ( m_x * m_x ) + ( m_y * m_y ) + ( m_z * m_z ) );
+	const auto length = sqrt( ( m_w * m_w ) + ( m_x * m_x ) + ( m_y * m_y ) + ( m_z * m_z ) );
 	EAE6320_ASSERTF( length > s_epsilon, "Can't divide by zero" );
 	const auto length_reciprocal = 1.0f / length;
 	m_w *= length_reciprocal;
@@ -62,7 +62,7 @@ void eae6320::Math::cQuaternion::Normalize()
 
 eae6320::Math::cQuaternion eae6320::Math::cQuaternion::GetNormalized() const
 {
-	const auto length = std::sqrt( ( m_w * m_w ) + ( m_x * m_x ) + ( m_y * m_y ) + ( m_z * m_z ) );
+	const auto length = sqrt( ( m_w * m_w ) + ( m_x * m_x ) + ( m_y * m_y ) + ( m_z * m_z ) );
 	EAE6320_ASSERTF( length > s_epsilon, "Can't divide by zero" );
 	const auto length_reciprocal = 1.0f / length;
 	return cQuaternion( m_w * length_reciprocal, m_x * length_reciprocal, m_y * length_reciprocal, m_z * length_reciprocal );

@@ -20,15 +20,15 @@ namespace eae6320
 		// We define nine anchor positions on the screen
 		enum eAnchor : uint8_t
 		{
-			TopLeft = 0,
-			TopCentre = 1 << 0,
-			TopRight = 1 << 1,
-			MidLeft = 1 << 2,
-			MidCentre = 1 << 3,
-			MidRight = 1 << 4,
-			BottomLeft = 1 << 5,
-			BottomCentre = 1 << 6,
-			BottomRight = 1 << 7,
+			TOP_LEFT = 0,
+			TOP_CENTER = 1 << 0,
+			TOP_RIGHT = 1 << 1,
+			MID_LEFT = 1 << 2,
+			MID_CENTER = 1 << 3,
+			MID_RIGHT = 1 << 4,
+			BOTTOM_LEFT = 1 << 5,
+			BOTTOM_CENTER = 1 << 6,
+			BOTTOM_RIGHT = 1 << 7,
 		};
 		// Helper struct to store screen position
 		struct sScreenPosition

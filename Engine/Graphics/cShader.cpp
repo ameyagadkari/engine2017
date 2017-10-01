@@ -21,7 +21,7 @@ eae6320::Assets::cManager<eae6320::Graphics::cShader> eae6320::Graphics::cShader
 
 eae6320::cResult eae6320::Graphics::cShader::Load( const char* const i_path, cShader*& o_shader, const ShaderTypes::eType i_type )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	Platform::sDataFromFile dataFromFile;
 	cShader* newShader = nullptr;
@@ -55,7 +55,7 @@ eae6320::cResult eae6320::Graphics::cShader::Load( const char* const i_path, cSh
 		newShader = new (std::nothrow) cShader( i_type );
 		if ( !newShader )
 		{
-			result = Results::OutOfMemory;
+			result = Results::outOfMemory;
 			EAE6320_ASSERTF( false, "Couldn't allocate memory for the shader %s", i_path );
 			Logging::OutputError( "Failed to allocate memory for the shader %s", i_path );
 			goto OnExit;

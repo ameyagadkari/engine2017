@@ -15,14 +15,14 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 {
 	// Nothing Special is required to be done here.
 
-	return eae6320::Results::Success;
+	return eae6320::Results::success;
 }
 
 eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
 {
 	// Nothing Special is required to be done here.
 
-	return eae6320::Results::Success;
+	return eae6320::Results::success;
 }
 
 // Render
@@ -30,7 +30,7 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
 
 void eae6320::Graphics::cEffect::BindPlatformSpecific() const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
 	EAE6320_ASSERT(direct3dImmediateContext);
 	{
 		ID3D11ClassInstance* const* noInterfaces = nullptr;

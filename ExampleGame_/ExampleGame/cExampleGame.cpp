@@ -27,7 +27,7 @@ namespace
 void eae6320::cExampleGame::UpdateBasedOnInput()
 {
 	// Is the user pressing the ESC key?
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::Escape))
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::ESCAPE))
 	{
 		// Exit the application
 		const auto result = Exit(EXIT_SUCCESS);
@@ -65,7 +65,7 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 	{
 		for (auto& effectSpritePair : s_effectSpritePairs)
 		{
-			Graphics::SubmitEffectSpritePair(effectSpritePair.first, effectSpritePair.second);
+			SubmitEffectSpritePair(effectSpritePair.first, effectSpritePair.second);
 		}
 	}
 }
@@ -75,12 +75,12 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 
 eae6320::cResult eae6320::cExampleGame::Initialize()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 	uint16_t currentResolutionWidth, currentResolutionHeight;
 	result = GetCurrentResolution(currentResolutionWidth, currentResolutionHeight);
 	if (result)
 	{
-		eae6320::Transform::SetCurrentResolution(currentResolutionWidth, currentResolutionHeight);
+		Transform::SetCurrentResolution(currentResolutionWidth, currentResolutionHeight);
 	}
 	else
 	{
@@ -89,14 +89,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite_white.shd")))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite_white.shd"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::MidCentre);
-		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite1_path", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::MID_CENTER);
+		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite1_path", sprite, spriteLocation))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -105,14 +105,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TopLeft);
-		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite2_path", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TOP_LEFT);
+		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite2_path", sprite, spriteLocation))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -121,14 +121,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BottomRight);
-		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite3_path", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BOTTOM_RIGHT);
+		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite3_path", sprite, spriteLocation))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -137,14 +137,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TopRight);
-		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite4_path", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TOP_RIGHT);
+		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite4_path", sprite, spriteLocation))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -153,14 +153,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!(result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd")))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BottomLeft);
-		if (!(result = Graphics::cSprite::s_manager.Load("fake_sprite5_path", sprite, spriteLocation)))
+		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BOTTOM_LEFT);
+		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite5_path", sprite, spriteLocation))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -174,7 +174,7 @@ OnExit:
 
 eae6320::cResult eae6320::cExampleGame::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 	for (auto& effectSpritePair : s_effectSpritePairs)
 	{
 		// Clean up effect

@@ -14,7 +14,7 @@
 
 namespace
 {
-	HWND s_mainWindow = NULL;
+	HWND s_mainWindow = nullptr;
 }
 
 // Interface
@@ -72,12 +72,12 @@ eae6320::cResult eae6320::UserOutput::Initialize( const sInitializationParameter
 {
 	s_mainWindow = i_initializationParameters.mainWindow;
 
-	return Results::Success;
+	return Results::success;
 }
 
 eae6320::cResult eae6320::UserOutput::CleanUp()
 {
-	s_mainWindow = NULL;
+	s_mainWindow = nullptr;
 
-	return Results::Success;
+	return Results::success;
 }

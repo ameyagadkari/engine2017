@@ -17,7 +17,7 @@
 
 eae6320::cResult eae6320::Concurrency::cThread::Start( fThreadFunction const i_threadFunction, void* const io_userData )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( !m_handle )
 	{
@@ -29,7 +29,7 @@ eae6320::cResult eae6320::Concurrency::cThread::Start( fThreadFunction const i_t
 			void* const userData;
 			cEvent whenThreadDataHasBeenExtracted;
 		} threadData = { i_threadFunction, io_userData };
-		if ( result = threadData.whenThreadDataHasBeenExtracted.Initialize( EventType::RemainSignaledUntilReset ) )
+		if ( (result = threadData.whenThreadDataHasBeenExtracted.Initialize( EventType::REMAIN_SIGNALED_UNTIL_RESET )) )
 		{
 			// Start the new thread
 			{
@@ -133,7 +133,7 @@ eae6320::cResult eae6320::Concurrency::cThread::Start( fThreadFunction const i_t
 	{
 		result = Results::Failure;
 		EAE6320_ASSERTF( false, "A thread can't be started if it is already running" );
-		eae6320::Logging::OutputError( "An attempt was made to start a thread that was already running" );
+		Logging::OutputError( "An attempt was made to start a thread that was already running" );
 		goto OnExit;
 	}
 
@@ -147,7 +147,7 @@ eae6320::cResult eae6320::Concurrency::WaitForThreadToStop( cThread& io_thread, 
 	if ( io_thread.m_handle )
 	{
 		const auto result = WaitForSingleObject( io_thread.m_handle,
-			( i_timeToWait_inMilliseconds == eae6320::Concurrency::Constants::DontTimeOut ) ? INFINITE : static_cast<DWORD>( i_timeToWait_inMilliseconds ) );
+			( i_timeToWait_inMilliseconds == eae6320::Concurrency::Constants::dontTimeOut ) ? INFINITE : static_cast<DWORD>( i_timeToWait_inMilliseconds ) );
 		switch ( result )
 		{
 		// The thread exited
@@ -156,21 +156,21 @@ eae6320::cResult eae6320::Concurrency::WaitForThreadToStop( cThread& io_thread, 
 			return io_thread.CleanUp();
 		// The time-out period elapsed before the thread exited
 		case WAIT_TIMEOUT:
-			return eae6320::Results::TimeOut;
+			return eae6320::Results::timeOut;
 		// A Windows error prevented the wait
 		case WAIT_FAILED:
 			{
 				const auto errorMessage = eae6320::Windows::GetLastSystemError();
 				EAE6320_ASSERTF( false, "Failed to wait for a thread to exit: %s", errorMessage.c_str() );
-				eae6320::Logging::OutputError( "Windows failed waiting for a thread to exit: %s", errorMessage.c_str() );
+				Logging::OutputError( "Windows failed waiting for a thread to exit: %s", errorMessage.c_str() );
 			}
 			break;
 		// An unexpected error occurred
 		default:
 			EAE6320_ASSERTF( false, "Failed to wait for a thread to exit" );
-			eae6320::Logging::OutputError( "Windows failed waiting for a thread to exit due to an unknown reason (this should never happen)" );
+			Logging::OutputError( "Windows failed waiting for a thread to exit due to an unknown reason (this should never happen)" );
 		}
-		return eae6320::Results::Failure;
+		return Results::Failure;
 	}
 	else
 	{
@@ -178,7 +178,7 @@ eae6320::cResult eae6320::Concurrency::WaitForThreadToStop( cThread& io_thread, 
 		// Even calling the function with a NULL handle is probably a user error,
 		// the thread isn't running (assuming the user didn't call CleanUp() prematurely)
 		// and so success is returned
-		return eae6320::Results::Success;
+		return Results::success;
 	}
 }
 
@@ -198,7 +198,7 @@ eae6320::Concurrency::cThread::cThread()
 
 eae6320::cResult eae6320::Concurrency::cThread::CleanUp()
 {
-	cResult result = eae6320::Results::Success;
+	auto result = Results::success;
 
 	if ( m_handle )
 	{
@@ -211,10 +211,10 @@ eae6320::cResult eae6320::Concurrency::cThread::CleanUp()
 			}
 			if ( result )
 			{
-				result = eae6320::Results::Failure;
+				result = Results::Failure;
 			}
 		}
-		m_handle = NULL;
+		m_handle = nullptr;
 	}
 
 	return result;

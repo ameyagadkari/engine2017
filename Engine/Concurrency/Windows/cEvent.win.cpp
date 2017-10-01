@@ -10,34 +10,34 @@
 // Interface
 //==========
 
-eae6320::cResult eae6320::Concurrency::WaitForEvent( const eae6320::Concurrency::cEvent& i_event, const unsigned int i_timeToWait_inMilliseconds )
+eae6320::cResult eae6320::Concurrency::WaitForEvent( const cEvent& i_event, const unsigned int i_timeToWait_inMilliseconds )
 {
 	if ( i_event.m_handle )
 	{
 		const auto result = WaitForSingleObject( i_event.m_handle,
-			( i_timeToWait_inMilliseconds == eae6320::Concurrency::Constants::DontTimeOut ) ? INFINITE : static_cast<DWORD>( i_timeToWait_inMilliseconds ) );
+			( i_timeToWait_inMilliseconds == Constants::dontTimeOut ) ? INFINITE : static_cast<DWORD>( i_timeToWait_inMilliseconds ) );
 		switch ( result )
 		{
 		// The event was signaled
 		case WAIT_OBJECT_0:
-			return eae6320::Results::Success;
+			return Results::success;
 		// The time-out period elapsed before the event was signaled
 		case WAIT_TIMEOUT:
-			return eae6320::Results::TimeOut;
+			return Results::timeOut;
 		// A Windows error prevented the wait
 		case WAIT_FAILED:
 			{
-				const auto errorMessage = eae6320::Windows::GetLastSystemError();
+				const auto errorMessage = Windows::GetLastSystemError();
 				EAE6320_ASSERTF( false, "Failed to wait for an event: %s", errorMessage.c_str() );
-				eae6320::Logging::OutputError( "Windows failed waiting for an event: %s", errorMessage.c_str() );
+				Logging::OutputError( "Windows failed waiting for an event: %s", errorMessage.c_str() );
 			}
 			break;
 		// An unexpected error occurred
 		default:
 			EAE6320_ASSERTF( false, "Failed to wait for an event" );
-			eae6320::Logging::OutputError( "Windows failed waiting for an event due to an unknown reason (this should never happen)" );
+			Logging::OutputError( "Windows failed waiting for an event due to an unknown reason (this should never happen)" );
 		}
-		return eae6320::Results::Failure;
+		return Results::Failure;
 	}
 	else
 	{
@@ -47,36 +47,30 @@ eae6320::cResult eae6320::Concurrency::WaitForEvent( const eae6320::Concurrency:
 	}
 }
 
-eae6320::cResult eae6320::Concurrency::cEvent::Signal()
+eae6320::cResult eae6320::Concurrency::cEvent::Signal() const
 {
 	EAE6320_ASSERTF( m_handle, "An event can't be signaled until it has been initialized" );
 	if ( SetEvent( m_handle ) != FALSE )
 	{
-		return Results::Success;
+		return Results::success;
 	}
-	else
-	{
-		const auto errorMessage = Windows::GetLastSystemError();
-		EAE6320_ASSERTF( false, "Couldn't signal event: %s", errorMessage.c_str() );
-		Logging::OutputError( "Windows failed to signal an event: %s", errorMessage.c_str() );
-		return Results::Failure;
-	}
+	const auto errorMessage = Windows::GetLastSystemError();
+	EAE6320_ASSERTF( false, "Couldn't signal event: %s", errorMessage.c_str() );
+	Logging::OutputError( "Windows failed to signal an event: %s", errorMessage.c_str() );
+	return Results::Failure;
 }
 
-eae6320::cResult eae6320::Concurrency::cEvent::ResetToUnsignaled()
+eae6320::cResult eae6320::Concurrency::cEvent::ResetToUnsignaled() const
 {
 	EAE6320_ASSERTF( m_handle, "An event can't be reset until it has been initialized" );
 	if ( ResetEvent( m_handle ) != FALSE )
 	{
-		return Results::Success;
+		return Results::success;
 	}
-	else
-	{
-		const auto errorMessage = Windows::GetLastSystemError();
-		EAE6320_ASSERTF( false, "Couldn't reset event to be unsignaled: %s", errorMessage.c_str() );
-		Logging::OutputError( "Windows failed to reset an event to be unsignaled: %s", errorMessage.c_str() );
-		return Results::Failure;
-	}
+	const auto errorMessage = Windows::GetLastSystemError();
+	EAE6320_ASSERTF( false, "Couldn't reset event to be unsignaled: %s", errorMessage.c_str() );
+	Logging::OutputError( "Windows failed to reset an event to be unsignaled: %s", errorMessage.c_str() );
+	return Results::Failure;
 }
 
 // Initialization / Clean Up
@@ -86,17 +80,14 @@ eae6320::cResult eae6320::Concurrency::cEvent::Initialize( const EventType i_typ
 {
 	constexpr SECURITY_ATTRIBUTES* const useDefaultSecurityAttributes = nullptr;
 	constexpr char* const noName = nullptr;
-	if ( m_handle = CreateEvent( useDefaultSecurityAttributes, i_type == EventType::RemainSignaledUntilReset, i_initialState == EventState::Signaled, noName ) )
+	if ( (m_handle = CreateEvent( useDefaultSecurityAttributes, i_type == EventType::REMAIN_SIGNALED_UNTIL_RESET, i_initialState == EventState::SIGNALED, noName )) )
 	{
-		return Results::Success;
+		return Results::success;
 	}
-	else
-	{
-		const auto errorMessage = Windows::GetLastSystemError();
-		EAE6320_ASSERTF( false, "Couldn't create event: %s", errorMessage.c_str() );
-		Logging::OutputError( "Windows failed to create an event: %s", errorMessage.c_str() );
-		return Results::Failure;
-	}
+	const auto errorMessage = Windows::GetLastSystemError();
+	EAE6320_ASSERTF( false, "Couldn't create event: %s", errorMessage.c_str() );
+	Logging::OutputError( "Windows failed to create an event: %s", errorMessage.c_str() );
+	return Results::Failure;
 }
 
 eae6320::Concurrency::cEvent::cEvent()
@@ -106,7 +97,7 @@ eae6320::Concurrency::cEvent::cEvent()
 
 eae6320::cResult eae6320::Concurrency::cEvent::CleanUp()
 {
-	auto result = Results::Success;
+	const auto result = Results::success;
 
 	if ( m_handle )
 	{
@@ -116,7 +107,7 @@ eae6320::cResult eae6320::Concurrency::cEvent::CleanUp()
 			EAE6320_ASSERTF( false, "Couldn't close event handle: %s", errorMessage.c_str() );
 			Logging::OutputError( "Windows failed to close an event handle: %s", errorMessage.c_str() );
 		}
-		m_handle = NULL;
+		m_handle = nullptr;
 	}
 
 	return result;

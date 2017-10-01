@@ -80,8 +80,6 @@ namespace eae6320
 			// Implementation
 			//===============
 
-		private:
-
 			// Initialization / Shut Down
 			//---------------------------
 
@@ -90,7 +88,7 @@ namespace eae6320
 			// Friends
 			//========
 
-			friend class cMatrix_transformation;
+			friend class cMatrixTransformation;
 		};
 	}
 }

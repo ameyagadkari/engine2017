@@ -9,7 +9,7 @@ namespace eae6320
 {
 	namespace Math
 	{
-		constexpr float Pi = 3.141592654f;
+		constexpr float pi = 3.141592654f;
 	}
 }
 

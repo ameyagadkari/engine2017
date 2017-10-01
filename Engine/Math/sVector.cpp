@@ -95,7 +95,7 @@ eae6320::Math::sVector& eae6320::Math::sVector::operator /=( const float i_rhs )
 
 float eae6320::Math::sVector::GetLength() const
 {
-	return std::sqrt( ( x * x ) + ( y * y ) + ( z * z ) );
+	return sqrt( ( x * x ) + ( y * y ) + ( z * z ) );
 }
 
 float eae6320::Math::sVector::Normalize()

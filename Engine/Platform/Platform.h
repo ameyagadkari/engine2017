@@ -77,7 +77,7 @@ namespace eae6320
 			// This is returned when an environment variable doesn't exist
 			// (i.e. if GetEnvironmentVariable() fails this indicates that there were no platform-specific API errors,
 			// but that the requested environment variable doesn't exist)
-			constexpr cResult EnvironmentVariableDoesntExist( IsFailure, System::Platform, __LINE__ );
+			constexpr cResult environmentVariableDoesntExist( IsFailure, System::Platform, __LINE__ );
 		}
 	}
 }

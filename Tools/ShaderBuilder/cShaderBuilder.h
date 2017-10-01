@@ -25,22 +25,18 @@ namespace eae6320
 			// Inherited Implementation
 			//=========================
 
-		private:
-
 			// Build
 			//------
 
-			virtual cResult Build( const std::vector<std::string>& i_arguments ) override;
+			cResult Build(const std::vector<std::string>& i_arguments) override;
 
 			// Implementation
 			//===============
 
-		private:
-
 			// Build
 			//------
 
-			cResult Build( const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments );
+			cResult Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments) const;
 		};
 	}
 }

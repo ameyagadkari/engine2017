@@ -24,7 +24,7 @@ int eae6320::Application::cbApplication::ParseEntryPointParametersAndRun( const 
 	// Initialize the application
 	// (this also starts the application loop on a separate thread)
 	{
-		const auto result = Initialize_all( i_entryPointParameters );
+		const auto result = InitializeAll( i_entryPointParameters );
 		if ( result )
 		{
 			Logging::OutputMessage( "The application was successfully initialized" );
@@ -52,7 +52,7 @@ int eae6320::Application::cbApplication::ParseEntryPointParametersAndRun( const 
 OnExit:
 
 	{
-		const auto result = CleanUp_all();
+		const auto result = CleanUpAll();
 		if ( !result )
 		{
 			EAE6320_ASSERT( false );
@@ -68,7 +68,7 @@ OnExit:
 
 eae6320::cResult eae6320::Application::cbApplication::Exit( const int i_exitCode )
 {
-	const auto result = Exit_platformSpecific( i_exitCode );
+	const auto result = ExitPlatformSpecific( i_exitCode );
 	if ( result )
 	{
 		m_exitCode = i_exitCode;	// This will likely already be set by Exit_platformSpecific()
@@ -82,7 +82,7 @@ eae6320::cResult eae6320::Application::cbApplication::Exit( const int i_exitCode
 
 eae6320::Application::cbApplication::~cbApplication()
 {
-	CleanUp_base();
+	CleanUpBase();
 }
 
 // Inheritable Implementation
@@ -100,7 +100,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 	// and it gets updated at the start of every iteration of the application loop
 	m_tickCount_systemTime_current = Time::GetCurrentSystemTimeTickCount();
 	// Each update of the simulation is done with a fixed amount of time
-	const auto secondCount_perSimulationUpdate = GetSimulationUpdatePeriod_inSeconds();
+	const auto secondCount_perSimulationUpdate = GetSimulationUpdatePeriodInSeconds();
 	const uint64_t tickCount_perSimulationUpdate = Time::ConvertSecondsToTicks( secondCount_perSimulationUpdate );
 	// Since a single update of the simulation only uses a fixed amount of time
 	// there will be "leftover" time (time that has passed but has not been used)
@@ -199,7 +199,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 					// but short enough that any delay in exiting will (hopefully) not be noticeable to a human
 					constexpr unsigned int timeToWait_inMilliseconds = 1000 / 4;
 					canGraphicsDataBeSubmittedForANewFrame = Graphics::WaitUntilDataForANewFrameCanBeSubmitted( timeToWait_inMilliseconds );
-				} while ( ( canGraphicsDataBeSubmittedForANewFrame == Results::TimeOut ) && !m_shouldApplicationLoopExit );
+				} while ( ( canGraphicsDataBeSubmittedForANewFrame == Results::timeOut ) && !m_shouldApplicationLoopExit );
 				// If graphics data can't be submitted for a new frame the application will exit
 				if ( !canGraphicsDataBeSubmittedForANewFrame )
 				{
@@ -246,7 +246,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 	}
 }
 
-void eae6320::Application::cbApplication::EntryPoint_applicationLoopThread( void* const io_application )
+void eae6320::Application::cbApplication::EntryPointApplicationLoopThread( void* const io_application )
 {
 	auto *const application = static_cast<cbApplication*>( io_application );
 	EAE6320_ASSERT( application );
@@ -256,9 +256,9 @@ void eae6320::Application::cbApplication::EntryPoint_applicationLoopThread( void
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Application::cbApplication::Initialize_all( const sEntryPointParameters& i_entryPointParameters )
+eae6320::cResult eae6320::Application::cbApplication::InitializeAll( const sEntryPointParameters& i_entryPointParameters )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Initialize logging first so that it's always available
 	if ( !( result = Logging::Initialize() ) )
@@ -277,13 +277,13 @@ eae6320::cResult eae6320::Application::cbApplication::Initialize_all( const sEnt
 		goto OnExit;
 	}
 	// Initialize the new application instance with entry point parameters
-	if ( !( result = Initialize_base( i_entryPointParameters ) ) )
+	if ( !( result = InitializeBase( i_entryPointParameters ) ) )
 	{
 		EAE6320_ASSERT( false );
 		goto OnExit;
 	}
 	// Initialize engine systems
-	if ( !( result = Initialize_engine() ) )
+	if ( !( result = InitializeEngine() ) )
 	{
 		EAE6320_ASSERT( false );
 		goto OnExit;
@@ -296,7 +296,7 @@ eae6320::cResult eae6320::Application::cbApplication::Initialize_all( const sEnt
 	}
 
 	// Start the application loop thread
-	if ( !( result = m_applicationLoopThread.Start( EntryPoint_applicationLoopThread, this ) ) )
+	if ( !( result = m_applicationLoopThread.Start( EntryPointApplicationLoopThread, this ) ) )
 	{
 		EAE6320_ASSERT( false );
 		Logging::OutputError( "The application loop thread couldn't be started" );
@@ -308,9 +308,9 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Application::cbApplication::Initialize_engine()
+eae6320::cResult eae6320::Application::cbApplication::InitializeEngine()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// User Output
 	{
@@ -352,9 +352,9 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Application::cbApplication::CleanUp_all()
+eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Exit the application loop
 	{
@@ -363,11 +363,11 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUp_all()
 		// Wait for the thread to exit
 		{
 			constexpr unsigned int timeToWait_inMilliseconds = 5 * 1000;
-			const auto localResult = Concurrency::WaitForThreadToStop( m_applicationLoopThread, timeToWait_inMilliseconds );
+			const auto localResult = WaitForThreadToStop( m_applicationLoopThread, timeToWait_inMilliseconds );
 			if ( !localResult )
 			{
 				EAE6320_ASSERTF( false, "Couldn't wait for the application loop thread to exit" );
-				if ( localResult == Results::TimeOut )
+				if ( localResult == Results::timeOut )
 				{
 					Logging::OutputError( "The application loop thread didn't exit after waiting %u milliseconds", timeToWait_inMilliseconds );
 				}
@@ -392,7 +392,7 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUp_all()
 	}
 	// Clean up engine systems
 	{
-		const auto localResult = CleanUp_engine();
+		const auto localResult = CleanUpEngine();
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
@@ -404,7 +404,7 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUp_all()
 	}
 	// Clean up the base class application
 	{
-		const auto localResult = CleanUp_base();
+		const auto localResult = CleanUpBase();
 		if ( !localResult )
 		{
 			EAE6320_ASSERT( false );
@@ -442,9 +442,9 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUp_all()
 	return result;
 }
 
-eae6320::cResult eae6320::Application::cbApplication::CleanUp_engine()
+eae6320::cResult eae6320::Application::cbApplication::CleanUpEngine()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Graphics
 	{

@@ -33,7 +33,7 @@ eae6320::cResult eae6320::Platform::ExecuteCommand( const char* const i_command,
 	const auto result = Windows::ExecuteCommand( i_command, &exitCode_unsigned, o_errorMessage );
 	if ( o_exitCode )
 	{
-		int32_t exitCode_signed = static_cast<int32_t>( exitCode_unsigned );
+		const auto exitCode_signed = static_cast<int32_t>( exitCode_unsigned );
 		*o_exitCode = static_cast<int>( exitCode_signed );
 	}
 	return result;

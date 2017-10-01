@@ -9,12 +9,11 @@
 #include "cExampleGame.h"
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
-#undef _CRTDBG_MAP_ALLOC
 
 // Entry Point
 //============
 
-int WINAPI WinMain( HINSTANCE i_thisInstanceOfTheApplication, HINSTANCE, char* i_commandLineArguments, int i_initialWindowDisplayState )
+int WINAPI WinMain(const HINSTANCE i_thisInstanceOfTheApplication, HINSTANCE, char* i_commandLineArguments, const int i_initialWindowDisplayState )
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_crtBreakAlloc = 698;

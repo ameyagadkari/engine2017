@@ -9,8 +9,6 @@
 // Include Files
 //==============
 
-#include "Configuration.h"
-
 #include <Engine/Results/Results.h>
 
 // Interface

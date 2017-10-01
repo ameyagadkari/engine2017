@@ -16,7 +16,7 @@
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize( const void* const i_initialData )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( m_type < ConstantBufferTypes::count )
 	{

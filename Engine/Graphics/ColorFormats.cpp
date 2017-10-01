@@ -11,7 +11,7 @@
 
 eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i_r, const float i_g, const float i_b, const float i_a)
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 #define MIN_VAL 0.0f
 #define MAX_VAL 1.0f
 	// Check Red Component

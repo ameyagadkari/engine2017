@@ -3,7 +3,7 @@
 
 #include "Asserts.h"
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 	#include <cstdarg>
 	#include <cstdio>
 #endif
@@ -11,7 +11,7 @@
 // Helper Function Definitions
 //============================
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 
 bool eae6320::Asserts::ShowMessageIfAssertionIsFalseAndReturnWhetherToBreak( const unsigned int i_lineNumber, const char* const i_file,
 	bool& io_shouldThisAssertBeIgnoredInTheFuture, const char* const i_message, ... )
@@ -53,7 +53,7 @@ bool eae6320::Asserts::ShowMessageIfAssertionIsFalseAndReturnWhetherToBreak( con
 		}
 	}
 	// Display it and break if necessary
-	return ShowMessageIfAssertionIsFalseAndReturnWhetherToBreak_platformSpecific( message, io_shouldThisAssertBeIgnoredInTheFuture );
+	return ShowMessageIfAssertionIsFalseAndReturnWhetherToBreakPlatformSpecific( message, io_shouldThisAssertBeIgnoredInTheFuture );
 }
 
-#endif	// EAE6320_ASSERTS_AREENABLED
+#endif	// EAE6320_ASSERTS_ARE_ENABLED

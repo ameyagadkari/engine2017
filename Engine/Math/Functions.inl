@@ -15,7 +15,7 @@
 
 inline float eae6320::Math::ConvertDegreesToRadians( const float i_degrees )
 {
-	return i_degrees * ( Pi / 180.0f );
+	return i_degrees * ( pi / 180.0f );
 }
 
 template<typename tUnsignedInteger, class EnforceUnsigned>
@@ -32,7 +32,7 @@ template<typename tUnsignedInteger, class EnforceUnsigned>
 }
 
 template<typename tUnsignedInteger, class EnforceUnsigned>
-	tUnsignedInteger eae6320::Math::RoundUpToMultiple_powerOf2( const tUnsignedInteger i_value, const tUnsignedInteger i_multipleWhichIsAPowerOf2 )
+	tUnsignedInteger eae6320::Math::RoundUpToMultiplePowerOf2( const tUnsignedInteger i_value, const tUnsignedInteger i_multipleWhichIsAPowerOf2 )
 {
 	EAE6320_ASSERTF( i_multipleWhichIsAPowerOf2 != 0, "Zero isn't a valid multiple" );
 	EAE6320_ASSERTF( i_multipleWhichIsAPowerOf2 > 0, "The multiple must be positive" );

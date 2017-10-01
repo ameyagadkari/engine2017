@@ -45,7 +45,7 @@ void eae6320::Graphics::cConstantBuffer::Update( const void* const i_data )
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if ( m_bufferId != 0 )
 	{
@@ -73,7 +73,7 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific( const void* const i_initialData )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Create a uniform buffer object and make it active
 	{

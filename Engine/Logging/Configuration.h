@@ -15,7 +15,7 @@
 // but it can be done after every message is output during development
 // if an application is crashing so that no messages are lost
 #ifdef _DEBUG
-	#define EAE6320_LOGGING_FLUSHBUFFERAFTEREVERYMESSAGE
+	#define EAE6320_LOGGING_FLUSH_BUFFER_AFTER_EVERY_MESSAGE
 #endif
 
 #endif	// EAE6320_LOGGING_CONFIGURATION_H

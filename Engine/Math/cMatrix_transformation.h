@@ -41,7 +41,7 @@ namespace eae6320
 {
 	namespace Math
 	{
-		class cMatrix_transformation
+		class cMatrixTransformation
 		{
 			// Interface
 			//==========
@@ -51,13 +51,13 @@ namespace eae6320
 			// Multiplication
 			//---------------
 
-			sVector operator *( const sVector& i_rhs ) const;
-			cMatrix_transformation operator *( const cMatrix_transformation& i_rhs ) const;
+			sVector operator *(const sVector& i_rhs) const;
+			cMatrixTransformation operator *(const cMatrixTransformation& i_rhs) const;
 			// If both transforms are known to be affine
 			// (in our class this should be true of everything except camera-to-projected transforms)
 			// then the following function is cheaper than general multiplication
-			static const cMatrix_transformation ConcatenateAffine(
-				const cMatrix_transformation& i_nextTransform, const cMatrix_transformation& i_firstTransform );
+			static const cMatrixTransformation ConcatenateAffine(
+				const cMatrixTransformation& i_nextTransform, const cMatrixTransformation& i_firstTransform);
 
 			// Access
 			//-------
@@ -71,13 +71,13 @@ namespace eae6320
 			//-------
 
 			// A world-to-camera transform (for rendering) can be created by specifying the relative camera data
-			static cMatrix_transformation CreateWorldToCameraTransform(
-				const cQuaternion& i_cameraOrientation, const sVector& i_cameraPosition );
+			static cMatrixTransformation CreateWorldToCameraTransform(
+				const cQuaternion& i_cameraOrientation, const sVector& i_cameraPosition);
 			// If a camera's local-to-world transform has already been created then it can be specified instead to save calculations
-			static cMatrix_transformation CreateWorldToCameraTransform( const cMatrix_transformation& transform_localCameraToWorld );
+			static cMatrixTransformation CreateWorldToCameraTransform(const cMatrixTransformation& transform_localCameraToWorld);
 
 			// A camera-to-projected transform (for rendering) can be created by specifying the relative data
-			static cMatrix_transformation CreateCameraToProjectedTransform_perspective(
+			static cMatrixTransformation CreateCameraToProjectedTransformPerspective(
 				// The vertical field of view is the vertical angle of the view frustum (i.e. how wide the camera can see vertically)
 				//	* If you prefer to think in terms of degrees you can use Math::ConvertDegreesToRadians()
 				//	* If you prefer to think in terms of horizontal field of view you can use Math::ConvertHorizontalFieldOfViewToVerticalFieldOfView()
@@ -93,13 +93,13 @@ namespace eae6320
 				//			(i.e. where you don't notice things disappearing when the camera gets close)
 				//			and the far plane should be as near to the camera as is acceptable
 				//			(i.e. where you don't notice things disappearing when the camera gets far away)
-				const float i_z_nearPlane, const float i_z_farPlane );
+				const float i_z_nearPlane, const float i_z_farPlane);
 
 			// Initialization / Shut Down
 			//---------------------------
 
-			cMatrix_transformation() = default;	// The default constructor creates a a transform with no rotation and no translation
-			cMatrix_transformation( const cQuaternion& i_rotation, const sVector& i_translation );
+			cMatrixTransformation() = default;	// The default constructor creates a a transform with no rotation and no translation
+			cMatrixTransformation(const cQuaternion& i_rotation, const sVector& i_translation);
 
 			// Data
 			//=====
@@ -120,11 +120,11 @@ namespace eae6320
 			// Initialization / Shut Down
 			//---------------------------
 
-			cMatrix_transformation(
+			cMatrixTransformation(
 				const float i_00, const float i_10, const float i_20, const float i_30,
 				const float i_01, const float i_11, const float i_21, const float i_31,
 				const float i_02, const float i_12, const float i_22, const float i_32,
-				const float i_03, const float i_13, const float i_23, const float i_33 );
+				const float i_03, const float i_13, const float i_23, const float i_33);
 		};
 	}
 }

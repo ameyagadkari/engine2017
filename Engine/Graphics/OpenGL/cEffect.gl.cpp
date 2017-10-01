@@ -11,7 +11,7 @@
 
 eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 {
-	auto result = eae6320::Results::Success;
+	auto result = Results::success;
 
 	// Create a program
 	{
@@ -19,17 +19,17 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 		const auto errorCode = glGetError();
 		if (errorCode != GL_NO_ERROR)
 		{
-			result = eae6320::Results::Failure;
+			result = Results::Failure;
 			EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			eae6320::Logging::OutputError("OpenGL failed to create a program: %s",
+			Logging::OutputError("OpenGL failed to create a program: %s",
 				reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			goto OnExit;
 		}
-		else if (m_programId == 0)
+		if (m_programId == 0)
 		{
-			result = eae6320::Results::Failure;
+			result = Results::Failure;
 			EAE6320_ASSERT(false);
-			eae6320::Logging::OutputError("OpenGL failed to create a program");
+			Logging::OutputError("OpenGL failed to create a program");
 			goto OnExit;
 		}
 	}
@@ -41,22 +41,22 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 			const auto errorCode = glGetError();
 			if (errorCode != GL_NO_ERROR)
 			{
-				result = eae6320::Results::Failure;
+				result = Results::Failure;
 				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				eae6320::Logging::OutputError("OpenGL failed to attach the vertex shader to the program: %s",
+				Logging::OutputError("OpenGL failed to attach the vertex shader to the program: %s",
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 				goto OnExit;
 			}
 		}
 		// Fragment
 		{
-			glAttachShader(m_programId, eae6320::Graphics::cShader::s_manager.Get(m_fragmentShader)->m_shaderId);
+			glAttachShader(m_programId, cShader::s_manager.Get(m_fragmentShader)->m_shaderId);
 			const auto errorCode = glGetError();
 			if (errorCode != GL_NO_ERROR)
 			{
-				result = eae6320::Results::Failure;
+				result = Results::Failure;
 				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				eae6320::Logging::OutputError("OpenGL failed to attach the fragment shader to the program: %s",
+				Logging::OutputError("OpenGL failed to attach the fragment shader to the program: %s",
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 				goto OnExit;
 			}
@@ -78,10 +78,10 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 				const auto errorCode = glGetError();
 				if (errorCode == GL_NO_ERROR)
 				{
-					struct sLogInfo
+					const struct sLogInfo
 					{
 						GLchar* memory;
-						sLogInfo(const size_t i_size) { memory = reinterpret_cast<GLchar*>(malloc(i_size)); }
+						explicit sLogInfo(const size_t i_size) { memory = reinterpret_cast<GLchar*>(malloc(i_size)); }
 						~sLogInfo() { if (memory) free(memory); }
 					} info(static_cast<size_t>(infoSize));
 					GLsizei* const dontReturnLength = nullptr;
@@ -93,18 +93,18 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 					}
 					else
 					{
-						result = eae6320::Results::Failure;
+						result = Results::Failure;
 						EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-						eae6320::Logging::OutputError("OpenGL failed to get link info of the program: %s",
+						Logging::OutputError("OpenGL failed to get link info of the program: %s",
 							reinterpret_cast<const char*>(gluErrorString(errorCode)));
 						goto OnExit;
 					}
 				}
 				else
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					eae6320::Logging::OutputError("OpenGL failed to get the length of the program link info: %s",
+					Logging::OutputError("OpenGL failed to get the length of the program link info: %s",
 						reinterpret_cast<const char*>(gluErrorString(errorCode)));
 					goto OnExit;
 				}
@@ -118,18 +118,18 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 				{
 					if (didLinkingSucceed == GL_FALSE)
 					{
-						result = eae6320::Results::Failure;
+						result = Results::Failure;
 						EAE6320_ASSERTF(false, linkInfo.c_str());
-						eae6320::Logging::OutputError("The program failed to link: %s",
+						Logging::OutputError("The program failed to link: %s",
 							linkInfo.c_str());
 						goto OnExit;
 					}
 				}
 				else
 				{
-					result = eae6320::Results::Failure;
+					result = Results::Failure;
 					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					eae6320::Logging::OutputError("OpenGL failed to find out if linking of the program succeeded: %s",
+					Logging::OutputError("OpenGL failed to find out if linking of the program succeeded: %s",
 						reinterpret_cast<const char*>(gluErrorString(errorCode)));
 					goto OnExit;
 				}
@@ -137,9 +137,9 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 		}
 		else
 		{
-			result = eae6320::Results::Failure;
+			result = Results::Failure;
 			EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			eae6320::Logging::OutputError("OpenGL failed to link the program: %s",
+			Logging::OutputError("OpenGL failed to link the program: %s",
 				reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			goto OnExit;
 		}
@@ -155,9 +155,9 @@ OnExit:
 			const auto errorCode = glGetError();
 			if (errorCode != GL_NO_ERROR)
 			{
-				result = eae6320::Results::Failure;
+				result = Results::Failure;
 				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				eae6320::Logging::OutputError("OpenGL failed to delete the program: %s",
+				Logging::OutputError("OpenGL failed to delete the program: %s",
 					reinterpret_cast<const char*>(gluErrorString(errorCode)));
 			}
 			m_programId = 0;
@@ -169,7 +169,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
 {
-	auto result = eae6320::Results::Success;
+	auto result = Results::success;
 	// Program clean up
 	if (m_programId != 0)
 	{
@@ -179,10 +179,10 @@ eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
 		{
 			if (result)
 			{
-				result = eae6320::Results::Failure;
+				result = Results::Failure;
 			}
 			EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-			eae6320::Logging::OutputError("OpenGL failed to delete the program: %s",
+			Logging::OutputError("OpenGL failed to delete the program: %s",
 				reinterpret_cast<const char*>(gluErrorString(errorCode)));
 		}
 		m_programId = 0;

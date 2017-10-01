@@ -9,7 +9,6 @@
 //==============
 
 #include <Engine/Results/Results.h>
-#include <string>
 
 // Interface
 //==========
@@ -18,7 +17,7 @@ namespace eae6320
 {
 	namespace Assets
 	{
-		eae6320::cResult BuildAssets();
+		cResult BuildAssets();
 
 		// Error / Warning Output
 		//-----------------------

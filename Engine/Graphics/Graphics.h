@@ -8,8 +8,6 @@
 // Include Files
 //==============
 
-#include "Configuration.h"
-
 #include <cstdint>
 #include <Engine/Results/Results.h>
 #include "ColorFormats.h"

@@ -14,7 +14,7 @@
 // Multiplication
 //---------------
 
-eae6320::Math::sVector eae6320::Math::cMatrix_transformation::operator *( const sVector& i_rhs ) const
+eae6320::Math::sVector eae6320::Math::cMatrixTransformation::operator *( const sVector& i_rhs ) const
 {
 	return sVector(
 		( m_00 * i_rhs.x ) + ( m_01 * i_rhs.y ) + ( m_02 * i_rhs.z ) + m_03,
@@ -23,9 +23,9 @@ eae6320::Math::sVector eae6320::Math::cMatrix_transformation::operator *( const 
 	);
 }
 
-eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::operator *( const cMatrix_transformation& i_rhs ) const
+eae6320::Math::cMatrixTransformation eae6320::Math::cMatrixTransformation::operator *( const cMatrixTransformation& i_rhs ) const
 {
-	return cMatrix_transformation(
+	return cMatrixTransformation(
 		( m_00 * i_rhs.m_00 ) + ( m_01 * i_rhs.m_10 ) + ( m_02 * i_rhs.m_20 ) + ( m_03 * i_rhs.m_30 ),
 		( m_10 * i_rhs.m_00 ) + ( m_11 * i_rhs.m_10 ) + ( m_12 * i_rhs.m_20 ) + ( m_13 * i_rhs.m_30 ),
 		( m_20 * i_rhs.m_00 ) + ( m_21 * i_rhs.m_10 ) + ( m_22 * i_rhs.m_20 ) + ( m_23 * i_rhs.m_30 ),
@@ -48,11 +48,11 @@ eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::ope
 	);
 }
 
-const eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::ConcatenateAffine(
-	const cMatrix_transformation& i_nextTransform, const cMatrix_transformation& i_firstTransform )
+const eae6320::Math::cMatrixTransformation eae6320::Math::cMatrixTransformation::ConcatenateAffine(
+	const cMatrixTransformation& i_nextTransform, const cMatrixTransformation& i_firstTransform )
 {
 	// A few simplifying assumptions can be made for affine transformations vs. general 4x4 matrix multiplication
-	return cMatrix_transformation(
+	return cMatrixTransformation(
 		( i_nextTransform.m_00 * i_firstTransform.m_00 ) + ( i_nextTransform.m_01 * i_firstTransform.m_10 ) + ( i_nextTransform.m_02 * i_firstTransform.m_20 ),
 		( i_nextTransform.m_10 * i_firstTransform.m_00 ) + ( i_nextTransform.m_11 * i_firstTransform.m_10 ) + ( i_nextTransform.m_12 * i_firstTransform.m_20 ),
 		( i_nextTransform.m_20 * i_firstTransform.m_00 ) + ( i_nextTransform.m_21 * i_firstTransform.m_10 ) + ( i_nextTransform.m_22 * i_firstTransform.m_20 ),
@@ -78,12 +78,12 @@ const eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformatio
 // Camera
 //-------
 
-eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::CreateWorldToCameraTransform( const cMatrix_transformation& i_transform_localCameraToWorld )
+eae6320::Math::cMatrixTransformation eae6320::Math::cMatrixTransformation::CreateWorldToCameraTransform( const cMatrixTransformation& i_transform_localCameraToWorld )
 {
 	// Many simplifying assumptions can be made in order to create the inverse
 	// because in our class a camera can only ever have rotation and translation
 	// (i.e. it can't be scaled)
-	return cMatrix_transformation(
+	return cMatrixTransformation(
 		i_transform_localCameraToWorld.m_00, i_transform_localCameraToWorld.m_01, i_transform_localCameraToWorld.m_02, 0.0f,
 		i_transform_localCameraToWorld.m_10, i_transform_localCameraToWorld.m_11, i_transform_localCameraToWorld.m_12, 0.0f,
 		i_transform_localCameraToWorld.m_20, i_transform_localCameraToWorld.m_21, i_transform_localCameraToWorld.m_22, 0.0f,
@@ -95,7 +95,7 @@ eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::Cre
 		1.0f );
 }
 
-eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::CreateCameraToProjectedTransform_perspective(
+eae6320::Math::cMatrixTransformation eae6320::Math::cMatrixTransformation::CreateCameraToProjectedTransformPerspective(
 	const float i_verticalFieldOfView_inRadians,
 	const float i_aspectRatio,
 	const float i_z_nearPlane, const float i_z_farPlane )
@@ -104,7 +104,7 @@ eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::Cre
 	const auto xScale = yScale / i_aspectRatio;
 #if defined( EAE6320_PLATFORM_D3D )
 	const auto zDistanceScale = i_z_farPlane / ( i_z_nearPlane - i_z_farPlane );
-	return cMatrix_transformation(
+	return cMatrixTransformation(
 		xScale, 0.0f, 0.0f, 0.0f,
 		0.0f, yScale, 0.0f, 0.0f,
 		0.0f, 0.0f, zDistanceScale, -1.0f,
@@ -122,7 +122,7 @@ eae6320::Math::cMatrix_transformation eae6320::Math::cMatrix_transformation::Cre
 // Initialization / Shut Down
 //---------------------------
 
-eae6320::Math::cMatrix_transformation::cMatrix_transformation( const cQuaternion& i_rotation, const sVector& i_translation )
+eae6320::Math::cMatrixTransformation::cMatrixTransformation( const cQuaternion& i_rotation, const sVector& i_translation )
 	:
 	m_30( 0.0f ), m_31( 0.0f ), m_32( 0.0f ),
 	m_03( i_translation.x ), m_13( i_translation.y ), m_23( i_translation.z ),
@@ -160,7 +160,7 @@ eae6320::Math::cMatrix_transformation::cMatrix_transformation( const cQuaternion
 // Initialization / Shut Down
 //---------------------------
 
-eae6320::Math::cMatrix_transformation::cMatrix_transformation(
+eae6320::Math::cMatrixTransformation::cMatrixTransformation(
 	const float i_00, const float i_10, const float i_20, const float i_30,
 	const float i_01, const float i_11, const float i_21, const float i_31,
 	const float i_02, const float i_12, const float i_22, const float i_32,

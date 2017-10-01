@@ -6,11 +6,6 @@
 #ifndef EAE6320_GRAPHICS_VERTEXFORMATS_H
 #define EAE6320_GRAPHICS_VERTEXFORMATS_H
 
-// Include Files
-//==============
-
-#include "Configuration.h"
-
 // Vertex Formats
 //===============
 

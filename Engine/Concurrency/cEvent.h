@@ -42,13 +42,13 @@ namespace eae6320
 	{
 		enum class EventType
 		{
-			ResetAutomaticallyAfterBeingSignaled,
-			RemainSignaledUntilReset
+			RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED,
+			REMAIN_SIGNALED_UNTIL_RESET
 		};
 		enum class EventState
 		{
-			Unsignaled,
-			Signaled
+			UNSIGNALED,
+			SIGNALED
 		};
 	}
 }
@@ -78,19 +78,19 @@ namespace eae6320
 			//	* The specified time-out period elapses
 			//		* If the caller doesn't specify a time-out period then the function will never return until the event happens
 			//		* If the caller specifies a time-out period of zero then the function will return immediately
-			friend cResult WaitForEvent( const cEvent& i_event, const unsigned int i_timeToWait_inMilliseconds = Constants::DontTimeOut );
+			friend cResult WaitForEvent( const cEvent& i_event, const unsigned int i_timeToWait_inMilliseconds = Constants::dontTimeOut );
 
 			// This function should be called when an event happens
 			// (which "signals" the event happening to any waiting threads)
-			cResult Signal();
+			cResult Signal() const;
 			// Calling this function sets the state of the event to unsignaled
 			// (it resets the event as if it had never happened)
-			cResult ResetToUnsignaled();
+			cResult ResetToUnsignaled() const;
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize( const EventType i_type, const EventState i_initialState = EventState::Unsignaled );
+			cResult Initialize( const EventType i_type, const EventState i_initialState = EventState::UNSIGNALED );
 			cResult CleanUp();
 
 			cEvent();
@@ -102,7 +102,7 @@ namespace eae6320
 		private:
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HANDLE m_handle = NULL;
+			HANDLE m_handle = nullptr;
 #endif
 		};
 	}

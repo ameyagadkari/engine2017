@@ -24,7 +24,7 @@ void eae6320::Transform::SetCurrentResolution(const uint16_t i_width, const uint
 eae6320::Transform::sRectTransform::sRectTransform() :
 	width(100),
 	height(100),
-	anchor(TopLeft)
+	anchor(TOP_LEFT)
 {
 	pixelCoordinates.x = 0;
 	pixelCoordinates.y = 0;
@@ -61,7 +61,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 
 	switch (anchor)
 	{
-	case TopLeft:
+	case TOP_LEFT:
 	{
 		constexpr float xOffset = -1.0f;
 		constexpr float yOffset = 1.0f;
@@ -70,7 +70,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case TopCentre:
+	case TOP_CENTER:
 	{
 		constexpr float xOffset = 0.0f;
 		constexpr float yOffset = 1.0f;
@@ -79,7 +79,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case TopRight:
+	case TOP_RIGHT:
 	{
 		constexpr float xOffset = 1.0f;
 		constexpr float yOffset = 1.0f;
@@ -88,7 +88,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case MidLeft:
+	case MID_LEFT:
 	{
 		constexpr float xOffset = -1.0f;
 		constexpr float yOffset = 0.0f;
@@ -97,7 +97,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case MidCentre:
+	case MID_CENTER:
 	{
 		constexpr float xOffset = 0.0f;
 		constexpr float yOffset = 0.0f;
@@ -106,7 +106,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case MidRight:
+	case MID_RIGHT:
 	{
 		constexpr float xOffset = 1.0f;
 		constexpr float yOffset = 0.0f;
@@ -115,7 +115,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case BottomLeft:
+	case BOTTOM_LEFT:
 	{
 		constexpr float xOffset = -1.0f;
 		constexpr float yOffset = -1.0f;
@@ -124,7 +124,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case BottomCentre:
+	case BOTTOM_CENTER:
 	{
 		constexpr float xOffset = 0.0f;
 		constexpr float yOffset = -1.0f;
@@ -133,7 +133,7 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	case BottomRight:
+	case BOTTOM_RIGHT:
 	{
 		constexpr float xOffset = 1.0f;
 		constexpr float yOffset = -1.0f;

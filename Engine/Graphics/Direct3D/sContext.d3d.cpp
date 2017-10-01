@@ -26,7 +26,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::sContext::Initialize( const sInitializationParameters& i_initializationParameters )
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	windowBeingRenderedTo = i_initializationParameters.mainWindow;
 
@@ -51,7 +51,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	if (renderTargetView)
 	{
@@ -63,15 +63,15 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 		depthStencilView->Release();
 		depthStencilView = nullptr;
 	}
-	if ( direct3dImmediateContext )
+	if ( direct3DImmediateContext )
 	{
-		direct3dImmediateContext->Release();
-		direct3dImmediateContext = nullptr;
+		direct3DImmediateContext->Release();
+		direct3DImmediateContext = nullptr;
 	}
-	if ( direct3dDevice )
+	if ( direct3DDevice )
 	{
-		direct3dDevice->Release();
-		direct3dDevice = nullptr;
+		direct3DDevice->Release();
+		direct3DDevice = nullptr;
 	}
 	if ( swapChain )
 	{
@@ -89,7 +89,7 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 
 void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_color) const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3dImmediateContext;
+	auto* const direct3dImmediateContext = g_context.direct3DImmediateContext;
 	EAE6320_ASSERT(direct3dImmediateContext);
 	{
 		EAE6320_ASSERT(renderTargetView);
@@ -102,7 +102,7 @@ void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_
 
 void eae6320::Graphics::sContext::BufferSwap() const
 {
-	auto* const swapChain = sContext::g_context.swapChain;
+	auto* const swapChain = g_context.swapChain;
 	EAE6320_ASSERT(swapChain);
 	constexpr unsigned int swapImmediately = 0;
 	constexpr unsigned int presentNextFrame = 0;
@@ -163,10 +163,10 @@ namespace
 		D3D_FEATURE_LEVEL highestSupportedFeatureLevel;
 		const auto d3dResult = D3D11CreateDeviceAndSwapChain( useDefaultAdapter, useHardwareRendering, dontUseSoftwareRendering,
 			flags, useDefaultFeatureLevels, requestedFeatureLevelCount, sdkVersion, &swapChainDescription,
-			&g_context.swapChain, &g_context.direct3dDevice, &highestSupportedFeatureLevel, &g_context.direct3dImmediateContext );
+			&g_context.swapChain, &g_context.direct3DDevice, &highestSupportedFeatureLevel, &g_context.direct3DImmediateContext );
 		if ( SUCCEEDED( d3dResult ) )
 		{
-			return eae6320::Results::Success;
+			return eae6320::Results::success;
 		}
 		else
 		{
@@ -178,15 +178,15 @@ namespace
 
 	eae6320::cResult InitializeViews(const unsigned int i_resolutionWidth, const unsigned int i_resolutionHeight)
 	{
-		auto result = eae6320::Results::Success;
+		auto result = eae6320::Results::success;
 
 		ID3D11Texture2D* backBuffer = nullptr;
 		ID3D11Texture2D* depthBuffer = nullptr;
 
 		auto& g_context = eae6320::Graphics::sContext::g_context;
-		auto* const direct3dDevice = g_context.direct3dDevice;
+		auto* const direct3dDevice = g_context.direct3DDevice;
 		EAE6320_ASSERT(direct3dDevice);
-		auto* const direct3dImmediateContext = g_context.direct3dImmediateContext;
+		auto* const direct3dImmediateContext = g_context.direct3DImmediateContext;
 		EAE6320_ASSERT(direct3dImmediateContext);
 
 		// Create a "render target view" of the back buffer

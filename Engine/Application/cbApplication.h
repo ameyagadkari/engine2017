@@ -53,7 +53,7 @@ namespace eae6320
 		{
 			// Create a platform-specific struct
 			// that can be passed to functions in a platform-independent way
-			tApplication::sEntryPointParameters entryPointParameters =
+			typename tApplication::sEntryPointParameters entryPointParameters =
 			{
 #if defined( EAE6320_PLATFORM_WINDOWS )
 				i_thisInstanceOfTheApplication, i_commandLineArguments, i_initialWindowDisplayState
@@ -79,7 +79,7 @@ namespace eae6320
 				// The specific instance of the application
 				// (if you have two instances of your game running simultaneously
 				// this handle can differentiate between them)
-				const HINSTANCE applicationInstance = NULL;
+				const HINSTANCE applicationInstance = nullptr;
 				// The arguments in the command to start the program
 				const char* const commandLineArguments = nullptr;
 				// The requested initial state of the window
@@ -134,7 +134,7 @@ namespace eae6320
 			// The default value is a relatively large amount of time;
 			// you may want to experiement with smaller values in your application
 			// and observe the change in responsiveness or simulation accuracy.
-			virtual float GetSimulationUpdatePeriod_inSeconds() const { return 1.0f / 15.0f; }
+			virtual float GetSimulationUpdatePeriodInSeconds() const { return 1.0f / 15.0f; }
 
 			// Run
 			//----
@@ -232,8 +232,6 @@ namespace eae6320
 			// Implementation
 			//===============
 
-		private:
-
 			// Run
 			//----
 
@@ -241,29 +239,29 @@ namespace eae6320
 			// and it returns once the application is finished and ready to exit.
 			// It runs on the original process thread
 			// and interacts with the operating system to decide when the graphics system can render a frame.
-			cResult RenderFramesWhileWaitingForApplicationToExit( int& o_exitCode );
+			static cResult RenderFramesWhileWaitingForApplicationToExit( int& o_exitCode );
 
 			// The main application loop.
 			// It is called from its own thread (m_applicationLoopThread)
 			// distinct from the main process thread (that is used to render).
 			void UpdateUntilExit();
-			static void EntryPoint_applicationLoopThread( void* const io_application );
+			static void EntryPointApplicationLoopThread( void* const io_application );
 
-			cResult Exit_platformSpecific( const int i_exitCode );
+			cResult ExitPlatformSpecific( const int i_exitCode );
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize_all( const sEntryPointParameters& i_entryPointParameters );	// This initializes everything
-				cResult Initialize_base( const sEntryPointParameters& i_entryPointParameters );	// This initializes just this base class
-				cResult Initialize_engine();	// This initializes all of the engine systems
+			cResult InitializeAll( const sEntryPointParameters& i_entryPointParameters );	// This initializes everything
+				cResult InitializeBase( const sEntryPointParameters& i_entryPointParameters );	// This initializes just this base class
+				cResult InitializeEngine();	// This initializes all of the engine systems
 
-			cResult PopulateGraphicsInitializationParameters( Graphics::sInitializationParameters& o_initializationParameters );
-			cResult PopulateUserOutputInitializationParameters( UserOutput::sInitializationParameters& o_initializationParameters );
+			cResult PopulateGraphicsInitializationParameters( Graphics::sInitializationParameters& o_initializationParameters ) const;
+			cResult PopulateUserOutputInitializationParameters( UserOutput::sInitializationParameters& o_initializationParameters ) const;
 
-			cResult CleanUp_all();	// This cleans up everything
-				cResult CleanUp_base();	// This cleans up just this base class
-				cResult CleanUp_engine();	// This cleans up all of the engine systems
+			cResult CleanUpAll();	// This cleans up everything
+				cResult CleanUpBase();	// This cleans up just this base class
+				cResult CleanUpEngine();	// This cleans up all of the engine systems
 
 			// #include the platform-specific class declarations
 #if defined( EAE6320_PLATFORM_WINDOWS )

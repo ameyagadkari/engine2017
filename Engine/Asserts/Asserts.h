@@ -20,7 +20,7 @@
 
 #include "Configuration.h"
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 
 	#include <sstream>
 
@@ -33,14 +33,14 @@
 // Helper Function Declarations
 //=============================
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 	namespace eae6320
 	{
 		namespace Asserts
 		{
 			bool ShowMessageIfAssertionIsFalseAndReturnWhetherToBreak( const unsigned int i_lineNumber, const char* const i_file,
 				bool& io_shouldThisAssertBeIgnoredInTheFuture, const char* const i_message, ... );
-			bool ShowMessageIfAssertionIsFalseAndReturnWhetherToBreak_platformSpecific(
+			bool ShowMessageIfAssertionIsFalseAndReturnWhetherToBreakPlatformSpecific(
 				std::ostringstream& io_message, bool& io_shouldThisAssertBeIgnoredInTheFuture );
 		}
 	}
@@ -49,7 +49,7 @@
 // Interface
 //==========
 
-#ifdef EAE6320_ASSERTS_AREENABLED
+#ifdef EAE6320_ASSERTS_ARE_ENABLED
 	// Breaking could be defined in Asserts.cpp and avoid any platform-specific code here in the header file,
 	// but then the debugger would break in Asserts.cpp rather than in the file where the failed assert is
 	#if defined( EAE6320_PLATFORM_WINDOWS )

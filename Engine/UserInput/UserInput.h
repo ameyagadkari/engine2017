@@ -24,7 +24,7 @@ namespace eae6320
 
 		// For special keys use one of the KeyCodes enumerations below
 
-		bool IsKeyPressed( const uint_fast8_t i_keyCode );
+		bool IsKeyPressed(const uint_fast8_t i_keyCode);
 		bool IsKeyPressedOnce(const uint_fast8_t i_keyCode);
 		bool IsKeyPressedAndReleased(const uint_fast8_t i_keyCode);
 
@@ -33,30 +33,30 @@ namespace eae6320
 			// These values are what the Windows-specific function expects, for simplicity
 			enum eKeyCodes : uint_fast8_t
 			{
-				Left = 0x25,
-				Up = 0x26,
-				Right = 0x27,
-				Down = 0x28,
+				LEFT = 0x25,
+				UP = 0x26,
+				RIGHT = 0x27,
+				DOWN = 0x28,
 
-				Space = 0x20,
+				SPACE = 0x20,
 
-				Escape = 0x1b,
+				ESCAPE = 0x1b,
 
-				Shift = 0x10,
-				Control = 0x11,
-				Alt = 0x12,
+				SHIFT = 0x10,
+				CONTROL = 0x11,
+				ALT = 0x12,
 
-				Tab = 0x09,
-				CapsLock = 0x14,
+				TAB = 0x09,
+				CAPS_LOCK = 0x14,
 
-				BackSpace = 0x08,
-				Enter = 0x0d,
-				Delete = 0x2e,
+				BACK_SPACE = 0x08,
+				ENTER = 0x0d,
+				DELETE_BUTTON = 0x2e,
 
-				PageUp = 0x21,
-				PageDown = 0x22,
-				End = 0x23,
-				Home = 0x24,
+				PAGE_UP = 0x21,
+				PAGE_DOWN = 0x22,
+				END = 0x23,
+				HOME = 0x24,
 
 				F1 = 0x70,
 				F2 = 0x71,

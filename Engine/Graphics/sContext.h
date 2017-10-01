@@ -11,8 +11,6 @@
 // Include Files
 //==============
 
-#include "Configuration.h"
-
 #include "Graphics.h"
 
 #include <Engine/Results/Results.h>
@@ -60,15 +58,15 @@ namespace eae6320
 			//=====
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HWND windowBeingRenderedTo = NULL;
+			HWND windowBeingRenderedTo = nullptr;
 #endif
 
 #if defined( EAE6320_PLATFORM_D3D )
 			// The device is an interface representing a graphics device (i.e. a graphics card)
-			ID3D11Device* direct3dDevice = nullptr;
+			ID3D11Device* direct3DDevice = nullptr;
 			// A device's immediate context can only be used by the main/render thread
 			// (it is not thread safe)
-			ID3D11DeviceContext* direct3dImmediateContext = nullptr;
+			ID3D11DeviceContext* direct3DImmediateContext = nullptr;
 			// A swap chain is like an array (a "chain") of textures
 			// that are rendered to in sequence,
 			// with a single one being currently displayed

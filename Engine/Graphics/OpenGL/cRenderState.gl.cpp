@@ -89,7 +89,7 @@ void eae6320::Graphics::cRenderState::Bind() const
 
 eae6320::cResult eae6320::Graphics::cRenderState::CleanUp()
 {
-	return Results::Success;
+	return Results::success;
 }
 
 // Implementation
@@ -101,5 +101,5 @@ eae6320::cResult eae6320::Graphics::cRenderState::CleanUp()
 eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 {
 	// OpenGL uses the bits directly at binding time
-	return Results::Success;
+	return Results::success;
 }

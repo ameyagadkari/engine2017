@@ -1,6 +1,7 @@
 // Include Files
 //==============
 
+#include "Configuration.h"
 #include "Logging.h"
 
 #include <cstdarg>
@@ -73,7 +74,7 @@ eae6320::cResult eae6320::Logging::OutputMessage( const char* const i_message, .
 		result = ::OutputMessage( i_message, insertions );
 		va_end( insertions );
 	}
-#ifdef EAE6320_LOGGING_FLUSHBUFFERAFTEREVERYMESSAGE
+#ifdef EAE6320_LOGGING_FLUSH_BUFFER_AFTER_EVERY_MESSAGE
 	s_logger.FlushLog();
 #endif
 	return result;
@@ -123,15 +124,12 @@ namespace
 			// Write the message to the file
 			m_outputStream << i_message << "\n";
 
-			return eae6320::Results::Success;
+			return eae6320::Results::success;
 		}
-		else
-		{
-			return eae6320::Results::Failure;
-		}
+		return eae6320::Results::Failure;
 	}
 
-	inline void cLogging::FlushLog()
+	void cLogging::FlushLog()
 	{
 		m_outputStream.flush();
 	}
@@ -146,72 +144,60 @@ namespace
 		{
 			if ( m_outputStream.is_open() )
 			{
-				return eae6320::Results::Success;
+				return eae6320::Results::success;
 			}
-			else
+			if ( !s_hasTheLogFileAlreadyBeenWrittenTo )
 			{
-				if ( !s_hasTheLogFileAlreadyBeenWrittenTo )
+				EAE6320_ASSERTF( strlen( EAE6320_LOGGING_PATH ) > 0, "The path to log to is empty" );
+				m_outputStream.open( EAE6320_LOGGING_PATH );
+				if ( m_outputStream.is_open() )
 				{
-					EAE6320_ASSERTF( strlen( EAE6320_LOGGING_PATH ) > 0, "The path to log to is empty" );
-					m_outputStream.open( EAE6320_LOGGING_PATH );
-					if ( m_outputStream.is_open() )
-					{
-						s_hasTheLogFileAlreadyBeenWrittenTo = true;
-						eae6320::Logging::OutputMessage( "Opened log file \"%s\"", EAE6320_LOGGING_PATH );
-						FlushLog();
-						return eae6320::Results::Success;
-					}
-					else
-					{
-						return eae6320::Results::Failure;
-					}
+					s_hasTheLogFileAlreadyBeenWrittenTo = true;
+					eae6320::Logging::OutputMessage( "Opened log file \"%s\"", EAE6320_LOGGING_PATH );
+					FlushLog();
+					return eae6320::Results::success;
 				}
-				else
-				{
-					m_outputStream.open( EAE6320_LOGGING_PATH, std::ofstream::app );
-					const auto result = m_outputStream.is_open() ? eae6320::Results::Success : eae6320::Results::Failure;
-					EAE6320_ASSERT( result );
-					if ( result )
-					{
-						eae6320::Logging::OutputMessage( "Re-opened log file" );
-						FlushLog();
-					}
-					return result;
-				}
+				return eae6320::Results::Failure;
 			}
-		}
-		else
-		{
-			// If the logger has already been destroyed it needs to be re-constructed in the same memory location
-			{
-				new ( this ) cLogging;
-				// Register the CleanUp() function so that it still gets called when the application exits
-				// (the destructor won't be called automatically when using placement new)
-				{
-					auto result = atexit( CleanUp );
-					if ( result == 0 )
-					{
-						s_hasTheLoggerBeenDestroyed = false;
-					}
-					else
-					{
-						EAE6320_ASSERTF( false, "Calling atexit() to register logging clean up on a revived logger failed with a return value of %i", result );
-						CleanUp();
-						return eae6320::Results::Failure;
-					}
-				}
-			}
-			// Re-open the file
 			m_outputStream.open( EAE6320_LOGGING_PATH, std::ofstream::app );
-			const auto result = m_outputStream.is_open() ? eae6320::Results::Success : eae6320::Results::Failure;
+			const auto result = m_outputStream.is_open() ? eae6320::Results::success : eae6320::Results::Failure;
 			EAE6320_ASSERT( result );
 			if ( result )
 			{
-				eae6320::Logging::OutputMessage( "Re-opened log file after it had been destroyed" );
+				eae6320::Logging::OutputMessage( "Re-opened log file" );
 				FlushLog();
 			}
 			return result;
 		}
+		// If the logger has already been destroyed it needs to be re-constructed in the same memory location
+		{
+			new ( this ) cLogging;
+			// Register the CleanUp() function so that it still gets called when the application exits
+			// (the destructor won't be called automatically when using placement new)
+			{
+				auto result = atexit( CleanUp );
+				if ( result == 0 )
+				{
+					s_hasTheLoggerBeenDestroyed = false;
+				}
+				else
+				{
+					EAE6320_ASSERTF( false, "Calling atexit() to register logging clean up on a revived logger failed with a return value of %i", result );
+					CleanUp();
+					return eae6320::Results::Failure;
+				}
+			}
+		}
+		// Re-open the file
+		m_outputStream.open( EAE6320_LOGGING_PATH, std::ofstream::app );
+		const auto result = m_outputStream.is_open() ? eae6320::Results::success : eae6320::Results::Failure;
+		EAE6320_ASSERT( result );
+		if ( result )
+		{
+			eae6320::Logging::OutputMessage( "Re-opened log file after it had been destroyed" );
+			FlushLog();
+		}
+		return result;
 	}
 
 	void cLogging::CleanUp()
@@ -223,7 +209,7 @@ namespace
 				s_logger.FlushLog();
 			}
 			s_logger.m_outputStream.close();
-			s_cleanUpResult = !s_logger.m_outputStream.is_open() ? eae6320::Results::Success : eae6320::Results::Failure;
+			s_cleanUpResult = !s_logger.m_outputStream.is_open() ? eae6320::Results::success : eae6320::Results::Failure;
 			EAE6320_ASSERTF( s_cleanUpResult, "Log file wasn't closed" );
 			if ( !s_cleanUpResult )
 			{
@@ -232,7 +218,7 @@ namespace
 			return;
 		}
 
-		s_cleanUpResult = eae6320::Results::Success;
+		s_cleanUpResult = eae6320::Results::success;
 	}
 
 	cLogging::~cLogging()
@@ -258,27 +244,21 @@ namespace
 			{
 				return s_logger.OutputMessage( buffer );
 			}
-			else
-			{
-				EAE6320_ASSERTF( false, "The internal logging buffer of size %u was not big enough to hold the formatted message of length %i",
-					bufferSize, formattingResult + 1 );
-				std::ostringstream errorMessage;
-				errorMessage << "FORMATTING ERROR! (The internal logging buffer of size " << bufferSize
-					<< " was not big enough to hold the formatted message of length " << ( formattingResult + 1 ) << ".)"
-					" Cut-off message is:\n\t" << buffer;
-				s_logger.OutputMessage( errorMessage.str().c_str() );
-				// Return failure regardless of whether the unformatted message was output
-				return eae6320::Results::Failure;
-			}
-		}
-		else
-		{
-			EAE6320_ASSERTF( false, "An encoding error occurred while logging the message \"%s\"", i_message );
+			EAE6320_ASSERTF( false, "The internal logging buffer of size %u was not big enough to hold the formatted message of length %i",
+				bufferSize, formattingResult + 1 );
 			std::ostringstream errorMessage;
-			errorMessage << "ENCODING ERROR! Unformatted message was:\n\t" << i_message;
+			errorMessage << "FORMATTING ERROR! (The internal logging buffer of size " << bufferSize
+				<< " was not big enough to hold the formatted message of length " << ( formattingResult + 1 ) << ".)"
+				" Cut-off message is:\n\t" << buffer;
 			s_logger.OutputMessage( errorMessage.str().c_str() );
 			// Return failure regardless of whether the unformatted message was output
 			return eae6320::Results::Failure;
 		}
+		EAE6320_ASSERTF( false, "An encoding error occurred while logging the message \"%s\"", i_message );
+		std::ostringstream errorMessage;
+		errorMessage << "ENCODING ERROR! Unformatted message was:\n\t" << i_message;
+		s_logger.OutputMessage( errorMessage.str().c_str() );
+		// Return failure regardless of whether the unformatted message was output
+		return eae6320::Results::Failure;
 	}
 }

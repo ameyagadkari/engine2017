@@ -55,7 +55,7 @@ double eae6320::Time::ConvertRatePerSecondToRatePerTick( const double i_rate_per
 
 eae6320::cResult eae6320::Time::Initialize()
 {
-	auto result = Results::Success;
+	auto result = Results::success;
 
 	// Get the frequency of the high-resolution performance counter
 	{
@@ -95,5 +95,5 @@ OnExit:
 
 eae6320::cResult eae6320::Time::CleanUp()
 {
-	return Results::Success;
+	return Results::success;
 }

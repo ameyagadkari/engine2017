@@ -28,10 +28,10 @@ namespace eae6320
 
 			struct sHiddenWindowInfo
 			{
-				HWND window = NULL;
+				HWND window = nullptr;
 				ATOM windowClass = NULL;
-				HDC deviceContext = NULL;
-				HGLRC openGlRenderingContext = NULL;
+				HDC deviceContext = nullptr;
+				HGLRC openGlRenderingContext = nullptr;
 			};
 
 			// It is ok if the HINSTANCE that is passed to CreateHiddenContextWindow() is NULL,

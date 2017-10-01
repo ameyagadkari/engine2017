@@ -13,7 +13,7 @@ void eae6320::Concurrency::cMutex::Lock()
 
 eae6320::cResult eae6320::Concurrency::cMutex::LockIfPossible()
 {
-	return ( TryAcquireSRWLockExclusive( &m_srwLock ) != FALSE ) ? Results::Success : Results::Failure;
+	return ( TryAcquireSRWLockExclusive( &m_srwLock ) != FALSE ) ? Results::success : Results::Failure;
 }
 
 void eae6320::Concurrency::cMutex::Unlock()
