@@ -10,6 +10,20 @@ This file manages the postion and orientation of 2D game entities such as sprite
 
 #include <cstdint>
 
+// Forward Declarations
+//=====================
+
+namespace eae6320
+{
+	namespace Graphics
+	{
+		namespace SpriteHelperStructs
+		{
+			struct sScreenPosition;
+		}
+	}
+}
+
 // Anchor Types
 //=============
 
@@ -20,25 +34,19 @@ namespace eae6320
 		// We define nine anchor positions on the screen
 		enum eAnchor : uint8_t
 		{
-			TOP_LEFT = 0,
-			TOP_CENTER = 1 << 0,
-			TOP_RIGHT = 1 << 1,
-			MID_LEFT = 1 << 2,
-			MID_CENTER = 1 << 3,
-			MID_RIGHT = 1 << 4,
-			BOTTOM_LEFT = 1 << 5,
-			BOTTOM_CENTER = 1 << 6,
-			BOTTOM_RIGHT = 1 << 7,
-		};
-		// Helper struct to store screen position
-		struct sScreenPosition
-		{
-			float left, right, top, bottom;
+			UNKNOWN,
+			TOP_LEFT,
+			TOP_CENTER,
+			TOP_RIGHT,
+			MID_LEFT,
+			MID_CENTER,
+			MID_RIGHT,
+			BOTTOM_LEFT,
+			BOTTOM_CENTER,
+			BOTTOM_RIGHT,
 		};
 	}
 }
-
-
 
 namespace eae6320
 {
@@ -63,24 +71,19 @@ namespace eae6320
 			// Access
 			//-------
 
-			void GetScreenPosition(sScreenPosition& o_screenPosition) const { o_screenPosition = screenPosition; }
+			void GetScreenPosition(Graphics::SpriteHelperStructs::sScreenPosition& o_screenPosition) const;
 
 			// Data
 			//=====
 
 		private:
-			sScreenPosition screenPosition;
+
 			struct
 			{
 				int16_t x, y;
 			}pixelCoordinates;
 			uint16_t width, height;
 			eAnchor anchor;
-
-			// Initialization / Clean Up
-			//--------------------------
-
-			void GenerateNewScreenCoordinates();
 		};
 	}
 }

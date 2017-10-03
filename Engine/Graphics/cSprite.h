@@ -1,17 +1,20 @@
+/*
+	A sprite is a 2d quad on screen
+	(usually a used for UI elements of a game, unless its a 2d game)
+ */
+
 #ifndef EAE6320_GRAPHICS_CSPRITE_H
 #define EAE6320_GRAPHICS_CSPRITE_H
 
-// Include Files
-//==============
+ // Include Files
+ //==============
 
 #include <Engine/Assets/ReferenceCountedAssets.h>
-
-#include <Engine/Assets/cHandle.h>
-#include <Engine/Assets/cManager.h>
 #include <Engine/Results/Results.h>
+#include <Engine/Math/cHalf.h>
 
 #ifdef EAE6320_PLATFORM_GL
-	#include "OpenGL/Includes.h"
+#include "OpenGL/Includes.h"
 #endif
 
 // Forward Declarations
@@ -26,6 +29,7 @@ namespace eae6320
 {
 	namespace Transform
 	{
+		enum eAnchor : uint8_t;
 		struct sRectTransform;
 	}
 }
@@ -43,15 +47,11 @@ namespace eae6320
 			//==========
 
 		public:
-			// Assets
-			//-------
-			using Handle = Assets::cHandle<cSprite>;
-			static Assets::cManager<cSprite> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cSprite*& o_sprite, const Transform::sRectTransform& i_rectTransform);
+			static cResult Load(cSprite*& o_sprite, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cSprite);
 
@@ -86,7 +86,6 @@ namespace eae6320
 			// Implementation
 			//===============
 
-		private:
 			// Initialization / Clean Up
 			//--------------------------
 

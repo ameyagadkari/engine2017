@@ -35,6 +35,7 @@
     <ClInclude Include="ColorFormats.h" />
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="TextureFormats.h" />
+    <ClInclude Include="SpriteHelperStructs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp">

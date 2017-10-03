@@ -9,13 +9,12 @@
 #include <Engine/Logging/Logging.h>
 #include <Engine/Graphics/Graphics.h>
 
-
 #include <vector>
 
 namespace
 {
 	bool s_isPaused = false;
-	std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite::Handle>> s_effectSpritePairs;
+	std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite *const>> s_effectSpritePairs;
 }
 
 // Inherited Implementation
@@ -83,9 +82,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 256, 256, Transform::MID_CENTER);
-		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite1_path", sprite, spriteLocation))))
+		Graphics::cSprite* sprite = nullptr;
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 256, 256, Transform::MID_CENTER))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -99,9 +97,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TOP_LEFT);
-		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite2_path", sprite, spriteLocation))))
+		Graphics::cSprite* sprite = nullptr;
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::TOP_LEFT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -115,9 +112,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BOTTOM_RIGHT);
-		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite3_path", sprite, spriteLocation))))
+		Graphics::cSprite* sprite = nullptr;
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::BOTTOM_RIGHT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -131,9 +127,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::TOP_RIGHT);
-		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite4_path", sprite, spriteLocation))))
+		Graphics::cSprite* sprite = nullptr;
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::TOP_RIGHT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -147,9 +142,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		Graphics::cSprite::Handle sprite;
-		Transform::sRectTransform spriteLocation(0, 0, 64, 64, Transform::BOTTOM_LEFT);
-		if (!((result = Graphics::cSprite::s_manager.Load("fake_sprite5_path", sprite, spriteLocation))))
+		Graphics::cSprite* sprite = nullptr;
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::BOTTOM_LEFT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -181,15 +175,7 @@ eae6320::cResult eae6320::cExampleGame::CleanUp()
 
 		// Clean up sprite
 		{
-			const auto localResult = Graphics::cSprite::s_manager.Release(effectSpritePair.second);
-			if (!localResult)
-			{
-				EAE6320_ASSERT(false);
-				if (result)
-				{
-					result = localResult;
-				}
-			}
+			effectSpritePair.second->DecrementReferenceCount();
 		}
 	}
 	s_effectSpritePairs.clear();

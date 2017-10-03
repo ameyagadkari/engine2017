@@ -37,7 +37,8 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 			goto OnExit;
 		}
 	}*/
-	// Allocate a new shader
+
+	// Allocate a new effect
 	{
 		newEffect = new (std::nothrow) cEffect();
 		if (!newEffect)

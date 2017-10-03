@@ -36,7 +36,7 @@ namespace eae6320
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor i_clearColor);
-		void SubmitEffectSpritePair(cEffect::Handle i_effectHandle, cSprite::Handle i_spriteHandle);
+		void SubmitEffectSpritePair(const cEffect::Handle i_effectHandle, cSprite * const i_sprite);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything

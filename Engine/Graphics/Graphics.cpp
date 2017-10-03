@@ -35,7 +35,7 @@ namespace
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
-		std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite::Handle>> effectSpritePairs_perFrame;
+		std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite *const>> effectSpritePairs_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -78,12 +78,12 @@ void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor i_clearColor
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
-void eae6320::Graphics::SubmitEffectSpritePair(cEffect::Handle i_effectHandle, cSprite::Handle i_spriteHandle)
+void eae6320::Graphics::SubmitEffectSpritePair(const cEffect::Handle i_effectHandle, cSprite * const i_sprite)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
 	cEffect::s_manager.Get(i_effectHandle)->IncrementReferenceCount();
-	cSprite::s_manager.Get(i_spriteHandle)->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.push_back(std::make_pair(i_effectHandle, i_spriteHandle));
+	i_sprite->IncrementReferenceCount();
+	s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.push_back(std::make_pair(i_effectHandle, i_sprite));
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -148,7 +148,7 @@ void eae6320::Graphics::RenderFrame()
 	for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
 	{
 		cEffect::s_manager.Get(effectSpritePair.first)->Bind();
-		cSprite::s_manager.Get(effectSpritePair.second)->Draw();
+		effectSpritePair.second->Draw();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -164,7 +164,7 @@ void eae6320::Graphics::RenderFrame()
 		for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
 		{
 			cEffect::s_manager.Get(effectSpritePair.first)->DecrementReferenceCount();
-			cSprite::s_manager.Get(effectSpritePair.second)->DecrementReferenceCount();
+			effectSpritePair.second->DecrementReferenceCount();
 		}
 		s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.clear();
 	}
@@ -175,17 +175,23 @@ void eae6320::Graphics::RenderFrame()
 
 eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& i_initializationParameters)
 {
-	auto result = Results::success;
+	cResult result;
 
 	// Initialize the platform-specific context
-	if (!(result = sContext::g_context.Initialize(i_initializationParameters)))
+	if (!((result = sContext::g_context.Initialize(i_initializationParameters))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	// Initialize the asset managers
 	{
-		if (!(result = cShader::s_manager.Initialize()))
+		if (!((result = cShader::s_manager.Initialize())))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+
+		if (!((result = cEffect::s_manager.Initialize())))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -194,7 +200,7 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 
 	// Initialize the platform-independent graphics objects
 	{
-		if (result = s_constantBuffer_perFrame.Initialize())
+		if ((result = s_constantBuffer_perFrame.Initialize()))
 		{
 			// There is only a single per-frame constant buffer that is re-used
 			// and so it can be bound at initialization time and never unbound
@@ -207,7 +213,7 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (result = s_samplerState.Initialize())
+		if ((result = s_samplerState.Initialize()))
 		{
 			// There is only a single sampler state that is re-used
 			// and so it can be bound at initialization time and never unbound
@@ -221,13 +227,13 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 	}
 	// Initialize the events
 	{
-		if (!(result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED)))
+		if (!((result = s_whenAllDataHasBeenSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		if (!(result = s_whenDataForANewFrameCanBeSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED,
-			Concurrency::EventState::SIGNALED)))
+		if (!((result = s_whenDataForANewFrameCanBeSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED,
+		                                                                                     Concurrency::EventState::SIGNALED))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -243,13 +249,14 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 {
 	auto result = Results::success;
 	{
+		// Cleaning up the data submitted by application thread
 		if (!s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.empty())
 		{
 			for (auto& effectSpritePair : s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame)
 			{
 				// Clean up effect
 				{
-					const auto localResult = Graphics::cEffect::s_manager.Release(effectSpritePair.first);
+					const auto localResult = cEffect::s_manager.Release(effectSpritePair.first);
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -262,26 +269,20 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 				// Clean up sprite
 				{
-					const auto localResult = Graphics::cSprite::s_manager.Release(effectSpritePair.second);
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
+					effectSpritePair.second->DecrementReferenceCount();
 				}
 			}
 			s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.clear();
 		}
+
+		// Cleaning up the data rendered by render thread
 		if (!s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.empty())
 		{
 			for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
 			{
 				// Clean up effect
 				{
-					const auto localResult = Graphics::cEffect::s_manager.Release(effectSpritePair.first);
+					const auto localResult = cEffect::s_manager.Release(effectSpritePair.first);
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -294,20 +295,13 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 				// Clean up sprite
 				{
-					const auto localResult = Graphics::cSprite::s_manager.Release(effectSpritePair.second);
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
+					effectSpritePair.second->DecrementReferenceCount();
 				}
 			}
 			s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.clear();
 		}
 	}
+
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
 		if (!localResult)

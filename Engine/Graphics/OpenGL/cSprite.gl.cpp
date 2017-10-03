@@ -3,6 +3,7 @@
 
 #include "../cSprite.h"
 #include "../VertexFormats.h"
+#include "../SpriteHelperStructs.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
@@ -13,7 +14,8 @@
 
 namespace
 {
-	// Since a sprite is always a quad
+	// Since a sprite is always a quad the vertex count will always be 4
+
 	constexpr unsigned int s_vertexCount = 4;
 }
 
@@ -84,7 +86,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	{
 		VertexFormats::sSprite vertexData[s_vertexCount];
 		{
-			Transform::sScreenPosition screenPosition;
+			SpriteHelperStructs::sScreenPosition screenPosition;
 			i_rectTransform.GetScreenPosition(screenPosition);
 			{
 				// Bottom Right

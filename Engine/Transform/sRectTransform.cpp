@@ -4,15 +4,17 @@
 #include "sRectTransform.h"
 
 #include <Engine/UserSettings/UserSettings.h>
+#include <Engine/Graphics/SpriteHelperStructs.h>
+#include "Engine/Asserts/Asserts.h"
 
 // Static Data Initialization
 //===========================
 
 namespace
 {
-	auto is_initialized = false;
-	uint16_t s_screenWidth = 0;	
-	uint16_t s_screenHeight = 0;
+	auto s_isInitialized = false;
+	float s_widthMultiplier = 0.0f;
+	float s_heightMultiplier = 0.0f;
 }
 
 // Interface
@@ -22,13 +24,12 @@ namespace
 //--------------------------
 
 eae6320::Transform::sRectTransform::sRectTransform() :
-	width(100),
-	height(100),
-	anchor(TOP_LEFT)
+	width(0),
+	height(0),
+	anchor(UNKNOWN)
 {
 	pixelCoordinates.x = 0;
 	pixelCoordinates.y = 0;
-	GenerateNewScreenCoordinates();
 }
 
 eae6320::Transform::sRectTransform::sRectTransform(
@@ -43,29 +44,30 @@ eae6320::Transform::sRectTransform::sRectTransform(
 {
 	pixelCoordinates.x = i_x;
 	pixelCoordinates.y = i_y;
-	GenerateNewScreenCoordinates();
 }
 
-// Initialization / Clean Up
-//--------------------------
+// Access
+//-------
 
-void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
+void eae6320::Transform::sRectTransform::GetScreenPosition(Graphics::SpriteHelperStructs::sScreenPosition& o_screenPosition) const
 {
-	if (!is_initialized)
+	if (!s_isInitialized)
 	{
-		UserSettings::GetDesiredInitialResolutionWidth(s_screenWidth);
-		UserSettings::GetDesiredInitialResolutionHeight(s_screenHeight);
-		is_initialized = true;
+		uint16_t screenWidth, screenHeight;
+		UserSettings::GetDesiredInitialResolutionWidth(screenWidth);
+		UserSettings::GetDesiredInitialResolutionHeight(screenHeight);
+		EAE6320_ASSERT(screenWidth);
+		EAE6320_ASSERT(screenHeight);
+		s_widthMultiplier = 2.0f / screenWidth;
+		s_heightMultiplier = 2.0f / screenHeight;
+		s_isInitialized = true;
 	}
-
-	const auto widthMultiplier = 2.0f / s_screenWidth;
-	const auto heightMultiplier = 2.0f / s_screenHeight;
 
 	// Calculate screen coordinates according to anchor
 
 #define EAE6320_CALCULATE_SCREEN_COORDINATES( i_xOffset, i_yOffset, i_widthModifier, i_heightModifier )		\
-	screenPosition.left = ((pixelCoordinates.x - (width * i_widthModifier))*widthMultiplier) + i_xOffset;	\
-	screenPosition.top = (pixelCoordinates.y + (height * i_heightModifier))*heightMultiplier + i_yOffset;
+	o_screenPosition.left = ((pixelCoordinates.x - (width * i_widthModifier))*s_widthMultiplier) + i_xOffset;	\
+	o_screenPosition.top = (pixelCoordinates.y + (height * i_heightModifier))*s_heightMultiplier + i_yOffset;
 
 
 	switch (anchor)
@@ -151,11 +153,13 @@ void eae6320::Transform::sRectTransform::GenerateNewScreenCoordinates()
 		EAE6320_CALCULATE_SCREEN_COORDINATES(xOffset, yOffset, widthModifier, heightModifier)
 	}
 	break;
-	default:
-		break;
+	default:;
 	}
-	screenPosition.right = screenPosition.left + (width*widthMultiplier);
-	screenPosition.bottom = screenPosition.top - (height*heightMultiplier);
+	if (anchor != UNKNOWN)
+	{
+		o_screenPosition.right = o_screenPosition.left + (width*s_widthMultiplier);
+		o_screenPosition.bottom = o_screenPosition.top - (height*s_heightMultiplier);
+	}
 #undef EAE6320_CALCULATE_SCREEN_COORDINATES
 
 }

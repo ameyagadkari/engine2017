@@ -6,6 +6,7 @@
 #include "Includes.h"
 #include "../sContext.h"
 #include "../VertexFormats.h"
+#include "../SpriteHelperStructs.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
@@ -17,7 +18,8 @@
 
 namespace
 {
-	// Since a sprite is always a quad
+	// Since a sprite is always a quad the vertex count will always be 4
+
 	constexpr unsigned int s_vertexCount = 4;
 }
 
@@ -28,7 +30,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
 {
-	auto result = Results::success;
+	cResult result;
 
 	auto* const direct3DDevice = sContext::g_context.direct3DDevice;
 	EAE6320_ASSERT(direct3DDevice);
@@ -90,7 +92,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	// Vertex Buffer
 	{
 		VertexFormats::sSprite vertexData[s_vertexCount];
-		Transform::sScreenPosition screenPosition;
+		SpriteHelperStructs::sScreenPosition screenPosition;
 		i_rectTransform.GetScreenPosition(screenPosition);
 		{
 			// Bottom Right
