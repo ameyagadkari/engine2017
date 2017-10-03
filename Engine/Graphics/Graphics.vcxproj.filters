@@ -96,6 +96,7 @@
     <ClCompile Include="OpenGL\cTexture.gl.cpp">
       <Filter>OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteHelperStructs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />

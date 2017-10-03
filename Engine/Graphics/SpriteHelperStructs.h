@@ -42,11 +42,27 @@ namespace eae6320
 					top(Math::cHalf::MakeHalfFromFloat(1.0f - i_top)),
 					bottom(Math::cHalf::MakeHalfFromFloat(1.0f - i_bottom))
 #elif defined( EAE6320_PLATFORM_GL )
-					top(Math::cHalf::MakeHalfFromFloat(top)),
-					bottom(Math::cHalf::MakeHalfFromFloat(bottom))
+					top(Math::cHalf::MakeHalfFromFloat(i_top)),
+					bottom(Math::cHalf::MakeHalfFromFloat(i_bottom))
 #endif
 				{}
 			};
+		}
+	}
+}
+
+// Static Data Declaration
+//========================
+namespace eae6320
+{
+	namespace Graphics
+	{
+		namespace SpriteHelperStructs
+		{
+			// We can declare a global Texture Coordinates struct for UIs
+			// which map the whole texture to the given quad
+
+			extern sTextureCoordinates const g_defaultMappedUVs;
 		}
 	}
 }
