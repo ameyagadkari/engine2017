@@ -44,13 +44,13 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		{
 			// Create the vertex layout
 
-			// These elements must match the VertexFormats::sGeometry layout struct exactly.
+			// These elements must match the VertexFormats::sSprite layout struct exactly.
 			// They instruct Direct3D how to match the binary data in the vertex buffer
 			// to the input elements in a vertex shader
 			// (by using so-called "semantic" names so that, for example,
 			// "POSITION" here matches with "POSITION" in shader code).
 			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			constexpr unsigned int vertexElementCount = 1;
+			constexpr unsigned int vertexElementCount = 2;
 			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = {};
 			{
 				// Slot 0
@@ -68,6 +68,23 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 					positionElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sSprite, x);
 					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// Slot 1
+
+				// TEXTURE_COORDINATES
+				// 2 uint16_t == 4 bytes
+				// Offset = 8
+				{
+					auto& uvsElement = layoutDescription[1];
+
+					uvsElement.SemanticName = "TEXCOORD";
+					uvsElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					uvsElement.Format = DXGI_FORMAT_R16G16_FLOAT;
+					uvsElement.InputSlot = 0;
+					uvsElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sSprite, u);
+					uvsElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					uvsElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 			}
 
@@ -92,33 +109,48 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	// Vertex Buffer
 	{
 		VertexFormats::sSprite vertexData[s_vertexCount];
-		SpriteHelperStructs::sScreenPosition screenPosition;
-		i_rectTransform.GetScreenPosition(screenPosition);
 		{
-			// Bottom Right
+			//GenerateVertexData(i_rectTransform, vertexData);
+			SpriteHelperStructs::sScreenPosition screenPosition;
+			i_rectTransform.GetScreenPosition(screenPosition);
 			{
-				vertexData[0].x = screenPosition.right;
-				vertexData[0].y = screenPosition.bottom;
-			}
-			// Bottom Left
-			{
-				vertexData[1].x = screenPosition.left;
-				vertexData[1].y = screenPosition.bottom;
-			}
-			// Top Right
-			{
-				vertexData[2].x = screenPosition.right;
-				vertexData[2].y = screenPosition.top;
-			}
-			// Top Left
-			{
-				vertexData[3].x = screenPosition.left;
-				vertexData[3].y = screenPosition.top;
+				// Bottom Right
+				{
+					vertexData[0].x = screenPosition.right;
+					vertexData[0].y = screenPosition.bottom;
+
+					vertexData[0].u = SpriteHelperStructs::g_defaultMappedUVs.right;
+					vertexData[0].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
+				}
+				// Bottom Left
+				{
+					vertexData[1].x = screenPosition.left;
+					vertexData[1].y = screenPosition.bottom;
+
+					vertexData[1].u = SpriteHelperStructs::g_defaultMappedUVs.left;
+					vertexData[1].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
+				}
+				// Top Right
+				{
+					vertexData[2].x = screenPosition.right;
+					vertexData[2].y = screenPosition.top;
+
+					vertexData[2].u = SpriteHelperStructs::g_defaultMappedUVs.right;
+					vertexData[2].v = SpriteHelperStructs::g_defaultMappedUVs.top;
+				}
+				// Top Left
+				{
+					vertexData[3].x = screenPosition.left;
+					vertexData[3].y = screenPosition.top;
+
+					vertexData[3].u = SpriteHelperStructs::g_defaultMappedUVs.left;
+					vertexData[3].v = SpriteHelperStructs::g_defaultMappedUVs.top;
+				}
 			}
 		}
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = s_vertexCount * sizeof(eae6320::Graphics::VertexFormats::sSprite);
+			const auto bufferSize = s_vertexCount * sizeof(VertexFormats::sSprite);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created

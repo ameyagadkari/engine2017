@@ -13,6 +13,7 @@
 #include "ColorFormats.h"
 #include "cSprite.h"
 #include "cEffect.h"
+#include "cTexture.h"
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
@@ -36,7 +37,7 @@ namespace eae6320
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor i_clearColor);
-		void SubmitEffectSpritePair(const cEffect::Handle i_effectHandle, cSprite * const i_sprite);
+		void SubmitEffectTextureSpriteTuple(const cEffect::Handle i_effectHandle, const cTexture::Handle i_textureHandle, cSprite * const i_sprite);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything

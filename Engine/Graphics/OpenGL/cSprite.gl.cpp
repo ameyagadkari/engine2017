@@ -3,7 +3,7 @@
 
 #include "../cSprite.h"
 #include "../VertexFormats.h"
-#include "../SpriteHelperStructs.h"
+//#include "../SpriteHelperStructs.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
@@ -26,7 +26,7 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
 {
-	auto result = eae6320::Results::success;
+	auto result = Results::success;
 
 	// Create a vertex array object and make it active
 	{
@@ -86,30 +86,43 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	{
 		VertexFormats::sSprite vertexData[s_vertexCount];
 		{
-			SpriteHelperStructs::sScreenPosition screenPosition;
+			GenerateVertexData(i_rectTransform, vertexData);
+			/*SpriteHelperStructs::sScreenPosition screenPosition;
 			i_rectTransform.GetScreenPosition(screenPosition);
 			{
 				// Bottom Right
 				{
 					vertexData[0].x = screenPosition.right;
 					vertexData[0].y = screenPosition.bottom;
+
+					vertexData[0].u = SpriteHelperStructs::g_defaultMappedUVs.right;
+					vertexData[0].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
 				}
 				// Top Right
 				{
 					vertexData[1].x = screenPosition.right;
 					vertexData[1].y = screenPosition.top;
+
+					vertexData[1].u = SpriteHelperStructs::g_defaultMappedUVs.right;
+					vertexData[1].v = SpriteHelperStructs::g_defaultMappedUVs.top;
 				}
 				// Bottom Left
 				{
 					vertexData[2].x = screenPosition.left;
 					vertexData[2].y = screenPosition.bottom;
+
+					vertexData[2].u = SpriteHelperStructs::g_defaultMappedUVs.left;
+					vertexData[2].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
 				}
 				// Top Left
 				{
 					vertexData[3].x = screenPosition.left;
 					vertexData[3].y = screenPosition.top;
+
+					vertexData[3].u = SpriteHelperStructs::g_defaultMappedUVs.left;
+					vertexData[3].v = SpriteHelperStructs::g_defaultMappedUVs.top;
 				}
-			}
+			}*/
 		}
 		const auto bufferSize = s_vertexCount * sizeof(VertexFormats::sSprite);
 		EAE6320_ASSERT(bufferSize < uint64_t(1u) << sizeof(GLsizeiptr) * 8);
@@ -141,6 +154,39 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 			constexpr GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 			glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
 				reinterpret_cast<GLvoid*>(offsetof(eae6320::Graphics::VertexFormats::sSprite, x)));
+			const auto errorCode = glGetError();
+			if (errorCode == GL_NO_ERROR)
+			{
+				glEnableVertexAttribArray(vertexElementLocation);
+				const auto errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					result = Results::Failure;
+					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Logging::OutputError("OpenGL failed to enable the POSITION vertex attribute at location %u: %s",
+						vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					goto OnExit;
+				}
+			}
+			else
+			{
+				result = Results::Failure;
+				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Logging::OutputError("OpenGL failed to set the POSITION vertex attribute at location %u: %s",
+					vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				goto OnExit;
+			}
+		}
+
+		// Texture Coordinates (1)
+		// 2 uint16_t == 4 bytes
+		// Offset = 8
+		{
+			constexpr GLuint vertexElementLocation = 1;
+			constexpr auto elementCount = 2;
+			constexpr GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
+			glVertexAttribPointer(vertexElementLocation, elementCount, GL_HALF_FLOAT, notNormalized, stride,
+				reinterpret_cast<GLvoid*>(offsetof(eae6320::Graphics::VertexFormats::sSprite, u)));
 			const auto errorCode = glGetError();
 			if (errorCode == GL_NO_ERROR)
 			{

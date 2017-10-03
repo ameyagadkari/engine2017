@@ -111,7 +111,7 @@ eae6320::Math::cMatrixTransformation eae6320::Math::cMatrixTransformation::Creat
 		0.0f, 0.0f, i_z_nearPlane * zDistanceScale, 0.0f );
 #elif defined( EAE6320_PLATFORM_GL )
 	const auto zDistanceScale = 1.0f / ( i_z_nearPlane - i_z_farPlane );
-	return cMatrix_transformation(
+	return cMatrixTransformation(
 		xScale, 0.0f, 0.0f, 0.0f,
 		0.0f, yScale, 0.0f, 0.0f,
 		0.0f, 0.0f, ( i_z_nearPlane + i_z_farPlane ) * zDistanceScale, -1.0f,

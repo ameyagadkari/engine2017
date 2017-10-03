@@ -29,18 +29,18 @@ namespace eae6320
 	namespace Assets
 	{
 		template <class tAsset>
-			class cManager
+		class cManager
 		{
 			// Interface
 			//==========
 
 		public:
 
-			tAsset* Get( const cHandle<tAsset> i_handle );
+			tAsset* Get(const cHandle<tAsset> i_handle);
 
 			template <typename... tConstructorArguments>
-				cResult Load( const char* const i_path, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments );
-			cResult Release( cHandle<tAsset>& io_handle );
+			cResult Load(const char* const i_path, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments);
+			cResult Release(cHandle<tAsset>& io_handle);
 
 			// Initialization / Clean Up
 			//==========================
@@ -63,7 +63,7 @@ namespace eae6320
 			std::vector<sAssetRecord> m_assetRecords;
 			std::vector<uint32_t> m_unusedAssetRecordIndices;
 			std::map< std::string, cHandle<tAsset> > m_map_pathsToHandles;
-			eae6320::Concurrency::cMutex m_mutex;
+			Concurrency::cMutex m_mutex;
 		};
 	}
 }

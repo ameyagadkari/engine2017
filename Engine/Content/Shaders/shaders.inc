@@ -39,6 +39,55 @@
 
 #endif
 
+// Operators
+//==========
+#if defined( EAE6320_PLATFORM_GL )
+
+	#define mul(a, b) a * b 
+
+#endif
+
+// Texture Objects
+//================
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+	#define DeclareTexture2DObject( i_name, i_id ) Texture2D i_name : register( t##i_id );
+
+#elif defined( EAE6320_PLATFORM_GL )
+
+	#define DeclareTexture2DObject( i_name, i_id ) layout( binding = i_id ) uniform sampler2D i_name;
+
+#endif
+
+
+// Sampler State Objects
+//======================
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+	#define DeclareSamplerStateObject( i_name, i_id ) SamplerState i_name : register( s##i_id );
+
+#elif defined( EAE6320_PLATFORM_GL )
+
+	#define DeclareSamplerStateObject( i_name, i_id )
+
+#endif
+
+
+// Sampled Color
+//==============
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) i_texture2D.Sample( i_samplerstate, i_uv );
+
+#elif defined( EAE6320_PLATFORM_GL )
+
+	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) texture2D( i_texture2D, i_uv );
+
+#endif
+
 // Constant Buffers
 //=================
 
@@ -70,3 +119,7 @@ DeclareConstantBuffer( g_constantBuffer_perDrawCall, 2)
 	// This is a placeholder to prevent an empty constant buffer declaration
 	float4 DUMMY;
 };
+
+DeclareTexture2DObject( g_color_texture, 0 )
+
+DeclareSamplerStateObject( g_color_samplerState, 0 )

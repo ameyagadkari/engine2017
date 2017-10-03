@@ -34,6 +34,17 @@ namespace eae6320
 	}
 }
 
+namespace eae6320
+{
+	namespace Graphics
+	{
+		namespace VertexFormats
+		{
+			struct sSprite;
+		}
+	}
+}
+
 // Class Declaration
 //==================
 
@@ -95,6 +106,10 @@ namespace eae6320
 			cResult Initialize(const Transform::sRectTransform& i_rectTransform);
 			cResult CleanUp();
 
+			// Helper Functions Declaration
+			//-----------------------------
+
+			static void GenerateVertexData(const Transform::sRectTransform& i_rectTransform, VertexFormats::sSprite*const&  o_vertexData);
 		};
 	}
 }

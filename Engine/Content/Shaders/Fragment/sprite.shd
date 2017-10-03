@@ -1,0 +1,49 @@
+/*
+	This is sprite fragment shader
+*/
+
+#include <Shaders/shaders.inc>
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+// Entry Point
+//============
+
+void main(
+	
+	// Input
+	//======
+	
+	in float2 i_uvs : TEXCOORD,
+
+	// Output
+	//=======
+
+	out float4 o_color : SV_TARGET
+
+	)
+	
+#elif defined( EAE6320_PLATFORM_GL )
+
+// Input
+//======
+
+layout( location = 0 ) in vec2 i_uvs;
+
+// Output
+//=======
+
+out vec4 o_color;
+
+// Entry Point
+//============
+
+void main()
+
+#endif
+
+{
+	vec4 sampledColor = SampleColor( g_color_texture, g_color_samplerState, i_uvs )
+	
+	o_color = sampledColor;
+}

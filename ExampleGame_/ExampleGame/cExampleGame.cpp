@@ -14,7 +14,7 @@
 namespace
 {
 	bool s_isPaused = false;
-	std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite *const>> s_effectSpritePairs;
+	std::vector<std::tuple<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cTexture::Handle, eae6320::Graphics::cSprite *const>> s_effectTextureSpriteTuple;
 }
 
 // Inherited Implementation
@@ -62,9 +62,9 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 
 	// Submit Effect/Sprite pair
 	{
-		for (auto& effectSpritePair : s_effectSpritePairs)
+		for (auto& effectTextureSpriteTuple : s_effectTextureSpriteTuple)
 		{
-			SubmitEffectSpritePair(effectSpritePair.first, effectSpritePair.second);
+			SubmitEffectTextureSpriteTuple(std::get<0>(effectTextureSpriteTuple), std::get<1>(effectTextureSpriteTuple), std::get<2>(effectTextureSpriteTuple));
 		}
 	}
 }
@@ -77,7 +77,13 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	cResult result;
 	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite_white.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cTexture::Handle texture;
+		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/happy.btf", texture))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -88,9 +94,9 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
 	}
-	{
+	/*{
 		Graphics::cEffect::Handle effect;
 		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
 		{
@@ -149,7 +155,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			goto OnExit;
 		}
 		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
-	}
+	}*/
 
 OnExit:
 	return result;
@@ -158,11 +164,24 @@ OnExit:
 eae6320::cResult eae6320::cExampleGame::CleanUp()
 {
 	auto result = Results::success;
-	for (auto& effectSpritePair : s_effectSpritePairs)
+	for (auto& effectTextureSpriteTuple : s_effectTextureSpriteTuple)
 	{
 		// Clean up effect
 		{
-			const auto localResult = Graphics::cEffect::s_manager.Release(effectSpritePair.first);
+			const auto localResult = Graphics::cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+			if (!localResult)
+			{
+				EAE6320_ASSERT(false);
+				if (result)
+				{
+					result = localResult;
+				}
+			}
+		}
+
+		// Clean up texture
+		{
+			const auto localResult = Graphics::cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
 			if (!localResult)
 			{
 				EAE6320_ASSERT(false);
@@ -175,9 +194,9 @@ eae6320::cResult eae6320::cExampleGame::CleanUp()
 
 		// Clean up sprite
 		{
-			effectSpritePair.second->DecrementReferenceCount();
+			std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 		}
 	}
-	s_effectSpritePairs.clear();
+	s_effectTextureSpriteTuple.clear();
 	return result;
 }

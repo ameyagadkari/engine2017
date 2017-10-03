@@ -35,7 +35,7 @@ uint16_t eae6320::Graphics::cTexture::GetHeight() const
 
 eae6320::cResult eae6320::Graphics::cTexture::Load(const char* const i_path, cTexture*& o_texture)
 {
-	auto result = Results::success;
+	cResult result;
 
 	Platform::sDataFromFile dataFromFile;
 	cTexture* newTexture = nullptr;
@@ -88,7 +88,7 @@ eae6320::cResult eae6320::Graphics::cTexture::Load(const char* const i_path, cTe
 	{
 		const auto* const textureData = reinterpret_cast<void*>(currentOffset);
 		const auto textureDataSize = static_cast<size_t>(finalOffset - currentOffset);
-		if (!(result = newTexture->Initialize(i_path, textureData, textureDataSize)))
+		if (!((result = newTexture->Initialize(i_path, textureData, textureDataSize))))
 		{
 			EAE6320_ASSERTF(false, "Initialization of new texture failed");
 			goto OnExit;

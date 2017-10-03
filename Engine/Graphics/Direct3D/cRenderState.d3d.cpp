@@ -17,26 +17,26 @@
 
 void eae6320::Graphics::cRenderState::Bind() const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
-	EAE6320_ASSERT( direct3dImmediateContext );
+	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
+	EAE6320_ASSERT( direct3DImmediateContext );
 
 	// Alpha Transparency
 	{
 		EAE6320_ASSERT( m_blendState );
-		const float* const noBlendFactor = NULL;
-		const unsigned int defaultSampleMask = 0xffffffff;
-		direct3dImmediateContext->OMSetBlendState( m_blendState, noBlendFactor, defaultSampleMask );
+		const float* const noBlendFactor = nullptr;
+		const auto defaultSampleMask = 0xffffffff;
+		direct3DImmediateContext->OMSetBlendState( m_blendState, noBlendFactor, defaultSampleMask );
 	}
 	// Depth Buffering
 	{
 		EAE6320_ASSERT( m_depthStencilState );
 		const unsigned int unusedStencilReference = 0;
-		direct3dImmediateContext->OMSetDepthStencilState( m_depthStencilState, unusedStencilReference );
+		direct3DImmediateContext->OMSetDepthStencilState( m_depthStencilState, unusedStencilReference );
 	}
 	// Draw Both Triangle Sides
 	{
 		EAE6320_ASSERT( m_rasterizerState );
-		direct3dImmediateContext->RSSetState( m_rasterizerState );
+		direct3DImmediateContext->RSSetState( m_rasterizerState );
 	}
 }
 

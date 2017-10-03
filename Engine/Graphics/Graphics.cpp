@@ -15,7 +15,6 @@
 #include <Engine/UserOutput/UserOutput.h>
 #include <utility>
 
-
 // Static Data Initialization
 //===========================
 
@@ -35,7 +34,7 @@ namespace
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
-		std::vector<std::pair<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cSprite *const>> effectSpritePairs_perFrame;
+		std::vector<std::tuple<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cTexture::Handle, eae6320::Graphics::cSprite *const>> effectTextureSpriteTuple_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -78,12 +77,15 @@ void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor i_clearColor
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
-void eae6320::Graphics::SubmitEffectSpritePair(const cEffect::Handle i_effectHandle, cSprite * const i_sprite)
+void eae6320::Graphics::SubmitEffectTextureSpriteTuple(const cEffect::Handle i_effectHandle, const cTexture::Handle i_textureHandle, cSprite * const i_sprite)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+
 	cEffect::s_manager.Get(i_effectHandle)->IncrementReferenceCount();
+	cTexture::s_manager.Get(i_textureHandle)->IncrementReferenceCount();
 	i_sprite->IncrementReferenceCount();
-	s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.push_back(std::make_pair(i_effectHandle, i_sprite));
+
+	s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.push_back(std::make_tuple(i_effectHandle, i_textureHandle, i_sprite));
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -145,10 +147,11 @@ void eae6320::Graphics::RenderFrame()
 
 	// Bind the effects
 	// Draw the sprites
-	for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
+	for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
 	{
-		cEffect::s_manager.Get(effectSpritePair.first)->Bind();
-		effectSpritePair.second->Draw();
+		cEffect::s_manager.Get(std::get<0>(effectTextureSpriteTuple))->Bind();
+		cTexture::s_manager.Get(std::get<1>(effectTextureSpriteTuple))->Bind(0);
+		std::get<2>(effectTextureSpriteTuple)->Draw();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -161,12 +164,13 @@ void eae6320::Graphics::RenderFrame()
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
 	{
 		// (At this point in the class there isn't anything that needs to be cleaned up)
-		for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
+		for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
 		{
-			cEffect::s_manager.Get(effectSpritePair.first)->DecrementReferenceCount();
-			effectSpritePair.second->DecrementReferenceCount();
+			cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+			cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
+			std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 		}
-		s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.clear();
+		s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.clear();
 	}
 }
 
@@ -192,6 +196,12 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 		}
 
 		if (!((result = cEffect::s_manager.Initialize())))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+
+		if (!((result = cTexture::s_manager.Initialize())))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -233,7 +243,7 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 			goto OnExit;
 		}
 		if (!((result = s_whenDataForANewFrameCanBeSubmittedFromApplicationThread.Initialize(Concurrency::EventType::RESET_AUTOMATICALLY_AFTER_BEING_SIGNALED,
-		                                                                                     Concurrency::EventState::SIGNALED))))
+			Concurrency::EventState::SIGNALED))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -250,13 +260,26 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::success;
 	{
 		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.empty())
+		if (!s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.empty())
 		{
-			for (auto& effectSpritePair : s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame)
+			for (auto& effectTextureSpriteTuple : s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame)
 			{
 				// Clean up effect
 				{
-					const auto localResult = cEffect::s_manager.Release(effectSpritePair.first);
+					const auto localResult = cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+					if (!localResult)
+					{
+						EAE6320_ASSERT(false);
+						if (result)
+						{
+							result = localResult;
+						}
+					}
+				}
+
+				// Clean up texture
+				{
+					const auto localResult = cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -269,20 +292,33 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 				// Clean up sprite
 				{
-					effectSpritePair.second->DecrementReferenceCount();
+					std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 				}
 			}
-			s_dataBeingSubmittedByApplicationThread->effectSpritePairs_perFrame.clear();
+			s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.clear();
 		}
 
 		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.empty())
+		if (!s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.empty())
 		{
-			for (auto& effectSpritePair : s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame)
+			for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
 			{
 				// Clean up effect
 				{
-					const auto localResult = cEffect::s_manager.Release(effectSpritePair.first);
+					const auto localResult = cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+					if (!localResult)
+					{
+						EAE6320_ASSERT(false);
+						if (result)
+						{
+							result = localResult;
+						}
+					}
+				}
+
+				// Clean up texture
+				{
+					const auto localResult = cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -295,10 +331,10 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 				// Clean up sprite
 				{
-					effectSpritePair.second->DecrementReferenceCount();
+					std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 				}
 			}
-			s_dataBeingRenderedByRenderThread->effectSpritePairs_perFrame.clear();
+			s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.clear();
 		}
 	}
 
