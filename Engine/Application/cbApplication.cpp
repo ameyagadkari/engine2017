@@ -17,34 +17,34 @@
 // Run
 //------
 
-int eae6320::Application::cbApplication::ParseEntryPointParametersAndRun( const sEntryPointParameters& i_entryPointParameters )
+int eae6320::Application::cbApplication::ParseEntryPointParametersAndRun(const sEntryPointParameters& i_entryPointParameters)
 {
 	int exitCode = EXIT_SUCCESS;
 
 	// Initialize the application
 	// (this also starts the application loop on a separate thread)
 	{
-		const auto result = InitializeAll( i_entryPointParameters );
-		if ( result )
+		const auto result = InitializeAll(i_entryPointParameters);
+		if (result)
 		{
-			Logging::OutputMessage( "The application was successfully initialized" );
+			Logging::OutputMessage("The application was successfully initialized");
 		}
 		else
 		{
 			exitCode = EXIT_FAILURE;
-			EAE6320_ASSERT( false );
-			Logging::OutputError( "Application initialization failed!" );
-			UserOutput::Print( "Initialization failed! (Check the log file for details.) This program will now exit." );
+			EAE6320_ASSERT(false);
+			Logging::OutputError("Application initialization failed!");
+			UserOutput::Print("Initialization failed! (Check the log file for details.) This program will now exit.");
 			goto OnExit;
 		}
 	}
 	// Enter an infinite loop rendering frames until the application is ready to exit
 	{
-		const auto result = RenderFramesWhileWaitingForApplicationToExit( exitCode );
-		if ( !result )
+		const auto result = RenderFramesWhileWaitingForApplicationToExit(exitCode);
+		if (!result)
 		{
-			EAE6320_ASSERT( false );
-			UserOutput::Print( "The application encountered an error and will now exit" );
+			EAE6320_ASSERT(false);
+			UserOutput::Print("The application encountered an error and will now exit");
 			goto OnExit;
 		}
 	}
@@ -53,10 +53,10 @@ OnExit:
 
 	{
 		const auto result = CleanUpAll();
-		if ( !result )
+		if (!result)
 		{
-			EAE6320_ASSERT( false );
-			if ( exitCode == EXIT_SUCCESS )
+			EAE6320_ASSERT(false);
+			if (exitCode == EXIT_SUCCESS)
 			{
 				exitCode = EXIT_FAILURE;
 			}
@@ -66,10 +66,10 @@ OnExit:
 	return exitCode;
 }
 
-eae6320::cResult eae6320::Application::cbApplication::Exit( const int i_exitCode )
+eae6320::cResult eae6320::Application::cbApplication::Exit(const int i_exitCode)
 {
-	const auto result = ExitPlatformSpecific( i_exitCode );
-	if ( result )
+	const auto result = ExitPlatformSpecific(i_exitCode);
+	if (result)
 	{
 		m_exitCode = i_exitCode;	// This will likely already be set by Exit_platformSpecific()
 		m_shouldApplicationLoopExit = true;
@@ -101,7 +101,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 	m_tickCount_systemTime_current = Time::GetCurrentSystemTimeTickCount();
 	// Each update of the simulation is done with a fixed amount of time
 	const auto secondCount_perSimulationUpdate = GetSimulationUpdatePeriodInSeconds();
-	const uint64_t tickCount_perSimulationUpdate = Time::ConvertSecondsToTicks( secondCount_perSimulationUpdate );
+	const auto tickCount_perSimulationUpdate = Time::ConvertSecondsToTicks(secondCount_perSimulationUpdate);
 	// Since a single update of the simulation only uses a fixed amount of time
 	// there will be "leftover" time (time that has passed but has not been used)
 	uint64_t tickCount_simulationTime_elapsedButNotYetSimulated = 0;
@@ -114,7 +114,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 	uint64_t tickCount_systemTime_maxAllowablePerIteration;
 	{
 		constexpr auto maxAllowableTimePerIteration_inSeconds = 0.5;
-		tickCount_systemTime_maxAllowablePerIteration = Time::ConvertSecondsToTicks( maxAllowableTimePerIteration_inSeconds );
+		tickCount_systemTime_maxAllowablePerIteration = Time::ConvertSecondsToTicks(maxAllowableTimePerIteration_inSeconds);
 	}
 	// This measures how much allowable system time has elapsed
 	uint64_t tickCount_systemTime_elapsedAllowable = 0;
@@ -125,7 +125,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 	constexpr unsigned int maxSimulationUpdateCountWithoutRendering = 5;
 
 	// Loop until it is time for the application to exit
-	while ( !m_shouldApplicationLoopExit )
+	while (!m_shouldApplicationLoopExit)
 	{
 		// Calculate how much time has elapsed since the last loop
 		uint64_t tickCount_systemTime_elapsedSinceLastLoop;
@@ -139,16 +139,16 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 				tickCount_systemTime_elapsedSinceLastLoop = m_tickCount_systemTime_current - tickCount_systemTime_previousLoop;
 				// Only consider the allowable amount of elapsed system time
 				tickCount_systemTime_elapsedSinceLastLoop =
-					std::min( tickCount_systemTime_elapsedSinceLastLoop, tickCount_systemTime_maxAllowablePerIteration );
+					std::min(tickCount_systemTime_elapsedSinceLastLoop, tickCount_systemTime_maxAllowablePerIteration);
 				tickCount_systemTime_elapsedAllowable += tickCount_systemTime_elapsedSinceLastLoop;
 			}
 			// Calculate the simulation time that has elapsed based on the simulation rate
 			tickCount_toSimulate_elapsedSinceLastLoop =
-				static_cast<uint64_t>( static_cast<float>( tickCount_systemTime_elapsedSinceLastLoop * m_simulationRate ) );
+				static_cast<uint64_t>(static_cast<float>(tickCount_systemTime_elapsedSinceLastLoop * m_simulationRate));
 		}
 		// Update any application state that isn't part of the simulation
 		{
-			UpdateBasedOnTime( static_cast<float>( Time::ConvertTicksToSeconds( tickCount_systemTime_elapsedSinceLastLoop ) ) );
+			UpdateBasedOnTime(static_cast<float>(Time::ConvertTicksToSeconds(tickCount_systemTime_elapsedSinceLastLoop)));
 			UpdateBasedOnInput();
 		}
 		// Update the simulation
@@ -160,13 +160,13 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 			// and so the amount of simulation updates per-iteration should most often be zero, should frequently be one,
 			// and should not be more than one unless something unexpected happens that causes a single iteration to take longer than expected)
 			unsigned int simulationUpdateCount_thisIteration = 0;
-			while ( ( tickCount_simulationTime_elapsedButNotYetSimulated >= tickCount_perSimulationUpdate )
+			while ((tickCount_simulationTime_elapsedButNotYetSimulated >= tickCount_perSimulationUpdate)
 				// Regardless of how far the simulation is behind
 				// frames need to be rendered (and operating system messages handled)
 				// or the application will stop responding
-				&& ( simulationUpdateCount_thisIteration < maxSimulationUpdateCountWithoutRendering ) )
+				&& (simulationUpdateCount_thisIteration < maxSimulationUpdateCountWithoutRendering))
 			{
-				UpdateSimulationBasedOnTime( secondCount_perSimulationUpdate );
+				UpdateSimulationBasedOnTime(secondCount_perSimulationUpdate);
 				++simulationUpdateCount_thisIteration;
 				m_tickCount_simulationTime_totalElapsed += tickCount_perSimulationUpdate;
 				tickCount_simulationTime_elapsedButNotYetSimulated -= tickCount_perSimulationUpdate;
@@ -177,7 +177,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 			// because rendering has already happened with predicted extrapolation based on time that had already passed.
 			// If simulation state were changed _before_ then it would invalidate frames that had already been rendered
 			// (so, for example, something that had moved in a previous frame would suddenly reset to a different position).
-			if ( simulationUpdateCount_thisIteration > 0 )
+			if (simulationUpdateCount_thisIteration > 0)
 			{
 				UpdateSimulationBasedOnInput();
 			}
@@ -198,12 +198,12 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 					// The wait is long in terms of rendering
 					// but short enough that any delay in exiting will (hopefully) not be noticeable to a human
 					constexpr unsigned int timeToWait_inMilliseconds = 1000 / 4;
-					canGraphicsDataBeSubmittedForANewFrame = Graphics::WaitUntilDataForANewFrameCanBeSubmitted( timeToWait_inMilliseconds );
-				} while ( ( canGraphicsDataBeSubmittedForANewFrame == Results::timeOut ) && !m_shouldApplicationLoopExit );
+					canGraphicsDataBeSubmittedForANewFrame = Graphics::WaitUntilDataForANewFrameCanBeSubmitted(timeToWait_inMilliseconds);
+				} while ((canGraphicsDataBeSubmittedForANewFrame == Results::timeOut) && !m_shouldApplicationLoopExit);
 				// If graphics data can't be submitted for a new frame the application will exit
-				if ( !canGraphicsDataBeSubmittedForANewFrame )
+				if (!canGraphicsDataBeSubmittedForANewFrame)
 				{
-					if ( m_shouldApplicationLoopExit )
+					if (m_shouldApplicationLoopExit)
 					{
 						// In this case graphics data can't be submitted because the application is supposed to exit,
 						// and the application is behaving normally
@@ -211,9 +211,9 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 					else
 					{
 						// In this case the wait failed for an unexpected reason (i.e. something other than a timeout)
-						EAE6320_ASSERT( false );
-						Logging::OutputError( "Failed to wait for graphics data for a new frame to be submittable" );
-						UserOutput::Print( "Something unexpected went wrong and rendering can't continue (the application will now exit)" );
+						EAE6320_ASSERT(false);
+						Logging::OutputError("Failed to wait for graphics data for a new frame to be submittable");
+						UserOutput::Print("Something unexpected went wrong and rendering can't continue (the application will now exit)");
 					}
 					return;
 				}
@@ -221,85 +221,85 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
 			// Submit the data to be rendered
 			{
 				// Submit the application-specific data
-				const auto elapsedSecondCount_systemTime = static_cast<float>( Time::ConvertTicksToSeconds( tickCount_systemTime_elapsedAllowable ) );
+				const auto elapsedSecondCount_systemTime = static_cast<float>(Time::ConvertTicksToSeconds(tickCount_systemTime_elapsedAllowable));
 				{
-					SubmitDataToBeRendered( elapsedSecondCount_systemTime,
-						static_cast<float>( Time::ConvertTicksToSeconds( tickCount_simulationTime_elapsedButNotYetSimulated ) ) );
+					SubmitDataToBeRendered(elapsedSecondCount_systemTime,
+						static_cast<float>(Time::ConvertTicksToSeconds(tickCount_simulationTime_elapsedButNotYetSimulated)));
 				}
 				// Submit the elapsed times
 				{
 					float elapsedSecondCount_simulationTime;
 					{
 						const auto tickCount_simulationTime_toRender = m_tickCount_simulationTime_totalElapsed + tickCount_simulationTime_elapsedButNotYetSimulated;
-						elapsedSecondCount_simulationTime = static_cast<float>( Time::ConvertTicksToSeconds( tickCount_simulationTime_toRender ) );
+						elapsedSecondCount_simulationTime = static_cast<float>(Time::ConvertTicksToSeconds(tickCount_simulationTime_toRender));
 					}
-					Graphics::SubmitElapsedTime( elapsedSecondCount_systemTime, elapsedSecondCount_simulationTime );
+					Graphics::SubmitElapsedTime(elapsedSecondCount_systemTime, elapsedSecondCount_simulationTime);
 				}
 			}
 			// Let the graphics system know that all of the data for this frame has been submitted
 			// (which means that it can start using it to render)
 			{
 				const auto result = Graphics::SignalThatAllDataForAFrameHasBeenSubmitted();
-				EAE6320_ASSERT( result );
+				EAE6320_ASSERT(result);
 			}
 		}
 	}
 }
 
-void eae6320::Application::cbApplication::EntryPointApplicationLoopThread( void* const io_application )
+void eae6320::Application::cbApplication::EntryPointApplicationLoopThread(void* const io_application)
 {
-	auto *const application = static_cast<cbApplication*>( io_application );
-	EAE6320_ASSERT( application );
+	auto *const application = static_cast<cbApplication*>(io_application);
+	EAE6320_ASSERT(application);
 	return application->UpdateUntilExit();
 }
 
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Application::cbApplication::InitializeAll( const sEntryPointParameters& i_entryPointParameters )
+eae6320::cResult eae6320::Application::cbApplication::InitializeAll(const sEntryPointParameters& i_entryPointParameters)
 {
-	auto result = Results::success;
+	cResult result;
 
 	// Initialize logging first so that it's always available
-	if ( !( result = Logging::Initialize() ) )
+	if (!((result = Logging::Initialize())))
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	// Initialize time next in order to track total time
-	if ( result = Time::Initialize() )
+	if ((result = Time::Initialize()))
 	{
 		m_tickCount_systemTime_whenApplicationStarted = Time::GetCurrentSystemTimeTickCount();
 	}
 	else
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	// Initialize the new application instance with entry point parameters
-	if ( !( result = InitializeBase( i_entryPointParameters ) ) )
+	if (!((result = InitializeBase(i_entryPointParameters))))
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	// Initialize engine systems
-	if ( !( result = InitializeEngine() ) )
+	if (!((result = InitializeEngine())))
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 	// Initialize the derived application
-	if ( !( result = Initialize() ) )
+	if (!((result = Initialize())))
 	{
-		EAE6320_ASSERT( false );
+		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
 
 	// Start the application loop thread
-	if ( !( result = m_applicationLoopThread.Start( EntryPointApplicationLoopThread, this ) ) )
+	if (!((result = m_applicationLoopThread.Start(EntryPointApplicationLoopThread, this))))
 	{
-		EAE6320_ASSERT( false );
-		Logging::OutputError( "The application loop thread couldn't be started" );
+		EAE6320_ASSERT(false);
+		Logging::OutputError("The application loop thread couldn't be started");
 		goto OnExit;
 	}
 
@@ -308,41 +308,41 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Application::cbApplication::InitializeEngine()
+eae6320::cResult eae6320::Application::cbApplication::InitializeEngine() const
 {
-	auto result = Results::success;
+	cResult result;
 
 	// User Output
 	{
 		UserOutput::sInitializationParameters initializationParameters;
-		if ( result = PopulateUserOutputInitializationParameters( initializationParameters ) )
+		if ((result = PopulateUserOutputInitializationParameters(initializationParameters)))
 		{
-			if ( !( result = UserOutput::Initialize( initializationParameters ) ) )
+			if (!((result = UserOutput::Initialize(initializationParameters))))
 			{
-				EAE6320_ASSERT( false );
+				EAE6320_ASSERT(false);
 				goto OnExit;
 			}
 		}
 		else
 		{
-			EAE6320_ASSERT( false );
+			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 	}
 	// Graphics
 	{
 		Graphics::sInitializationParameters initializationParameters;
-		if ( result = PopulateGraphicsInitializationParameters( initializationParameters ) )
+		if ((result = PopulateGraphicsInitializationParameters(initializationParameters)))
 		{
-			if ( !( result = Graphics::Initialize( initializationParameters ) ) )
+			if (!((result = Graphics::Initialize(initializationParameters))))
 			{
-				EAE6320_ASSERT( false );
+				EAE6320_ASSERT(false);
 				goto OnExit;
 			}
 		}
 		else
 		{
-			EAE6320_ASSERT( false );
+			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 	}
@@ -363,15 +363,15 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 		// Wait for the thread to exit
 		{
 			constexpr unsigned int timeToWait_inMilliseconds = 5 * 1000;
-			const auto localResult = WaitForThreadToStop( m_applicationLoopThread, timeToWait_inMilliseconds );
-			if ( !localResult )
+			const auto localResult = WaitForThreadToStop(m_applicationLoopThread, timeToWait_inMilliseconds);
+			if (!localResult)
 			{
-				EAE6320_ASSERTF( false, "Couldn't wait for the application loop thread to exit" );
-				if ( localResult == Results::timeOut )
+				EAE6320_ASSERTF(false, "Couldn't wait for the application loop thread to exit");
+				if (localResult == Results::timeOut)
 				{
-					Logging::OutputError( "The application loop thread didn't exit after waiting %u milliseconds", timeToWait_inMilliseconds );
+					Logging::OutputError("The application loop thread didn't exit after waiting %u milliseconds", timeToWait_inMilliseconds);
 				}
-				if ( result )
+				if (result)
 				{
 					result = localResult;
 				}
@@ -381,10 +381,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 	// Clean up the derived application
 	{
 		const auto localResult = CleanUp();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -393,10 +393,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 	// Clean up engine systems
 	{
 		const auto localResult = CleanUpEngine();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -405,10 +405,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 	// Clean up the base class application
 	{
 		const auto localResult = CleanUpBase();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -417,10 +417,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 	// Clean up time second-to-last in case any clean up times are measured
 	{
 		const auto localResult = Time::CleanUp();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -429,10 +429,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpAll()
 	// Clean up logging last so that messages can still be logged during clean up
 	{
 		const auto localResult = Logging::CleanUp();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -449,10 +449,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpEngine()
 	// Graphics
 	{
 		const auto localResult = Graphics::CleanUp();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}
@@ -461,10 +461,10 @@ eae6320::cResult eae6320::Application::cbApplication::CleanUpEngine()
 	// User Output
 	{
 		const auto localResult = UserOutput::CleanUp();
-		if ( !localResult )
+		if (!localResult)
 		{
-			EAE6320_ASSERT( false );
-			if ( result )
+			EAE6320_ASSERT(false);
+			if (result)
 			{
 				result = localResult;
 			}

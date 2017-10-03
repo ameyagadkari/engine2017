@@ -16,7 +16,7 @@
 #include <Engine/Results/Results.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include <Engine/Windows/Includes.h>
+#include <Engine/Windows/Includes.h>
 #endif
 
 // Forward Declarations
@@ -45,9 +45,9 @@ namespace eae6320
 		// is to call the following function with the derived application class
 		// as the template argument:
 		template<class tApplication>
-			int Run(
+		int Run(
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			 const HINSTANCE i_thisInstanceOfTheApplication, const char* const i_commandLineArguments, const int i_initialWindowDisplayState
+			const HINSTANCE i_thisInstanceOfTheApplication, const char* const i_commandLineArguments, const int i_initialWindowDisplayState
 #endif
 		)
 		{
@@ -62,7 +62,7 @@ namespace eae6320
 			// Create an instance of the applciation
 			tApplication newApplicationInstance;
 			// Run it
-			return newApplicationInstance.ParseEntryPointParametersAndRun( entryPointParameters );
+			return newApplicationInstance.ParseEntryPointParametersAndRun(entryPointParameters);
 		}
 
 		class cbApplication
@@ -91,19 +91,19 @@ namespace eae6320
 			// Access
 			//-------
 
-			cResult GetCurrentResolution( uint16_t& o_width, uint16_t& o_height ) const;
-			void SetSimulationRate( const float i_simulationRate );
+			cResult GetCurrentResolution(uint16_t& o_width, uint16_t& o_height) const;
+			void SetSimulationRate(const float i_simulationRate);
 
 			// Run
 			//------
 
 			// This is called from the templated Run<> function above
 			// with the parameters directly from the main() entry point:
-			int ParseEntryPointParametersAndRun( const sEntryPointParameters& i_entryPointParameters );
+			int ParseEntryPointParametersAndRun(const sEntryPointParameters& i_entryPointParameters);
 
 			// Exits the application
 			// (a derived class can call this explicitly when it determines the application should exit)
-			cResult Exit( const int i_exitCode );
+			cResult Exit(const int i_exitCode);
 
 			// Initialization / Clean Up
 			//--------------------------
@@ -121,7 +121,7 @@ namespace eae6320
 
 			// Your application can override the following configuration functions if desired
 
-			virtual void GetDefaultInitialResolution( uint16_t& o_width, uint16_t& o_height ) const
+			virtual void GetDefaultInitialResolution(uint16_t& o_width, uint16_t& o_height) const
 			{
 				o_width = 512;
 				o_height = 512;
@@ -167,18 +167,18 @@ namespace eae6320
 			// (in a game this would be e.g. the UI).
 			// They will both be called every rendered frame.
 			virtual void UpdateBasedOnInput() {}
-			virtual void UpdateBasedOnTime( const float i_elapsedSecondCount_sinceLastUpdate ) {}
+			virtual void UpdateBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) {}
 
 			// Your application can implement the following two functions
 			// to control the update of the simulation.
 			// They will both be called every time the simulation is updated
 			// (i.e. whenever GetSimulationUpdatePeriod_inSeconds() of simulation time has elapsed)
 			virtual void UpdateSimulationBasedOnInput() {}
-			virtual void UpdateSimulationBasedOnTime( const float i_elapsedSecondCount_sinceLastUpdate ) {}
+			virtual void UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) {}
 
 			// Your application should override the following function
 			// to instuct the Graphics system what to render for the next frame
-			virtual void SubmitDataToBeRendered( const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate ) {}
+			virtual void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) {}
 
 			// Initialization / Clean Up
 			//--------------------------
@@ -191,8 +191,6 @@ namespace eae6320
 
 			// Data
 			//=====
-
-		private:
 
 			// The time when the application started
 			// (This is set during initialization and then never changed)
@@ -239,33 +237,33 @@ namespace eae6320
 			// and it returns once the application is finished and ready to exit.
 			// It runs on the original process thread
 			// and interacts with the operating system to decide when the graphics system can render a frame.
-			static cResult RenderFramesWhileWaitingForApplicationToExit( int& o_exitCode );
+			static cResult RenderFramesWhileWaitingForApplicationToExit(int& o_exitCode);
 
 			// The main application loop.
 			// It is called from its own thread (m_applicationLoopThread)
 			// distinct from the main process thread (that is used to render).
 			void UpdateUntilExit();
-			static void EntryPointApplicationLoopThread( void* const io_application );
+			static void EntryPointApplicationLoopThread(void* const io_application);
 
-			cResult ExitPlatformSpecific( const int i_exitCode );
+			cResult ExitPlatformSpecific(const int i_exitCode);
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult InitializeAll( const sEntryPointParameters& i_entryPointParameters );	// This initializes everything
-				cResult InitializeBase( const sEntryPointParameters& i_entryPointParameters );	// This initializes just this base class
-				cResult InitializeEngine();	// This initializes all of the engine systems
+			cResult InitializeAll(const sEntryPointParameters& i_entryPointParameters);	// This initializes everything
+			cResult InitializeBase(const sEntryPointParameters& i_entryPointParameters);	// This initializes just this base class
+			cResult InitializeEngine() const;	// This initializes all of the engine systems
 
-			cResult PopulateGraphicsInitializationParameters( Graphics::sInitializationParameters& o_initializationParameters ) const;
-			cResult PopulateUserOutputInitializationParameters( UserOutput::sInitializationParameters& o_initializationParameters ) const;
+			cResult PopulateGraphicsInitializationParameters(Graphics::sInitializationParameters& o_initializationParameters) const;
+			cResult PopulateUserOutputInitializationParameters(UserOutput::sInitializationParameters& o_initializationParameters) const;
 
 			cResult CleanUpAll();	// This cleans up everything
-				cResult CleanUpBase();	// This cleans up just this base class
-				cResult CleanUpEngine();	// This cleans up all of the engine systems
+			cResult CleanUpBase();	// This cleans up just this base class
+			static cResult CleanUpEngine();	// This cleans up all of the engine systems
 
 			// #include the platform-specific class declarations
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			#include "Windows/cbApplication.win.h"
+#include "Windows/cbApplication.win.h"
 #endif
 		};
 	}

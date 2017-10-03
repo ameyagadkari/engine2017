@@ -38,16 +38,20 @@ namespace eae6320
 	}
 }
 
-// Interface
-//==========
+
 
 namespace eae6320
 {
 	namespace Transform
 	{
-		void SetCurrentResolution(const uint16_t i_width, const uint16_t i_height);
 		struct sRectTransform
 		{
+			// Interface
+			//==========
+
+			// Initialization / Clean Up
+			//--------------------------
+
 			explicit sRectTransform();
 			explicit sRectTransform(
 				const int16_t i_x,
@@ -55,7 +59,15 @@ namespace eae6320
 				const uint16_t i_width,
 				const uint16_t i_height,
 				const eAnchor i_anchor);
+
+			// Access
+			//-------
+
 			void GetScreenPosition(sScreenPosition& o_screenPosition) const { o_screenPosition = screenPosition; }
+
+			// Data
+			//=====
+
 		private:
 			sScreenPosition screenPosition;
 			struct
@@ -64,6 +76,10 @@ namespace eae6320
 			}pixelCoordinates;
 			uint16_t width, height;
 			eAnchor anchor;
+
+			// Initialization / Clean Up
+			//--------------------------
+
 			void GenerateNewScreenCoordinates();
 		};
 	}

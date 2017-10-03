@@ -75,18 +75,7 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 
 eae6320::cResult eae6320::cExampleGame::Initialize()
 {
-	auto result = Results::success;
-	uint16_t currentResolutionWidth, currentResolutionHeight;
-	result = GetCurrentResolution(currentResolutionWidth, currentResolutionHeight);
-	if (result)
-	{
-		Transform::SetCurrentResolution(currentResolutionWidth, currentResolutionHeight);
-	}
-	else
-	{
-		EAE6320_ASSERT(false);
-		goto OnExit;
-	}
+	cResult result;
 	{
 		Graphics::cEffect::Handle effect;
 		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite_white.shd"))))
