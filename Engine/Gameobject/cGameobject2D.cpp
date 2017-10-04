@@ -18,10 +18,11 @@ eae6320::Assets::cManager<eae6320::Gameobject::cGameobject2D> eae6320::Gameobjec
 eae6320::Gameobject::cGameobject2D::cGameobject2D(const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor)
 	:
 	m_rectTransform(i_x, i_y, i_width, i_height, i_anchor),
+	m_useAlternateTexture(false),
 	m_sprite(nullptr)
 {}
 
-eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_texturePath)
+eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_textureMainPath, const char* const i_textureAlternatePath)
 {
 	auto result = Results::success;
 
@@ -54,17 +55,29 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_pa
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
 
 	// Load the effect
-	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject2D->m_effectHandle, i_vertexShaderName, i_fragmentShaderName, i_renderState))))
+	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject2D->m_effect, i_vertexShaderName, i_fragmentShaderName, i_renderState))))
 	{
 		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_effectPath);
 		goto OnExit;
 	}
 
-	// Load the texture
-	if (!((result = Graphics::cTexture::s_manager.Load(i_texturePath, newGameobject2D->m_textureHandle))))
+	// Load the main texture
+	if (!((result = Graphics::cTexture::s_manager.Load(i_textureMainPath, newGameobject2D->m_textureMain))))
 	{
-		EAE6320_ASSERTF(false, "Loading of texture failed: \"%s\"", i_texturePath);
+		EAE6320_ASSERTF(false, "Loading of texture failed: \"%s\"", i_textureMainPath);
 		goto OnExit;
+	}
+
+	// If alternate texture exists load the alternate texture
+	{
+		if (i_textureAlternatePath)
+		{
+			if (!((result = Graphics::cTexture::s_manager.Load(i_textureAlternatePath, newGameobject2D->m_textureAlternate))))
+			{
+				EAE6320_ASSERTF(false, "Loading of texture failed: \"%s\"", i_textureAlternatePath);
+				goto OnExit;
+			}
+		}
 	}
 
 	// Load the sprite
@@ -103,9 +116,9 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::CleanUp()
 	auto result = Results::success;
 
 	// Effect Clean Up
-	if (m_effectHandle)
+	if (m_effect)
 	{
-		const auto localResult = Graphics::cEffect::s_manager.Release(m_effectHandle);
+		const auto localResult = Graphics::cEffect::s_manager.Release(m_effect);
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -116,10 +129,24 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::CleanUp()
 		}
 	}
 
-	// Texture Clean Up
-	if (m_textureHandle)
+	// Main Texture Clean Up
+	if (m_textureMain)
 	{
-		const auto localResult = Graphics::cTexture::s_manager.Release(m_textureHandle);
+		const auto localResult = Graphics::cTexture::s_manager.Release(m_textureMain);
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	// Alternate Texture Clean Up
+	if (m_textureAlternate)
+	{
+		const auto localResult = Graphics::cTexture::s_manager.Release(m_textureAlternate);
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -143,7 +170,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::CleanUp()
 
 void eae6320::Gameobject::cGameobject2D::BindAndDraw() const
 {
-	Graphics::cEffect::s_manager.Get(m_effectHandle)->Bind();
-	Graphics::cTexture::s_manager.Get(m_textureHandle)->Bind(0);
+	Graphics::cEffect::s_manager.Get(m_effect)->Bind();
+	m_useAlternateTexture&&m_textureAlternate ? Graphics::cTexture::s_manager.Get(m_textureAlternate)->Bind(0) : Graphics::cTexture::s_manager.Get(m_textureMain)->Bind(0);
 	m_sprite->Draw();
 }

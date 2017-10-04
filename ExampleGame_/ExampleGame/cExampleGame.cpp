@@ -13,8 +13,10 @@
 
 namespace
 {
-	bool s_isPaused = false;
 	std::vector<eae6320::Gameobject::cGameobject2D::Handle> s_2D_GameObject;
+	auto s_isPaused = false;
+	auto previousElapsedTime = 0.0f;
+	auto currentElapsedTime = 0.0f;
 }
 
 // Inherited Implementation
@@ -48,10 +50,20 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 	}
 
 	// Is the user pressing the SPACE key?
-	if (UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE))
 	{
-		//Change the bottom left sprite's texture and effect
+		//Change the bottom left sprite's texture
+		Gameobject::cGameobject2D::s_manager.Get(s_2D_GameObject[4])->m_useAlternateTexture = UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE);
+	}
+}
 
+void eae6320::cExampleGame::UpdateBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
+{
+	currentElapsedTime += i_elapsedSecondCount_sinceLastUpdate;
+	if (currentElapsedTime - previousElapsedTime > 1.0f)
+	{
+		auto const& gameObject2D = Gameobject::cGameobject2D::s_manager.Get(s_2D_GameObject[3]);
+		gameObject2D->m_useAlternateTexture = !gameObject2D->m_useAlternateTexture;
+		previousElapsedTime = currentElapsedTime;
 	}
 }
 
@@ -84,114 +96,45 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 {
 	constexpr auto alphaTransperancyAndDrawingBothSidedTrianglesEnabled = 0x05;
 	cResult result;
-	/*{
-		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cTexture::Handle texture;
-		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/happy.btf", texture))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 256, 256, Transform::MID_CENTER))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
-	}
 	{
-		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cTexture::Handle texture;
-		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/sad.btf", texture))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::TOP_LEFT))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
-	}
-	{
-		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cTexture::Handle texture;
-		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/sad.btf", texture))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::BOTTOM_RIGHT))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
-	}
-	{
-		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cTexture::Handle texture;
-		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/smiling.btf", texture))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::TOP_RIGHT))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
-	}
-	{
-		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cTexture::Handle texture;
-		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/smiling.btf", texture))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::BOTTOM_LEFT))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
-		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
-	}*/
-	{
-	Gameobject::cGameobject2D::Handle gameobject2D;
+		Gameobject::cGameobject2D::Handle gameobject2D;
 		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d1_path", gameobject2D, 0, 0, 256, 256, Transform::MID_CENTER, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/happy.btf"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_2D_GameObject.push_back(gameobject2D);
+	}
+	{
+		Gameobject::cGameobject2D::Handle gameobject2D;
+		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d2_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_LEFT, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/sad.btf"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_2D_GameObject.push_back(gameobject2D);
+	}
+	{
+		Gameobject::cGameobject2D::Handle gameobject2D;
+		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d3_path", gameobject2D, 0, 0, 128, 128, Transform::BOTTOM_RIGHT, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/sad.btf"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_2D_GameObject.push_back(gameobject2D);
+	}
+	{
+		Gameobject::cGameobject2D::Handle gameobject2D;
+		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d4_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_RIGHT, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/smiling.btf", "data/Textures/sad.btf"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_2D_GameObject.push_back(gameobject2D);
+	}
+	{
+		Gameobject::cGameobject2D::Handle gameobject2D;
+		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d5_path", gameobject2D, 0, 0, 128, 128, Transform::BOTTOM_LEFT, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/smiling.btf", "data/Textures/sad.btf"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;

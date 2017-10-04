@@ -69,6 +69,7 @@ namespace eae6320
 		//----
 
 		void UpdateBasedOnInput() override;
+		void UpdateBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) override;
 		void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
 
 		// Initialization / Clean Up

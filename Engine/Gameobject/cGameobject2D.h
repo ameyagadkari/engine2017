@@ -46,7 +46,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_texturePath);
+			static cResult Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_textureMainPath, const char* const i_textureAlternatePath = nullptr);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject2D);
 
@@ -74,10 +74,13 @@ namespace eae6320
 
 			Transform::sRectTransform m_rectTransform;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+		public:
+			bool m_useAlternateTexture;
+		private:
 			Graphics::cSprite* m_sprite;
-			Graphics::cEffect::Handle m_effectHandle;
-			Graphics::cTexture::Handle m_textureHandle;
-
+			Graphics::cEffect::Handle m_effect;
+			Graphics::cTexture::Handle m_textureMain;
+			Graphics::cTexture::Handle m_textureAlternate;
 		};
 	}
 }
