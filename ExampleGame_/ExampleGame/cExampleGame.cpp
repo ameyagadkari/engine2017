@@ -74,10 +74,11 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 
 eae6320::cResult eae6320::cExampleGame::Initialize()
 {
+	constexpr auto alphaTransperancyAndDrawingBothSidedTrianglesEnabled = 0x05;
 	cResult result;
 	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -96,66 +97,90 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		}
 		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
 	}
-	/*{
+	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cTexture::Handle texture;
+		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/sad.btf", texture))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::TOP_LEFT))))
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::TOP_LEFT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cTexture::Handle texture;
+		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/sad.btf", texture))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::BOTTOM_RIGHT))))
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::BOTTOM_RIGHT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cTexture::Handle texture;
+		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/smiling.btf", texture))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::TOP_RIGHT))))
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::TOP_RIGHT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
+		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
 	}
 	{
 		Graphics::cEffect::Handle effect;
-		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect2_path", effect, "sprite.shd", "sprite_color.shd"))))
+		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		Graphics::cTexture::Handle texture;
+		if (!((result = Graphics::cTexture::s_manager.Load("data/Textures/smiling.btf", texture))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		Graphics::cSprite* sprite = nullptr;
-		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 64, 64, Transform::BOTTOM_LEFT))))
+		if (!((result = Graphics::cSprite::Load(sprite, 0, 0, 128, 128, Transform::BOTTOM_LEFT))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
-		s_effectSpritePairs.push_back(std::make_pair(effect, sprite));
-	}*/
+		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
+	}
 
 OnExit:
 	return result;

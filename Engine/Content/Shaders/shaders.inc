@@ -60,6 +60,7 @@
 
 #endif
 
+DeclareTexture2DObject( g_color_texture, 0 )
 
 // Sampler State Objects
 //======================
@@ -74,7 +75,7 @@
 
 #endif
 
-DeclareTexture2DObject( g_color_texture, 0 )
+DeclareSamplerStateObject( g_color_samplerState, 0 )
 
 // Sampled Color
 //==============
@@ -88,8 +89,6 @@ DeclareTexture2DObject( g_color_texture, 0 )
 	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) texture2D( i_texture2D, i_uv )
 
 #endif
-
-DeclareSamplerStateObject( g_color_samplerState, 0 )
 
 // Constant Buffers
 //=================
