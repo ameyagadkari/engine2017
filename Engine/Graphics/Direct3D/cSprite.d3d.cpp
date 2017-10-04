@@ -6,7 +6,6 @@
 #include "Includes.h"
 #include "../sContext.h"
 #include "../VertexFormats.h"
-#include "../SpriteHelperStructs.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
