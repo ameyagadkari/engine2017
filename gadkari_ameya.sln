@@ -76,6 +76,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Transform", "Engine\Transfo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureBuilder", "Tools\TextureBuilder\TextureBuilder.vcxproj", "{37D50792-7ACF-496D-9239-2D656A57509C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameobject", "Engine\Gameobject\Gameobject.vcxproj", "{0446A807-E675-4D15-B534-E22FBB695670}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -300,6 +302,14 @@ Global
 		{37D50792-7ACF-496D-9239-2D656A57509C}.Release|x64.Build.0 = Release|x64
 		{37D50792-7ACF-496D-9239-2D656A57509C}.Release|x86.ActiveCfg = Release|Win32
 		{37D50792-7ACF-496D-9239-2D656A57509C}.Release|x86.Build.0 = Release|Win32
+		{0446A807-E675-4D15-B534-E22FBB695670}.Debug|x64.ActiveCfg = Debug|x64
+		{0446A807-E675-4D15-B534-E22FBB695670}.Debug|x64.Build.0 = Debug|x64
+		{0446A807-E675-4D15-B534-E22FBB695670}.Debug|x86.ActiveCfg = Debug|Win32
+		{0446A807-E675-4D15-B534-E22FBB695670}.Debug|x86.Build.0 = Debug|Win32
+		{0446A807-E675-4D15-B534-E22FBB695670}.Release|x64.ActiveCfg = Release|x64
+		{0446A807-E675-4D15-B534-E22FBB695670}.Release|x64.Build.0 = Release|x64
+		{0446A807-E675-4D15-B534-E22FBB695670}.Release|x86.ActiveCfg = Release|Win32
+		{0446A807-E675-4D15-B534-E22FBB695670}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -333,6 +343,7 @@ Global
 		{914D1A1B-000C-4F3A-8161-09DC89A7787D} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 		{B29C4A5C-7EA9-4190-8417-FB726E2471A0} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 		{37D50792-7ACF-496D-9239-2D656A57509C} = {31B05C03-4BB2-4A0D-B621-B41DA6B0F57E}
+		{0446A807-E675-4D15-B534-E22FBB695670} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A89F366F-0B7F-464F-90A8-A4828B273298}

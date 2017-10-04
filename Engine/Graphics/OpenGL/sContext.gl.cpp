@@ -104,7 +104,7 @@ void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_
 {
 	// Black is usually used
 	{
-		glClearColor(i_color.r(), i_color.g(), i_color.b(), i_color.a());
+		glClearColor(i_color.R(), i_color.G(), i_color.B(), i_color.A());
 		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	{

@@ -5,8 +5,8 @@
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
-#include <Engine/Transform/sRectTransform.h>
 #include <Engine/Logging/Logging.h>
+#include <Engine/Gameobject/cGameobject2D.h>
 #include <Engine/Graphics/Graphics.h>
 
 #include <vector>
@@ -14,7 +14,7 @@
 namespace
 {
 	bool s_isPaused = false;
-	std::vector<std::tuple<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cTexture::Handle, eae6320::Graphics::cSprite *const>> s_effectTextureSpriteTuple;
+	std::vector<eae6320::Gameobject::cGameobject2D::Handle> s_2D_GameObject;
 }
 
 // Inherited Implementation
@@ -43,7 +43,15 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 	// Game is not paused
 	if (!s_isPaused)
 	{
+		// Change Simulation Rate based on whether the user is pressing the S key?
 		UserInput::IsKeyPressed(UserInput::KeyCodes::S) ? SetSimulationRate(0.5f) : SetSimulationRate(1.0f);
+	}
+
+	// Is the user pressing the SPACE key?
+	if (UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE))
+	{
+		//Change the bottom left sprite's texture and effect
+
 	}
 }
 
@@ -52,7 +60,7 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 	// Submit Clear Color to Graphics
 	{
 		Graphics::ColorFormats::sColor clearColor;
-		if (!(clearColor.SetColor(0.0f, 0.0f, 1.0f)))
+		if (!clearColor.SetColor(0.0f, 0.2f, 0.8f))
 		{
 			EAE6320_ASSERT(false);
 			Logging::OutputError("All the SetColor parameters must be [0.0, 1.0]");
@@ -60,11 +68,11 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 		Graphics::SubmitClearColor(clearColor);
 	}
 
-	// Submit Effect/Sprite pair
+	// Submit 2D Gameobjects
 	{
-		for (auto& effectTextureSpriteTuple : s_effectTextureSpriteTuple)
+		for (auto& _2DGameObject : s_2D_GameObject)
 		{
-			SubmitEffectTextureSpriteTuple(std::get<0>(effectTextureSpriteTuple), std::get<1>(effectTextureSpriteTuple), std::get<2>(effectTextureSpriteTuple));
+			Graphics::SubmitGameobject2D(_2DGameObject);
 		}
 	}
 }
@@ -76,7 +84,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 {
 	constexpr auto alphaTransperancyAndDrawingBothSidedTrianglesEnabled = 0x05;
 	cResult result;
-	{
+	/*{
 		Graphics::cEffect::Handle effect;
 		if (!((result = Graphics::cEffect::s_manager.Load("fake_effect1_path", effect, "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled))))
 		{
@@ -180,6 +188,15 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			goto OnExit;
 		}
 		s_effectTextureSpriteTuple.push_back(std::make_tuple(effect, texture, sprite));
+	}*/
+	{
+	Gameobject::cGameobject2D::Handle gameobject2D;
+		if (!((result = Gameobject::cGameobject2D::s_manager.Load("fake_go2d1_path", gameobject2D, 0, 0, 256, 256, Transform::MID_CENTER, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/happy.btf"))))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+		s_2D_GameObject.push_back(gameobject2D);
 	}
 
 OnExit:
@@ -189,11 +206,11 @@ OnExit:
 eae6320::cResult eae6320::cExampleGame::CleanUp()
 {
 	auto result = Results::success;
-	for (auto& effectTextureSpriteTuple : s_effectTextureSpriteTuple)
+	for (auto& _2DGameObject : s_2D_GameObject)
 	{
-		// Clean up effect
+		// Clean up 2d gameobject
 		{
-			const auto localResult = Graphics::cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+			const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
 			if (!localResult)
 			{
 				EAE6320_ASSERT(false);
@@ -202,26 +219,8 @@ eae6320::cResult eae6320::cExampleGame::CleanUp()
 					result = localResult;
 				}
 			}
-		}
-
-		// Clean up texture
-		{
-			const auto localResult = Graphics::cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
-			if (!localResult)
-			{
-				EAE6320_ASSERT(false);
-				if (result)
-				{
-					result = localResult;
-				}
-			}
-		}
-
-		// Clean up sprite
-		{
-			std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 		}
 	}
-	s_effectTextureSpriteTuple.clear();
+	s_2D_GameObject.clear();
 	return result;
 }

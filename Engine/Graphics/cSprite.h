@@ -62,7 +62,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(cSprite*& o_sprite, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor);
+			static cResult Load(cSprite*& o_sprite, const Transform::sRectTransform& i_rectTransform);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cSprite);
 

@@ -15,11 +15,9 @@
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cSprite::Load(cSprite*& o_sprite, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor)
+eae6320::cResult eae6320::Graphics::cSprite::Load(cSprite*& o_sprite, const Transform::sRectTransform& i_rectTransform)
 {
 	cResult result;
-
-	const Transform::sRectTransform rectTransform(i_x, i_y, i_width, i_height, i_anchor);
 
 	cSprite* newSprite = nullptr;
 
@@ -35,7 +33,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Load(cSprite*& o_sprite, const int1
 		}
 	}
 
-	if (!((result = newSprite->Initialize(rectTransform))))
+	if (!((result = newSprite->Initialize(i_rectTransform))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;

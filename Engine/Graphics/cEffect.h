@@ -1,3 +1,6 @@
+/*
+An effect is an encapsulation for the shaders and the render state.
+*/
 #ifndef EAE6320_GRAPHICS_CEFFECT_H
 #define EAE6320_GRAPHICS_CEFFECT_H
 
@@ -28,7 +31,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState = 0);
+			static cResult Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
 
@@ -66,7 +69,7 @@ namespace eae6320
 			cEffect() = default;
 			~cEffect();
 
-			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t& i_renderState);
+			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
 			cResult CleanUp();
 
 			// Initialization / Clean Up Platform Dependent

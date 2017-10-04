@@ -10,10 +10,8 @@
 
 #include <cstdint>
 #include <Engine/Results/Results.h>
+#include <Engine/Gameobject/cGameobject2D.h>
 #include "ColorFormats.h"
-#include "cSprite.h"
-#include "cEffect.h"
-#include "cTexture.h"
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
@@ -36,8 +34,8 @@ namespace eae6320
 		// of how the application submits the total elapsed times
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
-		void SubmitClearColor(const ColorFormats::sColor i_clearColor);
-		void SubmitEffectTextureSpriteTuple(const cEffect::Handle i_effectHandle, const cTexture::Handle i_textureHandle, cSprite * const i_sprite);
+		void SubmitClearColor(const ColorFormats::sColor& i_clearColor);
+		void SubmitGameobject2D(const Gameobject::cGameobject2D::Handle i_gameObject2D);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything

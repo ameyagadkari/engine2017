@@ -1,0 +1,85 @@
+/*
+A gameobject 2d is a representation for a 2D gameobject on screen
+*/
+
+#ifndef EAE6320_GAMEOBJECT_CGAMEOBJECT2D_H
+#define EAE6320_GAMEOBJECT_CGAMEOBJECT2D_H
+
+// Include Files
+//==============
+
+#include <Engine/Transform/sRectTransform.h>
+#include <Engine/Graphics/cTexture.h>
+#include <Engine/Graphics/cEffect.h>
+
+// Forward Declarations
+//=====================
+
+namespace eae6320
+{
+	namespace Graphics
+	{
+		class cSprite;
+	}
+}
+
+// Class Declaration
+//==================
+
+namespace eae6320
+{
+	namespace Gameobject
+	{
+		class cGameobject2D
+		{
+			// Interface
+			//==========
+
+		public:
+
+			// Assets
+			//-------
+
+			using Handle = Assets::cHandle<cGameobject2D>;
+			static Assets::cManager<cGameobject2D> s_manager;
+
+			// Initialization / Clean Up
+			//--------------------------
+
+			static cResult Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_texturePath);
+
+			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject2D);
+
+			// Reference Counting
+			//-------------------
+
+			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+
+			cResult CleanUp();
+
+			// Render
+			//-------
+
+			void BindAndDraw() const;
+
+		private:
+
+			// Initialization / Clean Up
+			//--------------------------
+			explicit cGameobject2D(const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor);
+			~cGameobject2D() { CleanUp(); }
+
+			// Data
+			//=====
+
+			Transform::sRectTransform m_rectTransform;
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+			Graphics::cSprite* m_sprite;
+			Graphics::cEffect::Handle m_effectHandle;
+			Graphics::cTexture::Handle m_textureHandle;
+
+		};
+	}
+}
+
+#endif // EAE6320_GAMEOBJECT_CGAMEOBJECT2D_H

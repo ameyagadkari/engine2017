@@ -19,7 +19,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 		const auto localResult = (i_r >= MIN_VAL) && (i_r <= MAX_VAL);
 		if (localResult)
 		{
-			_r = i_r;
+			r = i_r;
 		}
 		else
 		{
@@ -35,7 +35,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 		const auto localResult = (i_g >= MIN_VAL) && (i_g <= MAX_VAL);
 		if (localResult)
 		{
-			_g = i_g;
+			g = i_g;
 		}
 		else
 		{
@@ -51,7 +51,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 		const auto localResult = (i_b >= MIN_VAL) && (i_b <= MAX_VAL);
 		if (localResult)
 		{
-			_b = i_b;
+			b = i_b;
 		}
 		else
 		{
@@ -67,7 +67,7 @@ eae6320::cResult eae6320::Graphics::ColorFormats::sColor::SetColor(const float i
 		const auto localResult = (i_a >= MIN_VAL) && (i_a <= MAX_VAL);
 		if (localResult)
 		{
-			_a = i_a;
+			a = i_a;
 		}
 		else
 		{

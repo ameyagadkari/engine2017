@@ -34,7 +34,7 @@ namespace
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
-		std::vector<std::tuple<eae6320::Graphics::cEffect::Handle, eae6320::Graphics::cTexture::Handle, eae6320::Graphics::cSprite *const>> effectTextureSpriteTuple_perFrame;
+		std::vector<eae6320::Gameobject::cGameobject2D::Handle> gameObjects2D_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -71,21 +71,19 @@ void eae6320::Graphics::SubmitElapsedTime(const float i_elapsedSecondCount_syste
 	constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
 }
 
-void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor i_clearColor)
+void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor& i_clearColor)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
-void eae6320::Graphics::SubmitEffectTextureSpriteTuple(const cEffect::Handle i_effectHandle, const cTexture::Handle i_textureHandle, cSprite * const i_sprite)
+void eae6320::Graphics::SubmitGameobject2D(const Gameobject::cGameobject2D::Handle i_gameObject2D)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
 
-	cEffect::s_manager.Get(i_effectHandle)->IncrementReferenceCount();
-	cTexture::s_manager.Get(i_textureHandle)->IncrementReferenceCount();
-	i_sprite->IncrementReferenceCount();
+	Gameobject::cGameobject2D::s_manager.Get(i_gameObject2D)->IncrementReferenceCount();
 
-	s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.push_back(std::make_tuple(i_effectHandle, i_textureHandle, i_sprite));
+	s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.push_back(i_gameObject2D);
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -145,13 +143,10 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update(&constantData_perFrame);
 	}
 
-	// Bind the effects
-	// Draw the sprites
-	for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
+	// Bind and draw 2d gameobjects
+	for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
 	{
-		cEffect::s_manager.Get(std::get<0>(effectTextureSpriteTuple))->Bind();
-		cTexture::s_manager.Get(std::get<1>(effectTextureSpriteTuple))->Bind(0);
-		std::get<2>(effectTextureSpriteTuple)->Draw();
+		Gameobject::cGameobject2D::s_manager.Get(_2DGameObject)->BindAndDraw();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -164,13 +159,18 @@ void eae6320::Graphics::RenderFrame()
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
 	{
 		// (At this point in the class there isn't anything that needs to be cleaned up)
-		for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
+		for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
 		{
-			cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
-			cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
-			std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
+			// Clean up 2d gameobject
+			{
+				const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
+				if (!localResult)
+				{
+					EAE6320_ASSERT(false);
+				}
+			}
 		}
-		s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.clear();
+		s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.clear();
 	}
 }
 
@@ -260,13 +260,13 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::success;
 	{
 		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.empty())
+		if (!s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.empty())
 		{
-			for (auto& effectTextureSpriteTuple : s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame)
+			for (auto& _2DGameObject : s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame)
 			{
-				// Clean up effect
+				// Clean up 2d gameobject
 				{
-					const auto localResult = cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+					const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -275,37 +275,19 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 							result = localResult;
 						}
 					}
-				}
-
-				// Clean up texture
-				{
-					const auto localResult = cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
-				}
-
-				// Clean up sprite
-				{
-					std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 				}
 			}
-			s_dataBeingSubmittedByApplicationThread->effectTextureSpriteTuple_perFrame.clear();
+			s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.clear();
 		}
 
 		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.empty())
+		if (!s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.empty())
 		{
-			for (auto& effectTextureSpriteTuple : s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame)
+			for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
 			{
-				// Clean up effect
+				// Clean up 2d gameobject
 				{
-					const auto localResult = cEffect::s_manager.Release(std::get<0>(effectTextureSpriteTuple));
+					const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
 					if (!localResult)
 					{
 						EAE6320_ASSERT(false);
@@ -314,27 +296,9 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 							result = localResult;
 						}
 					}
-				}
-
-				// Clean up texture
-				{
-					const auto localResult = cTexture::s_manager.Release(std::get<1>(effectTextureSpriteTuple));
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
-				}
-
-				// Clean up sprite
-				{
-					std::get<2>(effectTextureSpriteTuple)->DecrementReferenceCount();
 				}
 			}
-			s_dataBeingRenderedByRenderThread->effectTextureSpriteTuple_perFrame.clear();
+			s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.clear();
 		}
 	}
 

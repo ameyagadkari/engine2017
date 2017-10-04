@@ -8,8 +8,6 @@ A color format determines the representation of color
 // Include Files
 //==============
 
-#include "Configuration.h"
-
 #include <Engine/Results/Results.h>
 
 // Color Formats
@@ -23,14 +21,16 @@ namespace eae6320
 		{
 			struct sColor
 			{
-				sColor() :_r(1.0f), _g(1.0f), _b(1.0f), _a(1.0f) {}
+				sColor() :r(1.0f), g(1.0f), b(1.0f), a(1.0f) {}
+				sColor(const sColor&) = default;
+				sColor& operator=(const sColor&) = default;
 				cResult SetColor(const float i_r, const float i_g, const float i_b, const float i_a = 1.0f);
-				float r() const { return _r; }
-				float g() const { return _g; }
-				float b() const { return _b; }
-				float a() const { return _a; }
+				float R() const { return r; }
+				float G() const { return g; }
+				float B() const { return b; }
+				float A() const { return a; }
 			private:
-				float _r, _g, _b, _a;
+				float r, g, b, a;
 			};
 		}
 	}
