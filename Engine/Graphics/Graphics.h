@@ -35,7 +35,7 @@ namespace eae6320
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor& i_clearColor);
-		void SubmitGameobject2D(const Gameobject::cGameobject2D::Handle i_gameObject2D);
+		void SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything

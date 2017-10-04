@@ -34,7 +34,7 @@ namespace
 	{
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
-		std::vector<eae6320::Gameobject::cGameobject2D::Handle> gameObjects2D_perFrame;
+		std::vector<eae6320::Gameobject::cGameobject2D*> gameobjects2D_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -77,13 +77,13 @@ void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor& i_clearColo
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
-void eae6320::Graphics::SubmitGameobject2D(const Gameobject::cGameobject2D::Handle i_gameObject2D)
+void eae6320::Graphics::SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+	
+	i_gameObject2D->IncrementReferenceCount();
 
-	Gameobject::cGameobject2D::s_manager.Get(i_gameObject2D)->IncrementReferenceCount();
-
-	s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.push_back(i_gameObject2D);
+	s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.push_back(i_gameObject2D);
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -144,9 +144,10 @@ void eae6320::Graphics::RenderFrame()
 	}
 
 	// Bind and draw 2d gameobjects
-	for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
+	const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
+	for (size_t i = 0; i < length; i++)
 	{
-		Gameobject::cGameobject2D::s_manager.Get(_2DGameObject)->BindAndDraw();
+		s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->BindAndDraw();
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -159,18 +160,12 @@ void eae6320::Graphics::RenderFrame()
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
 	{
 		// (At this point in the class there isn't anything that needs to be cleaned up)
-		for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
+		for (size_t i = 0; i < length; i++)
 		{
 			// Clean up 2d gameobject
-			{
-				const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
-				if (!localResult)
-				{
-					EAE6320_ASSERT(false);
-				}
-			}
+			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
 		}
-		s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.clear();
+		s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
 	}
 }
 
@@ -260,45 +255,28 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::success;
 	{
 		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.empty())
+		if (!s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.empty())
 		{
-			for (auto& _2DGameObject : s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame)
+			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.size();
+			for (size_t i = 0; i < length; i++)
 			{
 				// Clean up 2d gameobject
-				{
-					const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
-				}
+				s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
 			}
-			s_dataBeingSubmittedByApplicationThread->gameObjects2D_perFrame.clear();
+
+			s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.clear();
 		}
 
 		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.empty())
+		if (!s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.empty())
 		{
-			for (auto& _2DGameObject : s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame)
+			const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
+			for (size_t i = 0; i < length; i++)
 			{
 				// Clean up 2d gameobject
-				{
-					const auto localResult = Gameobject::cGameobject2D::s_manager.Release(_2DGameObject);
-					if (!localResult)
-					{
-						EAE6320_ASSERT(false);
-						if (result)
-						{
-							result = localResult;
-						}
-					}
-				}
+				s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
 			}
-			s_dataBeingRenderedByRenderThread->gameObjects2D_perFrame.clear();
+			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
 		}
 	}
 

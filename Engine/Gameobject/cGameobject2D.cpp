@@ -4,11 +4,6 @@
 #include "cGameobject2D.h"
 #include <Engine/Graphics/cSprite.h>
 
-// Static Data Initialization
-//===========================
-
-eae6320::Assets::cManager<eae6320::Gameobject::cGameobject2D> eae6320::Gameobject::cGameobject2D::s_manager;
-
 // Interface
 //==========
 

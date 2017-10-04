@@ -37,12 +37,6 @@ namespace eae6320
 
 		public:
 
-			// Assets
-			//-------
-
-			using Handle = Assets::cHandle<cGameobject2D>;
-			static Assets::cManager<cGameobject2D> s_manager;
-
 			// Initialization / Clean Up
 			//--------------------------
 
