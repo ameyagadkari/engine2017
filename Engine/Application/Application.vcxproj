@@ -37,6 +37,9 @@
     <ProjectReference Include="..\Concurrency\Concurrency.vcxproj">
       <Project>{60ff1b7f-04ec-40ae-bded-5fe1742da10e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Gameobject\Gameobject.vcxproj">
+      <Project>{0446a807-e675-4d15-b534-e22fbb695670}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Graphics\Graphics.vcxproj">
       <Project>{914d1a1b-000c-4f3a-8161-09dc89a7787d}</Project>
     </ProjectReference>

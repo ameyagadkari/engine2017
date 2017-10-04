@@ -8,6 +8,8 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Transform/sRectTransform.h>
+#include <new>
+#include <utility>
 
 // Interface
 //==========

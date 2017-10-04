@@ -67,14 +67,13 @@ namespace eae6320
 			//=====
 
 			Transform::sRectTransform m_rectTransform;
-			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
-		public:
-			bool m_useAlternateTexture;
-		private:
 			Graphics::cSprite* m_sprite;
 			Graphics::cEffect::Handle m_effect;
 			Graphics::cTexture::Handle m_textureMain;
 			Graphics::cTexture::Handle m_textureAlternate;
+			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+		public:
+			bool m_useAlternateTexture;
 		};
 	}
 }
