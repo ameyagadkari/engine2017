@@ -74,19 +74,22 @@
 
 #endif
 
+DeclareTexture2DObject( g_color_texture, 0 )
 
 // Sampled Color
 //==============
 
 #if defined( EAE6320_PLATFORM_D3D )
 
-	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) i_texture2D.Sample( i_samplerstate, i_uv );
+	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) i_texture2D.Sample( i_samplerstate, i_uv )
 
 #elif defined( EAE6320_PLATFORM_GL )
 
-	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) texture2D( i_texture2D, i_uv );
+	#define SampleColor( i_texture2D, i_samplerstate, i_uv ) texture2D( i_texture2D, i_uv )
 
 #endif
+
+DeclareSamplerStateObject( g_color_samplerState, 0 )
 
 // Constant Buffers
 //=================
@@ -119,7 +122,3 @@ DeclareConstantBuffer( g_constantBuffer_perDrawCall, 2)
 	// This is a placeholder to prevent an empty constant buffer declaration
 	float4 DUMMY;
 };
-
-DeclareTexture2DObject( g_color_texture, 0 )
-
-DeclareSamplerStateObject( g_color_samplerState, 0 )
