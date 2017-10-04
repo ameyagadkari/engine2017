@@ -110,43 +110,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 	{
 		VertexFormats::sSprite vertexData[s_vertexCount];
 		{
-			//GenerateVertexData(i_rectTransform, vertexData);
-			SpriteHelperStructs::sScreenPosition screenPosition;
-			i_rectTransform.GetScreenPosition(screenPosition);
-			{
-				// Bottom Right
-				{
-					vertexData[0].x = screenPosition.right;
-					vertexData[0].y = screenPosition.bottom;
-
-					vertexData[0].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-					vertexData[0].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
-				}
-				// Bottom Left
-				{
-					vertexData[1].x = screenPosition.left;
-					vertexData[1].y = screenPosition.bottom;
-
-					vertexData[1].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-					vertexData[1].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
-				}
-				// Top Right
-				{
-					vertexData[2].x = screenPosition.right;
-					vertexData[2].y = screenPosition.top;
-
-					vertexData[2].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-					vertexData[2].v = SpriteHelperStructs::g_defaultMappedUVs.top;
-				}
-				// Top Left
-				{
-					vertexData[3].x = screenPosition.left;
-					vertexData[3].y = screenPosition.top;
-
-					vertexData[3].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-					vertexData[3].v = SpriteHelperStructs::g_defaultMappedUVs.top;
-				}
-			}
+			GenerateVertexData(i_rectTransform, vertexData);
 		}
 		D3D11_BUFFER_DESC bufferDescription{};
 		{

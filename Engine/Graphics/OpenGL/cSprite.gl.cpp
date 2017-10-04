@@ -87,42 +87,6 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		VertexFormats::sSprite vertexData[s_vertexCount];
 		{
 			GenerateVertexData(i_rectTransform, vertexData);
-			/*SpriteHelperStructs::sScreenPosition screenPosition;
-			i_rectTransform.GetScreenPosition(screenPosition);
-			{
-				// Bottom Right
-				{
-					vertexData[0].x = screenPosition.right;
-					vertexData[0].y = screenPosition.bottom;
-
-					vertexData[0].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-					vertexData[0].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
-				}
-				// Top Right
-				{
-					vertexData[1].x = screenPosition.right;
-					vertexData[1].y = screenPosition.top;
-
-					vertexData[1].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-					vertexData[1].v = SpriteHelperStructs::g_defaultMappedUVs.top;
-				}
-				// Bottom Left
-				{
-					vertexData[2].x = screenPosition.left;
-					vertexData[2].y = screenPosition.bottom;
-
-					vertexData[2].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-					vertexData[2].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
-				}
-				// Top Left
-				{
-					vertexData[3].x = screenPosition.left;
-					vertexData[3].y = screenPosition.top;
-
-					vertexData[3].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-					vertexData[3].v = SpriteHelperStructs::g_defaultMappedUVs.top;
-				}
-			}*/
 		}
 		const auto bufferSize = s_vertexCount * sizeof(VertexFormats::sSprite);
 		EAE6320_ASSERT(bufferSize < uint64_t(1u) << sizeof(GLsizeiptr) * 8);
