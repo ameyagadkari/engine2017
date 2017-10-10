@@ -59,7 +59,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_pa
 	// Load the main texture
 	if (!((result = Graphics::cTexture::s_manager.Load(i_textureMainPath, newGameobject2D->m_textureMain))))
 	{
-		EAE6320_ASSERTF(false, "Loading of texture failed: \"%s\"", i_textureMainPath);
+		EAE6320_ASSERTF(false, "Loading of main texture failed: \"%s\"", i_textureMainPath);
 		goto OnExit;
 	}
 
@@ -69,7 +69,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_pa
 		{
 			if (!((result = Graphics::cTexture::s_manager.Load(i_textureAlternatePath, newGameobject2D->m_textureAlternate))))
 			{
-				EAE6320_ASSERTF(false, "Loading of texture failed: \"%s\"", i_textureAlternatePath);
+				EAE6320_ASSERTF(false, "Loading of alternate texture failed: \"%s\"", i_textureAlternatePath);
 				goto OnExit;
 			}
 		}

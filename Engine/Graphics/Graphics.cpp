@@ -303,6 +303,28 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 		}
 	}
 	{
+		const auto localResult = cTexture::s_manager.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
+		const auto localResult = cEffect::s_manager.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
 		const auto localResult = cShader::s_manager.CleanUp();
 		if (!localResult)
 		{
