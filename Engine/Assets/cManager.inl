@@ -8,9 +8,13 @@
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
+#include <limits>
 
 // Interface
 //==========
+
+// Access
+//-------
 
 template <class tAsset>
 tAsset* eae6320::Assets::cManager<tAsset>::Get(const cHandle<tAsset> i_handle)
@@ -23,7 +27,7 @@ tAsset* eae6320::Assets::cManager<tAsset>::Get(const cHandle<tAsset> i_handle)
 		const auto assetCount = m_assetRecords.size();
 		if (index < assetCount)
 		{
-			auto &assetRecord = m_assetRecords[index];
+			auto& assetRecord = m_assetRecords[index];
 			const auto id_assetRecord = assetRecord.id;
 			const auto id_handle = i_handle.GetId();
 			if (id_handle == id_assetRecord)
@@ -46,6 +50,9 @@ tAsset* eae6320::Assets::cManager<tAsset>::Get(const cHandle<tAsset> i_handle)
 	return nullptr;
 }
 
+// Initialization / Clean Up
+//--------------------------
+
 template <class tAsset> template <typename... tConstructorArguments>
 eae6320::cResult eae6320::Assets::cManager<tAsset>::Load(const char* const i_path, cHandle<tAsset>& o_handle, tConstructorArguments&&... i_constructorArguments)
 {
@@ -64,15 +71,26 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load(const char* const i_pat
 				const auto assetCount = m_assetRecords.size();
 				if (index < assetCount)
 				{
-					auto &assetRecord = m_assetRecords[index];
+					auto& assetRecord = m_assetRecords[index];
 					const auto id_assetRecord = assetRecord.id;
 					const auto id_handle = existingHandle.GetId();
 					if (id_handle == id_assetRecord)
 					{
-						auto *const existingAsset = assetRecord.asset;
-						existingAsset->IncrementReferenceCount();
-						o_handle = existingHandle;
-						return Results::success;
+						EAE6320_ASSERT(assetRecord.asset);
+						const auto referenceCount = assetRecord.referenceCount;
+						if (referenceCount < std::numeric_limits<decltype(assetRecord.referenceCount)>::max())
+						{
+							assetRecord.referenceCount = referenceCount + 1;
+							o_handle = existingHandle;
+							return Results::success;
+						}
+						else
+						{
+							EAE6320_ASSERTF(false,
+								"The asset \"%s\" has been loaded too many times (the manager's reference count is too big)", i_path);
+							Logging::OutputError("A new instance of \"%s\" couldn't be loaded because the manager's reference count was too big", i_path);
+							return Results::Failure;
+						}
 					}
 				}
 				// If this code is reached it means that the existing entry is invalid
@@ -94,21 +112,31 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Load(const char* const i_pat
 			if (!m_unusedAssetRecordIndices.empty())
 			{
 				const auto index = m_unusedAssetRecordIndices.back();
-				m_unusedAssetRecordIndices.pop_back();
-				auto &assetRecord = m_assetRecords[index];
-				assetRecord.asset = newAsset;
+				{
+					m_unusedAssetRecordIndices.pop_back();
+				}
+				auto& assetRecord = m_assetRecords[index];
+				{
+					assetRecord.asset = newAsset;
+					assetRecord.referenceCount = 1;
+				}
 				o_handle = cHandle<tAsset>(index, assetRecord.id);
 			}
 			else
 			{
 				// Create a new asset record
 				const auto assetRecordCount = m_assetRecords.size();
-				if (assetRecordCount < cHandle<tAsset>::InvalidIndex)
+				if (assetRecordCount < cHandle<tAsset>::invalidIndex)
 				{
-					const auto index = static_cast<uint_fast32_t>(assetRecordCount);
-					constexpr uint32_t id = 0;
-					m_assetRecords.push_back(sAssetRecord{ newAsset, id });
-					o_handle = cHandle<tAsset>(index, id);
+					constexpr uint16_t id = 0;
+					{
+						constexpr uint16_t referenceCount = 1;
+						m_assetRecords.push_back(sAssetRecord(newAsset, id, referenceCount));
+					}
+					{
+						const auto index = static_cast<uint_fast32_t>(assetRecordCount);
+						o_handle = cHandle<tAsset>(index, id);
+					}
 				}
 				else
 				{
@@ -147,17 +175,30 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Release(cHandle<tAsset>& o_h
 			const auto assetCount = m_assetRecords.size();
 			if (index < assetCount)
 			{
-				auto &assetRecord = m_assetRecords[index];
+				auto& assetRecord = m_assetRecords[index];
 				const auto id_assetRecord = assetRecord.id;
 				const auto id_handle = o_handle.GetId();
 				if (id_handle == id_assetRecord)
 				{
-					const auto newReferenceCount = assetRecord.asset->DecrementReferenceCount();
+					// Decrement the manager's reference count
+					EAE6320_ASSERT(assetRecord.referenceCount > 0);
+					const auto newReferenceCount = --assetRecord.referenceCount;
 					if (newReferenceCount == 0)
 					{
-						assetRecord.asset = nullptr;
-						assetRecord.id = cHandle<tAsset>::IncrementId(id_assetRecord);
-						m_unusedAssetRecordIndices.push_back(index);
+						// If the manager's reference count is zero it means that
+						// every client that has asked to load the asset has now released it,
+						// and the manager can free the asset itself
+						{
+							EAE6320_ASSERT(assetRecord.asset);
+							assetRecord.asset->DecrementReferenceCount();
+						}
+						// The existing asset record has already been allocated,
+						// and can be re-used for a new asset
+						{
+							assetRecord.asset = nullptr;
+							assetRecord.id = static_cast<uint16_t>(cHandle<tAsset>::IncrementId(id_assetRecord));
+							m_unusedAssetRecordIndices.push_back(index);
+						}
 					}
 				}
 				else
@@ -181,9 +222,6 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::Release(cHandle<tAsset>& o_h
 	return result;
 }
 
-// Initialization / Clean Up
-//==========================
-
 template <class tAsset>
 eae6320::cResult eae6320::Assets::cManager<tAsset>::Initialize()
 {
@@ -201,23 +239,28 @@ eae6320::cResult eae6320::Assets::cManager<tAsset>::CleanUp()
 		// Lock the collections
 		{
 			Concurrency::cMutex::cScopeLock autoLock(m_mutex);
-			const auto assetRecordCount = m_assetRecords.size();
-			for (size_t i = 0; i < assetRecordCount; ++i)
 			{
-				auto& assetRecord = m_assetRecords[i];
-				if (assetRecord.asset)
+				for (auto& assetRecord : m_assetRecords)
 				{
-					EAE6320_ASSERTF(false, "A manager still has a record of an asset that hasn't been released");
-					result = Results::Failure;
-					wereThereStillAssets = true;
-					// The asset's reference count could be decremented until it gets destroyed,
-					// but there's no way of knowing that the asset still isn't being used
-					// and so the asset will leak
-					assetRecord.asset = nullptr;
-					// The following shouldn't be necessary since the manager is being cleaned up,
-					// but it doesn't hurt to be safe
-					assetRecord.id = cHandle<tAsset>::IncrementId(assetRecord.id);
+					if (assetRecord.asset)
+					{
+						EAE6320_ASSERTF(false, "A manager still has a record of an asset that hasn't been released");
+						result = Results::Failure;
+						wereThereStillAssets = true;
+						// The asset's reference count could be decremented until it gets destroyed,
+						// but there's no way of knowing that the asset still isn't being used
+						// and so the asset will leak
+						assetRecord.asset = nullptr;
+						// The following shouldn't be necessary since the manager is being cleaned up,
+						// but it doesn't hurt to be safe
+						assetRecord.id = cHandle<tAsset>::IncrementId(assetRecord.id);
+						assetRecord.referenceCount = 0;
+					}
 				}
+
+				m_assetRecords.clear();
+				m_unusedAssetRecordIndices.clear();
+				m_map_pathsToHandles.clear();
 			}
 		}
 
@@ -235,6 +278,17 @@ eae6320::Assets::cManager<tAsset>::~cManager<tAsset>()
 {
 	const auto result = CleanUp();
 	EAE6320_ASSERT(result);
+}
+
+// Implementation
+//===============
+
+template <class tAsset>
+eae6320::Assets::cManager<tAsset>::sAssetRecord::sAssetRecord(tAsset* const i_asset, const uint16_t i_id, const uint16_t i_referenceCount)
+	:
+	asset(i_asset), id(i_id), referenceCount(i_referenceCount)
+{
+
 }
 
 #endif	// EAE6320_ASSETS_CMANAGER_INL

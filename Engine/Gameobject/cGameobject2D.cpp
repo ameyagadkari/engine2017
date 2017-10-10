@@ -13,8 +13,8 @@
 eae6320::Gameobject::cGameobject2D::cGameobject2D(const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor)
 	:
 	m_rectTransform(i_x, i_y, i_width, i_height, i_anchor),
-	m_useAlternateTexture(false),
-	m_sprite(nullptr)
+	m_sprite(nullptr),
+	m_useAlternateTexture(false)
 {}
 
 eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_path, cGameobject2D*& o_gameobject2D, const int16_t i_x, const int16_t i_y, const uint16_t i_width, const uint16_t i_height, const Transform::eAnchor i_anchor, const char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const char* const i_textureMainPath, const char* const i_textureAlternatePath)

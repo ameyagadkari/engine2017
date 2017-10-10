@@ -26,9 +26,6 @@
     <ClCompile Include="Windows\cTextureBuilder.win.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Engine\Math\Math.vcxproj">
-      <Project>{999c3d5f-7f79-4bd7-ae21-92eeed0c5962}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\Engine\Platform\Platform.vcxproj">
       <Project>{7462d3a7-9936-442e-877c-89efda754596}</Project>
     </ProjectReference>
