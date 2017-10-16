@@ -4,6 +4,14 @@
 #include "cGameobject2D.h"
 #include <Engine/Graphics/cSprite.h>
 
+// Static Data Initialization
+//===========================
+
+namespace
+{
+	constexpr auto s_epsilon = 1.0e-9f;
+}
+
 // Interface
 //==========
 
@@ -71,6 +79,23 @@ eae6320::cResult eae6320::Gameobject::cGameobject2D::Load(const char* const i_pa
 			{
 				EAE6320_ASSERTF(false, "Loading of alternate texture failed: \"%s\"", i_textureAlternatePath);
 				goto OnExit;
+			}
+
+			// Assert if the width and height of the alternate texture is same as the main texture
+			{
+				auto const& mainTexture = Graphics::cTexture::s_manager.Get(newGameobject2D->m_textureMain);
+				auto const& alternateTexture = Graphics::cTexture::s_manager.Get(newGameobject2D->m_textureAlternate);
+				const auto mainTextureWidth = mainTexture->GetWidth();
+				const auto mainTextureHeight = mainTexture->GetHeight();
+				const auto alternateTextureWidth = alternateTexture->GetWidth();
+				const auto alternateTextureHeight = alternateTexture->GetHeight();
+				const auto mainTextureAspectRatio = static_cast<float>(mainTextureWidth) / mainTextureHeight;
+				const auto alternateTextureAspectRatio = static_cast<float>(alternateTextureWidth) / alternateTextureHeight;
+				if (abs(mainTextureAspectRatio - alternateTextureAspectRatio) > s_epsilon)
+				{
+					EAE6320_ASSERTF(false, "The main texture aspect ratio must match the alternate texture aspect ratio");
+					result = Results::Failure;
+				}
 			}
 		}
 	}
