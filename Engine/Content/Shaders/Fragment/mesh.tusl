@@ -1,0 +1,47 @@
+/*
+	This is sprite fragment shader
+*/
+
+#include <Shaders/shaders.inc>
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+// Entry Point
+//============
+
+void main(
+	
+	// Input
+	//======
+	in const float4 i_position : SV_POSITION,
+	in const float4 i_color : COLOR,
+
+	// Output
+	//=======
+
+	out float4 o_color : SV_TARGET
+
+	)
+	
+#elif defined( EAE6320_PLATFORM_GL )
+
+// Input
+//======
+
+layout( location = 0 ) in vec4 i_color;
+
+// Output
+//=======
+
+out vec4 o_color;
+
+// Entry Point
+//============
+
+void main()
+
+#endif
+
+{
+	o_color = i_color;
+}

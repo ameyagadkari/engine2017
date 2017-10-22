@@ -12,7 +12,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		namespace SpriteHelperStructs
+		namespace HelperStructs
 		{
 			// The positions and texture coordinates are stored as a quad
 			// (meaning that only rectangular sprites can be made)
@@ -57,7 +57,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		namespace SpriteHelperStructs
+		namespace HelperStructs
 		{
 			// We can declare a global Texture Coordinates struct for UIs
 			// which map the whole texture to the given quad

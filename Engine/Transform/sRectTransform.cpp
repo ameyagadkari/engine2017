@@ -49,7 +49,7 @@ eae6320::Transform::sRectTransform::sRectTransform(
 // Access
 //-------
 
-void eae6320::Transform::sRectTransform::GetScreenPosition(Graphics::SpriteHelperStructs::sScreenPosition& o_screenPosition) const
+void eae6320::Transform::sRectTransform::GetScreenPosition(Graphics::HelperStructs::sScreenPosition& o_screenPosition) const
 {
 	if (!s_isInitialized)
 	{

@@ -1,33 +1,23 @@
 // Include Files
 //==============
 
-#include "../cSprite.h"
+#include "../cMesh.h"
 
 #include "Includes.h"
 #include "../sContext.h"
 #include "../VertexFormats.h"
+#include "../MeshHelperStructs.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
-#include <Engine/Transform/sRectTransform.h>
-
-// Static Data Initialization
-//===========================
-
-namespace
-{
-	// Since a sprite is always a quad the vertex count will always be 4
-
-	constexpr unsigned int s_vertexCount = 4;
-}
 
 // Implementation
 //===============
 
 // Initialization / Clean Up
 
-eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
+eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMeshData& i_meshData)
 {
 	cResult result;
 
@@ -39,11 +29,11 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		// Load the compiled binary vertex shader for the input layout
 		Platform::sDataFromFile vertexShaderDataFromFile;
 		std::string errorMessage;
-		if ((result = LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_sprite.busl", vertexShaderDataFromFile, &errorMessage)))
+		if ((result = LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_mesh.shd", vertexShaderDataFromFile, &errorMessage)))
 		{
 			// Create the vertex layout
 
-			// These elements must match the VertexFormats::sSprite layout struct exactly.
+			// These elements must match the VertexFormats::sMesh layout struct exactly.
 			// They instruct Direct3D how to match the binary data in the vertex buffer
 			// to the input elements in a vertex shader
 			// (by using so-called "semantic" names so that, for example,
@@ -64,26 +54,26 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 					positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
 					positionElement.Format = DXGI_FORMAT_R32G32_FLOAT;
 					positionElement.InputSlot = 0;
-					positionElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sSprite, x);
+					positionElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, x);
 					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 
 				// Slot 1
 
-				// TEXTURE_COORDINATES
-				// 2 uint16_t == 4 bytes
+				// COLOR
+				// 4 uint8_t == 4 bytes
 				// Offset = 8
 				{
-					auto& uvsElement = layoutDescription[1];
+					auto& colorElement = layoutDescription[1];
 
-					uvsElement.SemanticName = "TEXCOORD";
-					uvsElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-					uvsElement.Format = DXGI_FORMAT_R16G16_FLOAT;
-					uvsElement.InputSlot = 0;
-					uvsElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sSprite, u);
-					uvsElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-					uvsElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+					colorElement.SemanticName = "COLOR";
+					colorElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					colorElement.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+					colorElement.InputSlot = 0;
+					colorElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, r);
+					colorElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					colorElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 			}
 
@@ -94,8 +84,6 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 				result = Results::Failure;
 				EAE6320_ASSERTF(false, "Geometry vertex input layout creation failed (HRESULT %#010x)", d3DResult);
 				Logging::OutputError("Direct3D failed to create the geometry vertex input layout (HRESULT %#010x)", d3DResult);
-				vertexShaderDataFromFile.Free();
-				goto OnExit;
 			}
 
 			vertexShaderDataFromFile.Free();
@@ -107,15 +95,12 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 			goto OnExit;
 		}
 	}
+
 	// Vertex Buffer
 	{
-		VertexFormats::sSprite vertexData[s_vertexCount];
-		{
-			GenerateVertexData(i_rectTransform, vertexData);
-		}
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = s_vertexCount * sizeof(VertexFormats::sSprite);
+			const auto bufferSize = i_meshData.numberOfVertices * sizeof(VertexFormats::sMesh);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -126,8 +111,8 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		}
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
-			EAE6320_ASSERT(vertexData);
-			initialData.pSysMem = vertexData;
+			EAE6320_ASSERT(i_meshData.vertexData);
+			initialData.pSysMem = i_meshData.vertexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
 
@@ -141,12 +126,43 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		}
 	}
 
+	// Index Buffer
+	{
+		m_numberOfIndices = i_meshData.numberOfIndices;
+		D3D11_BUFFER_DESC bufferDescription{};
+		{
+			const auto bufferSize = (m_isIndexing16Bit = (i_meshData.typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
+			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
+			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
+			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
+			bufferDescription.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			bufferDescription.CPUAccessFlags = 0;	// No CPU access is necessary
+			bufferDescription.MiscFlags = 0;
+			bufferDescription.StructureByteStride = 0;	// Not used
+		}
+		D3D11_SUBRESOURCE_DATA initialData{};
+		{
+			EAE6320_ASSERT(i_meshData.indexData);
+			initialData.pSysMem = i_meshData.indexData;
+			// (The other data members are ignored for non-texture buffers)
+		}
+
+		const auto d3DResult = direct3DDevice->CreateBuffer(&bufferDescription, &initialData, &m_indexBuffer);
+		if (FAILED(d3DResult))
+		{
+			result = Results::Failure;
+			EAE6320_ASSERTF(false, "Geometry index buffer creation failed (HRESULT %#010x)", d3DResult);
+			Logging::OutputError("Direct3D failed to create a geometry index buffer (HRESULT %#010x)", d3DResult);
+			goto OnExit;
+		}
+	}
+
 OnExit:
 
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cSprite::CleanUp()
+eae6320::cResult eae6320::Graphics::cMesh::CleanUp()
 {
 	const auto result = Results::success;
 
@@ -154,6 +170,11 @@ eae6320::cResult eae6320::Graphics::cSprite::CleanUp()
 	{
 		m_vertexBuffer->Release();
 		m_vertexBuffer = nullptr;
+	}
+	if (m_indexBuffer)
+	{
+		m_indexBuffer->Release();
+		m_indexBuffer = nullptr;
 	}
 	if (m_vertexInputLayout)
 	{
@@ -164,7 +185,7 @@ eae6320::cResult eae6320::Graphics::cSprite::CleanUp()
 	return result;
 }
 
-void eae6320::Graphics::cSprite::Draw() const
+void eae6320::Graphics::cMesh::Draw() const
 {
 	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
 	EAE6320_ASSERT(direct3DImmediateContext);
@@ -174,10 +195,19 @@ void eae6320::Graphics::cSprite::Draw() const
 		constexpr unsigned int startingSlot = 0;
 		constexpr unsigned int vertexBufferCount = 1;
 		// The "stride" defines how large a single vertex is in the stream of data
-		constexpr unsigned int bufferStride = sizeof(VertexFormats::sSprite);
+		constexpr unsigned int bufferStride = sizeof(VertexFormats::sMesh);
 		// It's possible to start streaming data in the middle of a vertex buffer
 		constexpr unsigned int bufferOffset = 0;
 		direct3DImmediateContext->IASetVertexBuffers(startingSlot, vertexBufferCount, &m_vertexBuffer, &bufferStride, &bufferOffset);
+	}
+	// Bind a specific index buffer to the device as a data source for indices
+	{
+		EAE6320_ASSERT(m_indexBuffer);
+		// Every index is a 16/32 bit unsigned integer
+		const auto dxgiFormat = m_isIndexing16Bit ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+		// The indices start at the beginning of the buffer
+		constexpr unsigned int offset = 0;
+		direct3DImmediateContext->IASetIndexBuffer(m_indexBuffer, dxgiFormat, offset);
 	}
 	// Specify what kind of data the vertex buffer holds
 	// Set the layout (which defines how to interpret a single vertex)
@@ -186,15 +216,15 @@ void eae6320::Graphics::cSprite::Draw() const
 		direct3DImmediateContext->IASetInputLayout(m_vertexInputLayout);
 	}
 	// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
-	// the vertex buffer was defined as a triangle stri[
-	// (meaning that every primitive is a triangle but only the first will be defined by three vertices
-	//  the rest of the triangles will use the previous two vertices and the next vertex)
-	direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	// the vertex buffer was defined as a triangle list
+	// (meaning that every primitive is a triangle and will be defined by three vertices)
+	direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Render triangles from the currently-bound vertex buffer
 	{
 		// It's possible to start rendering primitives in the middle of the stream
-		constexpr unsigned int indexOfFirstVertexToRender = 0;
-		direct3DImmediateContext->Draw(s_vertexCount, indexOfFirstVertexToRender);
+		constexpr unsigned int indexOfFirstIndexToUse = 0;
+		constexpr unsigned int offsetToAddToEachIndex = 0;
+		direct3DImmediateContext->DrawIndexed(m_numberOfIndices, indexOfFirstIndexToUse, offsetToAddToEachIndex);
 	}
 }

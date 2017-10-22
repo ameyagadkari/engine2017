@@ -37,7 +37,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Load(cSprite*& o_sprite, const Tran
 
 	if (!((result = newSprite->Initialize(i_rectTransform))))
 	{
-		EAE6320_ASSERTF(false, "Initialization of new effect failed");
+		EAE6320_ASSERTF(false, "Initialization of new sprite failed");
 		goto OnExit;
 	}
 
@@ -71,7 +71,7 @@ eae6320::Graphics::cSprite::~cSprite()
 
 void eae6320::Graphics::cSprite::GenerateVertexData(const Transform::sRectTransform& i_rectTransform, VertexFormats::sSprite*const& o_vertexData)
 {
-	SpriteHelperStructs::sScreenPosition screenPosition;
+	HelperStructs::sScreenPosition screenPosition;
 	i_rectTransform.GetScreenPosition(screenPosition);
 	{
 		// Bottom Right
@@ -79,32 +79,32 @@ void eae6320::Graphics::cSprite::GenerateVertexData(const Transform::sRectTransf
 			o_vertexData[0].x = screenPosition.right;
 			o_vertexData[0].y = screenPosition.bottom;
 
-			o_vertexData[0].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-			o_vertexData[0].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
+			o_vertexData[0].u = HelperStructs::g_defaultMappedUVs.right;
+			o_vertexData[0].v = HelperStructs::g_defaultMappedUVs.bottom;
 		}
 		// Top Right
 		{
 			o_vertexData[1].x = screenPosition.right;
 			o_vertexData[1].y = screenPosition.top;
 
-			o_vertexData[1].u = SpriteHelperStructs::g_defaultMappedUVs.right;
-			o_vertexData[1].v = SpriteHelperStructs::g_defaultMappedUVs.top;
+			o_vertexData[1].u = HelperStructs::g_defaultMappedUVs.right;
+			o_vertexData[1].v = HelperStructs::g_defaultMappedUVs.top;
 		}
 		// Bottom Left
 		{
 			o_vertexData[2].x = screenPosition.left;
 			o_vertexData[2].y = screenPosition.bottom;
 
-			o_vertexData[2].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-			o_vertexData[2].v = SpriteHelperStructs::g_defaultMappedUVs.bottom;
+			o_vertexData[2].u = HelperStructs::g_defaultMappedUVs.left;
+			o_vertexData[2].v = HelperStructs::g_defaultMappedUVs.bottom;
 		}
 		// Top Left
 		{
 			o_vertexData[3].x = screenPosition.left;
 			o_vertexData[3].y = screenPosition.top;
 
-			o_vertexData[3].u = SpriteHelperStructs::g_defaultMappedUVs.left;
-			o_vertexData[3].v = SpriteHelperStructs::g_defaultMappedUVs.top;
+			o_vertexData[3].u = HelperStructs::g_defaultMappedUVs.left;
+			o_vertexData[3].v = HelperStructs::g_defaultMappedUVs.top;
 		}
 	}
 #if defined( EAE6320_PLATFORM_D3D ) 

@@ -52,7 +52,8 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 	// Is the user pressing the SPACE key?
 	{
 		//Change the bottom left sprite's texture
-		s_2D_GameObject[4]->m_useAlternateTexture = UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE);
+		//s_2D_GameObject[4]->m_useAlternateTexture = UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE);
+		
 	}
 }
 
@@ -61,7 +62,7 @@ void eae6320::cExampleGame::UpdateBasedOnTime(const float i_elapsedSecondCount_s
 	currentElapsedTime += i_elapsedSecondCount_sinceLastUpdate;
 	if (currentElapsedTime > 1.0f)
 	{
-		auto const& gameObject2D = s_2D_GameObject[3];
+		auto const& gameObject2D = s_2D_GameObject[0];
 		gameObject2D->m_useAlternateTexture = !gameObject2D->m_useAlternateTexture;
 		currentElapsedTime = 0.0f;
 	}
@@ -98,14 +99,14 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	cResult result;
 	{
 		Gameobject::cGameobject2D* gameobject2D;
-		if (!((result = Gameobject::cGameobject2D::Load("fake_go2d1_path", gameobject2D, 0, 0, 256, 256, Transform::MID_CENTER, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/happy.btf"))))
+		if (!((result = Gameobject::cGameobject2D::Load("fake_go2d1_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_LEFT, "fake_effect1_path", "sprite.busl", "sprite.busl", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/happy.btf", "data/Textures/smiling.btf"))))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
 		s_2D_GameObject.push_back(gameobject2D);
 	}
-	{
+	/*{
 		Gameobject::cGameobject2D* gameobject2D;
 		if (!((result = Gameobject::cGameobject2D::Load("fake_go2d2_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_LEFT, "fake_effect1_path", "sprite.shd", "sprite.shd", alphaTransperancyAndDrawingBothSidedTrianglesEnabled, "data/Textures/sad.btf"))))
 		{
@@ -140,7 +141,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			goto OnExit;
 		}
 		s_2D_GameObject.push_back(gameobject2D);
-	}
+	}*/
 
 OnExit:
 	s_2D_GameObject_Size = s_2D_GameObject.size();

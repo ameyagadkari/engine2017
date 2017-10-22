@@ -17,7 +17,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		namespace SpriteHelperStructs
+		namespace HelperStructs
 		{
 			struct sScreenPosition;
 		}
@@ -71,7 +71,7 @@ namespace eae6320
 			// Access
 			//-------
 
-			void GetScreenPosition(Graphics::SpriteHelperStructs::sScreenPosition& o_screenPosition) const;
+			void GetScreenPosition(Graphics::HelperStructs::sScreenPosition& o_screenPosition) const;
 
 			// Data
 			//=====

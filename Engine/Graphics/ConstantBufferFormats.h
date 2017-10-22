@@ -39,7 +39,10 @@ namespace eae6320
 
 			struct sPerDrawCall
 			{
-				float DUMMY[4];	// This is a placeholder to prevent an empty struct
+				struct
+				{
+					float x = 0.0f, y = 0.0f, z = 0.0f, w = 1.0f;
+				} g_position;
 			};
 		}
 	}

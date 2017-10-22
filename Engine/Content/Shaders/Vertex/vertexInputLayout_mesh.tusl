@@ -1,0 +1,28 @@
+/*
+	This vertex shader is used to create a Direct3D vertex input layout object for mesh
+*/
+
+#include <Shaders/shaders.inc>
+
+// Entry Point
+//============
+
+void main(
+
+	// Input
+	//======
+	
+	in const float2 i_position : POSITION,
+	in const float4 i_color : COLOR,
+
+	// Output
+	//=======
+	
+	out float4 o_position : SV_POSITION,
+	out float4 o_color : COLOR
+
+	)
+{
+	o_position = float4( g_position.xy + i_position, 0.0, 1.0 );
+	o_color = i_color;
+}

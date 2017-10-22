@@ -1,0 +1,50 @@
+/*
+	This is mesh vertex shader
+*/
+
+#include <Shaders/shaders.inc>
+
+#if defined( EAE6320_PLATFORM_D3D )
+
+// Entry Point
+//============
+
+void main(
+
+	// Input
+	//======
+	
+	in const float2 i_position : POSITION,
+	in const float4 i_color : COLOR,
+
+	// Output
+	//=======
+	
+	out float4 o_position : SV_POSITION,
+	out float4 o_color : COLOR
+	)
+	
+#elif defined( EAE6320_PLATFORM_GL )
+
+// Input
+//======
+
+layout( location = 0 ) in vec2 i_position;
+layout( location = 1 ) in vec4 i_color;
+
+// Output
+//=======
+
+layout( location = 0 ) out vec4 o_color;
+
+// Entry Point
+//============
+
+void main()
+
+#endif
+
+{
+	o_position = vec4( g_position.xy + i_position, 0.0, 1.0 );
+	o_color = i_color;
+}
