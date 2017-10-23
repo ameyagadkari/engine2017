@@ -30,6 +30,11 @@ namespace eae6320
 
 		public:
 
+			// RotateVector
+			//-------------
+
+			sVector operator *(const sVector& i_rhs) const;
+
 			// Multiplication
 			//---------------
 

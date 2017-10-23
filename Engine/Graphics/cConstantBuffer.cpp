@@ -40,7 +40,7 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize( const void* con
 		}
 		// Initialize the platform-specific constant buffer
 		{
-			result = Initialize_platformSpecific( i_initialData );
+			result = InitializePlatformSpecific( i_initialData );
 			EAE6320_ASSERT( result );
 		}
 	}

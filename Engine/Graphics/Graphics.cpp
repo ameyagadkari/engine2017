@@ -22,6 +22,7 @@ namespace
 {
 	// Constant buffer object
 	eae6320::Graphics::cConstantBuffer s_constantBuffer_perFrame(eae6320::Graphics::ConstantBufferTypes::PerFrame);
+	eae6320::Graphics::cConstantBuffer s_constantBuffer_perDrawCall(eae6320::Graphics::ConstantBufferTypes::PerDrawCall);
 	// In our class we will only have a single sampler state
 	eae6320::Graphics::cSamplerState s_samplerState;
 
@@ -35,6 +36,7 @@ namespace
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
 		std::vector<eae6320::Gameobject::cGameobject2D*> gameobjects2D_perFrame;
+		std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -80,10 +82,23 @@ void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor& i_clearColo
 void eae6320::Graphics::SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
-	
+
 	i_gameObject2D->IncrementReferenceCount();
 
 	s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.push_back(i_gameObject2D);
+}
+
+void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_gameObject3D)
+{
+	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+
+	i_gameObject3D->IncrementReferenceCount();
+
+	ConstantBufferFormats::sPerDrawCall constantData_perDrawCall;
+	constantData_perDrawCall.g_position.x = i_gameObject3D->m_transform.position.x;
+	constantData_perDrawCall.g_position.y = i_gameObject3D->m_transform.position.y;
+
+	s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -143,11 +158,24 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update(&constantData_perFrame);
 	}
 
-	// Bind and draw 2d gameobjects
-	const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
-	for (size_t i = 0; i < length; i++)
+	// Bind and draw 3d gameobjects
 	{
-		s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->BindAndDraw();
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+		for (size_t i = 0; i < length; i++)
+		{
+			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].second;
+			s_constantBuffer_perDrawCall.Update(&constantData_perDrawCall);
+			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->BindAndDraw();
+		}
+	}
+
+	// Bind and draw 2d gameobjects
+	{
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
+		for (size_t i = 0; i < length; i++)
+		{
+			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->BindAndDraw();
+		}
 	}
 
 	// Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -159,7 +187,16 @@ void eae6320::Graphics::RenderFrame()
 	// should be cleaned up and cleared.
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
 	{
-		// (At this point in the class there isn't anything that needs to be cleaned up)
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+		for (size_t i = 0; i < length; i++)
+		{
+			// Clean up 3d gameobject
+			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+		}
+		s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.clear();
+	}
+	{
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
 		for (size_t i = 0; i < length; i++)
 		{
 			// Clean up 2d gameobject
@@ -218,6 +255,19 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
+		if ((result = s_constantBuffer_perDrawCall.Initialize()))
+		{
+			// There is only a single per-drawcall constant buffer that is re-used
+			// and so it can be bound at initialization time and never unbound
+			s_constantBuffer_perDrawCall.Bind(
+				// In our class only vertex shader uses per-drawcall constant data
+				ShaderTypes::Vertex);
+		}
+		else
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
 		if ((result = s_samplerState.Initialize()))
 		{
 			// There is only a single sampler state that is re-used
@@ -255,6 +305,32 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::success;
 	{
 		// Cleaning up the data submitted by application thread
+		if (!s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.empty())
+		{
+			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.size();
+			for (size_t i = 0; i < length; i++)
+			{
+				// Clean up 3d gameobject
+				s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+			}
+
+			s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.clear();
+		}
+
+		// Cleaning up the data rendered by render thread
+		if (!s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.empty())
+		{
+			const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+			for (size_t i = 0; i < length; i++)
+			{
+				// Clean up 3d gameobject
+				s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+			}
+			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.clear();
+		}
+	}
+	{
+		// Cleaning up the data submitted by application thread
 		if (!s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.empty())
 		{
 			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.size();
@@ -282,6 +358,17 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
+		const auto localResult = s_constantBuffer_perDrawCall.CleanUp();
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);

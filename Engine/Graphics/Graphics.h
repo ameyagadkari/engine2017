@@ -11,7 +11,9 @@
 #include <cstdint>
 #include <Engine/Results/Results.h>
 #include <Engine/Gameobject/cGameobject2D.h>
+#include <Engine/Gameobject/cGameobject3D.h>
 #include "ColorFormats.h"
+
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
@@ -36,6 +38,7 @@ namespace eae6320
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor& i_clearColor);
 		void SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D);
+		void SubmitGameobject3D(Gameobject::cGameobject3D*const& i_gameObject3D);
 
 		// When the application is ready to submit data for a new frame
 		// it should call this before submitting anything

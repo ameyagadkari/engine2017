@@ -12,6 +12,17 @@
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
 
+// Helper Function Declarations
+//=============================
+
+namespace
+{
+	template<typename T>
+	void Swap(T *a, T *b);
+	void Reverse(uint16_t *data, uint16_t end);
+	void Reverse(uint32_t *data, uint32_t end);
+}
+
 // Implementation
 //===============
 
@@ -29,7 +40,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		// Load the compiled binary vertex shader for the input layout
 		Platform::sDataFromFile vertexShaderDataFromFile;
 		std::string errorMessage;
-		if ((result = LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_mesh.shd", vertexShaderDataFromFile, &errorMessage)))
+		if ((result = LoadBinaryFile("data/Shaders/Vertex/vertexInputLayout_mesh.busl", vertexShaderDataFromFile, &errorMessage)))
 		{
 			// Create the vertex layout
 
@@ -84,6 +95,8 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 				result = Results::Failure;
 				EAE6320_ASSERTF(false, "Geometry vertex input layout creation failed (HRESULT %#010x)", d3DResult);
 				Logging::OutputError("Direct3D failed to create the geometry vertex input layout (HRESULT %#010x)", d3DResult);
+				vertexShaderDataFromFile.Free();
+				goto OnExit;
 			}
 
 			vertexShaderDataFromFile.Free();
@@ -143,6 +156,9 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
 			EAE6320_ASSERT(i_meshData.indexData);
+			m_isIndexing16Bit ?
+				Reverse(reinterpret_cast<uint16_t*>(i_meshData.indexData), m_numberOfIndices - 1) :
+				Reverse(reinterpret_cast<uint32_t*>(i_meshData.indexData), m_numberOfIndices - 1);
 			initialData.pSysMem = i_meshData.indexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
@@ -226,5 +242,44 @@ void eae6320::Graphics::cMesh::Draw() const
 		constexpr unsigned int indexOfFirstIndexToUse = 0;
 		constexpr unsigned int offsetToAddToEachIndex = 0;
 		direct3DImmediateContext->DrawIndexed(m_numberOfIndices, indexOfFirstIndexToUse, offsetToAddToEachIndex);
+	}
+}
+
+// Helper Function Definitions
+//============================
+
+namespace
+{
+	template<typename T>
+	void Swap(T *a, T *b)
+	{
+		if (a != b)
+		{
+			*a ^= *b;
+			*b ^= *a;
+			*a ^= *b;
+		}
+	}
+
+	void Reverse(uint16_t *data, uint16_t end)
+	{
+		uint16_t start = 0;
+		while (start < end)
+		{
+			Swap(data + start, data + end);
+			start++;
+			end--;
+		}
+	}
+
+	void Reverse(uint32_t *data, uint32_t end)
+	{
+		uint32_t start = 0;
+		while (start < end)
+		{
+			Swap(data + start, data + end);
+			start++;
+			end--;
+		}
 	}
 }

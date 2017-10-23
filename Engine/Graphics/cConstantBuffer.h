@@ -103,7 +103,7 @@ namespace eae6320
 			// Copies the specified CPU data to the GPU memory associated with the constant buffer.
 			// The specified data must be the appropriate Graphics::ConstantBufferFormats struct corresponding to this constant buffer's type!
 			// This function only needs to be called when the constant data that the GPU is using needs to change.
-			void Update( const void* const i_data );
+			void Update( const void* const i_data ) const;
 
 			// Initialization / Clean Up
 			//--------------------------
@@ -141,7 +141,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize_platformSpecific( const void* const i_initialData );
+			cResult InitializePlatformSpecific( const void* const i_initialData );
 
 			cConstantBuffer( const cConstantBuffer& i_instanceToBeCopied ) = delete;
 			cConstantBuffer& operator =( const cConstantBuffer& i_instanceToBeCopied ) = delete;

@@ -1,5 +1,5 @@
 /*
-A gameobject 2d is a representation for a 2D gameobject on screen
+A gameobject 2d class is a representation for a 2D gameobject on screen
 */
 
 #ifndef EAE6320_GAMEOBJECT_CGAMEOBJECT2D_H

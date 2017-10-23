@@ -19,6 +19,30 @@ namespace
 // Interface
 //==========
 
+// RotateVector
+//-------------
+
+eae6320::Math::sVector eae6320::Math::cQuaternion::operator *(const sVector& i_rhs) const
+{
+	const auto num = m_x * 2.0f;
+	const auto num2 = m_y * 2.0f;
+	const auto num3 = m_z * 2.0f;
+	const auto num4 = m_x * num;
+	const auto num5 = m_y * num2;
+	const auto num6 = m_z * num3;
+	const auto num7 = m_x * num2;
+	const auto num8 = m_x * num3;
+	const auto num9 = m_y * num3;
+	const auto num10 = m_w * num;
+	const auto num11 = m_w * num2;
+	const auto num12 = m_w * num3;
+	sVector result;
+	result.x = (1.0f - (num5 + num6)) * i_rhs.x + (num7 - num12) * i_rhs.y + (num8 + num11) * i_rhs.z;
+	result.y = (num7 + num12) * i_rhs.x + (1.0f - (num4 + num6)) * i_rhs.y + (num9 - num10) * i_rhs.z;
+	result.z = (num8 - num11) * i_rhs.x + (num9 + num10) * i_rhs.y + (1.0f - (num4 + num5)) * i_rhs.z;
+	return result;
+}
+
 // Multiplication
 //---------------
 

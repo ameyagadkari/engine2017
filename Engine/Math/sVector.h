@@ -19,6 +19,19 @@ namespace eae6320
 
 			float x = 0.0f, y = 0.0f, z = 0.0f;
 
+			// Static Data Declaration
+			//========================
+
+			static sVector const right;
+			static sVector const up;
+			static sVector const forward;
+
+			static sVector const left;
+			static sVector const down;
+			static sVector const back;
+
+			static sVector const zero;
+
 			// Interface
 			//==========
 

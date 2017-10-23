@@ -19,26 +19,26 @@
 
 void eae6320::Graphics::cConstantBuffer::Bind( const uint_fast8_t i_shaderTypesToBindTo ) const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
-	EAE6320_ASSERT( direct3dImmediateContext );
+	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
+	EAE6320_ASSERT( direct3DImmediateContext );
 
 	EAE6320_ASSERT( m_buffer );
 
 	constexpr unsigned int bufferCount = 1;
 	if ( i_shaderTypesToBindTo & ShaderTypes::Vertex )
 	{
-		direct3dImmediateContext->VSSetConstantBuffers( static_cast<unsigned int>( m_type ), bufferCount, &m_buffer );
+		direct3DImmediateContext->VSSetConstantBuffers( static_cast<unsigned int>( m_type ), bufferCount, &m_buffer );
 	}
 	if ( i_shaderTypesToBindTo & ShaderTypes::Fragment )
 	{
-		direct3dImmediateContext->PSSetConstantBuffers( static_cast<unsigned int>( m_type ), bufferCount, &m_buffer );
+		direct3DImmediateContext->PSSetConstantBuffers( static_cast<unsigned int>( m_type ), bufferCount, &m_buffer );
 	}
 }
 
-void eae6320::Graphics::cConstantBuffer::Update( const void* const i_data )
+void eae6320::Graphics::cConstantBuffer::Update( const void* const i_data ) const
 {
-	auto* const direct3dImmediateContext = sContext::g_context.direct3DImmediateContext;
-	EAE6320_ASSERT( direct3dImmediateContext );
+	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
+	EAE6320_ASSERT( direct3DImmediateContext );
 
 	EAE6320_ASSERT( m_buffer );
 
@@ -51,10 +51,10 @@ void eae6320::Graphics::cConstantBuffer::Update( const void* const i_data )
 		{
 			// Discard previous contents when writing
 			constexpr unsigned int noSubResources = 0;
-			constexpr D3D11_MAP mapType = D3D11_MAP_WRITE_DISCARD;
+			constexpr auto mapType = D3D11_MAP_WRITE_DISCARD;
 			constexpr unsigned int noFlags = 0;
-			const auto d3dResult = direct3dImmediateContext->Map( m_buffer, noSubResources, mapType, noFlags, &mappedSubResource );
-			if ( SUCCEEDED( d3dResult ) )
+			const auto d3DResult = direct3DImmediateContext->Map( m_buffer, noSubResources, mapType, noFlags, &mappedSubResource );
+			if ( SUCCEEDED( d3DResult ) )
 			{
 				mustConstantBufferBeUnmapped = true;
 			}
@@ -77,7 +77,7 @@ OnExit:
 		// Let Direct3D know that the memory contains the data
 		// (the pointer will be invalid after this call)
 		constexpr unsigned int noSubResources = 0;
-		direct3dImmediateContext->Unmap( m_buffer, noSubResources );
+		direct3DImmediateContext->Unmap( m_buffer, noSubResources );
 	}
 }
 
@@ -86,7 +86,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 {
-	auto result = Results::success;
+	const auto result = Results::success;
 
 	if ( m_buffer )
 	{
@@ -103,10 +103,10 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::CleanUp()
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific( const void* const i_initialData )
+eae6320::cResult eae6320::Graphics::cConstantBuffer::InitializePlatformSpecific( const void* const i_initialData )
 {
-	auto* const direct3dDevice = sContext::g_context.direct3DDevice;
-	EAE6320_ASSERT( direct3dDevice );
+	auto* const direct3DDevice = sContext::g_context.direct3DDevice;
+	EAE6320_ASSERT( direct3DDevice );
 
 	D3D11_BUFFER_DESC bufferDescription{};
 	{
@@ -126,17 +126,14 @@ eae6320::cResult eae6320::Graphics::cConstantBuffer::Initialize_platformSpecific
 		// (The other data members are ignored for non-texture buffers)
 	}
 
-	const auto d3dResult = direct3dDevice->CreateBuffer( &bufferDescription,
+	const auto d3DResult = direct3DDevice->CreateBuffer( &bufferDescription,
 		i_initialData ? &initialData : nullptr,
 		&m_buffer );
-	if ( SUCCEEDED( d3dResult ) )
+	if ( SUCCEEDED( d3DResult ) )
 	{
 		return Results::success;
 	}
-	else
-	{
-		EAE6320_ASSERTF( false, "Couldn't create constant buffer creation (HRESULT %#010x)", d3dResult );
-		eae6320::Logging::OutputError( "Direct3D failed to create a constant buffer with HRESULT %#010x", d3dResult );
-		return Results::Failure;
-	}
+	EAE6320_ASSERTF( false, "Couldn't create constant buffer creation (HRESULT %#010x)", d3DResult );
+	Logging::OutputError( "Direct3D failed to create a constant buffer with HRESULT %#010x", d3DResult );
+	return Results::Failure;
 }
