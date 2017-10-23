@@ -159,7 +159,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 				{
 					result = Results::Failure;
 					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-					Logging::OutputError("OpenGL failed to enable the POSITION vertex attribute at location %u: %s",
+					Logging::OutputError("OpenGL failed to enable the TEXTURE_COORDINATES vertex attribute at location %u: %s",
 						vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
 					goto OnExit;
 				}
@@ -168,7 +168,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 			{
 				result = Results::Failure;
 				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
-				Logging::OutputError("OpenGL failed to set the POSITION vertex attribute at location %u: %s",
+				Logging::OutputError("OpenGL failed to set the TEXTURE_COORDINATES vertex attribute at location %u: %s",
 					vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
 				goto OnExit;
 			}

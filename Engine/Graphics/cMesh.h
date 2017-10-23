@@ -71,7 +71,6 @@ namespace eae6320
 
 		private:
 			uint32_t m_numberOfIndices;
-			bool m_isIndexing16Bit;
 #if defined( EAE6320_PLATFORM_D3D )
 			// A vertex buffer holds the data for each vertex
 			ID3D11Buffer* m_vertexBuffer = nullptr;
@@ -95,6 +94,7 @@ namespace eae6320
 #endif
 #endif
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+			bool m_isIndexing16Bit;
 
 			// Implementation
 			//===============
