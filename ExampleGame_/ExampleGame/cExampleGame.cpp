@@ -14,8 +14,6 @@
 
 #include <vector>
 
-
-
 namespace
 {
 	std::vector<eae6320::Gameobject::cGameobject2D*> s_2D_GameObject;
@@ -125,6 +123,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[0];
 				meshVertex.x = 0.0f;
 				meshVertex.y = 0.25f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 255;
 				meshVertex.g = 0;
 				meshVertex.b = 0;
@@ -134,6 +133,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[1];
 				meshVertex.x = -0.25f;
 				meshVertex.y = 0.0f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 0;
 				meshVertex.g = 255;
 				meshVertex.b = 0;
@@ -143,6 +143,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[2];
 				meshVertex.x = 0.25f;
 				meshVertex.y = 0.0;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 0;
 				meshVertex.g = 0;
 				meshVertex.b = 255;
@@ -152,6 +153,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[3];
 				meshVertex.x = 0.25f;
 				meshVertex.y = -0.25f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 0;
 				meshVertex.g = 255;
 				meshVertex.b = 255;
@@ -161,6 +163,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[4];
 				meshVertex.x = -0.25f;
 				meshVertex.y = -0.25f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 255;
 				meshVertex.g = 0;
 				meshVertex.b = 255;
@@ -193,6 +196,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[0];
 				meshVertex.x = 0.0f;
 				meshVertex.y = 0.25f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 255;
 				meshVertex.g = 64;
 				meshVertex.b = 128;
@@ -202,6 +206,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[1];
 				meshVertex.x = -0.25f;
 				meshVertex.y = 0.0f;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 64;
 				meshVertex.g = 255;
 				meshVertex.b = 128;
@@ -211,6 +216,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				auto& meshVertex = meshData.vertexData[2];
 				meshVertex.x = 0.25f;
 				meshVertex.y = 0.0;
+				meshVertex.z = 0.0f;
 				meshVertex.r = 255;
 				meshVertex.g = 128;
 				meshVertex.b = 64;
