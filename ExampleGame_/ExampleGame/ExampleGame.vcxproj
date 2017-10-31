@@ -46,6 +46,9 @@
     <ProjectReference Include="..\..\Engine\UserInput\UserInput.vcxproj">
       <Project>{193bb096-cd2c-48e8-8a28-99ecc2d019ad}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Gameplay\Gameplay.vcxproj">
+      <Project>{746de02e-0930-4014-a1a0-0ff5f943622e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

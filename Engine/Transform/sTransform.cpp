@@ -29,13 +29,13 @@ eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const
 
 void eae6320::Transform::sTransform::UpdateLocalAxes()
 {
-	orientationQuaternion =
-		Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.x), Math::sVector::right)*
-		Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.y), Math::sVector::up)*
-		Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.z), Math::sVector::forward);
+	//orientationQuaternion =
+		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.x), Math::sVector::right)*
+		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.y), Math::sVector::up)*
+		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.z), Math::sVector::forward);
 
-	auto newForward = orientationQuaternion.GetInverse()*Math::sVector::back;
-
+	//auto newForward = orientationQuaternion.GetInverse()*Math::sVector::back;
+	auto newForward = orientationQuaternion.CalculateForwardDirection();
 	localAxes.forward = newForward.GetNormalized();
 	localAxes.right = Cross(localAxes.forward, Math::sVector::up).GetNormalized();
 	localAxes.up = Cross(localAxes.right, localAxes.forward).GetNormalized();

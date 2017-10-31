@@ -95,8 +95,8 @@ void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_ga
 	i_gameObject3D->IncrementReferenceCount();
 
 	ConstantBufferFormats::sPerDrawCall constantData_perDrawCall;
-	constantData_perDrawCall.g_position.x = i_gameObject3D->m_transform.position.x;
-	constantData_perDrawCall.g_position.y = i_gameObject3D->m_transform.position.y;
+	constantData_perDrawCall.g_position.x = i_gameObject3D->m_predictionTransform.position.x;
+	constantData_perDrawCall.g_position.y = i_gameObject3D->m_predictionTransform.position.y;
 
 	s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
 }

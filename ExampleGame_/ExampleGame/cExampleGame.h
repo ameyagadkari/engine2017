@@ -12,7 +12,7 @@
 #include <Engine/Results/Results.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include "Resource Files/Resource.h"
+#include "Resource Files/Resource.h"
 #endif
 
 // Class Declaration
@@ -70,6 +70,8 @@ namespace eae6320
 
 		void UpdateBasedOnInput() override;
 		void UpdateBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) override;
+		void UpdateSimulationBasedOnInput() override;
+		void UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate) override;
 		void SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate) override;
 
 		// Initialization / Clean Up
@@ -97,7 +99,7 @@ namespace eae6320
 			//		or else you could have two different ones with equal IDs.
 			//	* Note that you can define multiple Success codes.
 			//		This can be used if the caller may want to know more about how a function succeeded.
-			constexpr cResult exampleResult( IsFailure, System::Application, __LINE__, Severity::Default );
+			constexpr cResult exampleResult(IsFailure, System::Application, __LINE__, Severity::Default);
 		}
 	}
 }

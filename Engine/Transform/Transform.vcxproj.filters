@@ -4,6 +4,7 @@
     <ClInclude Include="sRectTransform.h" />
     <ClInclude Include="sTransform.h" />
     <ClInclude Include="sLocalAxes.h" />
+    <ClInclude Include="sPredictionTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sRectTransform.cpp" />

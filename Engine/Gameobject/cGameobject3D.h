@@ -9,7 +9,9 @@ A gameobject 3d class is a representation for a 3D gameobject on screen
 //==============
 
 #include <Engine/Transform/sTransform.h>
+#include <Engine/Transform/sPredictionTransform.h>
 #include <Engine/Graphics/cEffect.h>
+#include <ExampleGame_/Gameplay/cDefaultGameobjectController.h>
 
 // Forward Declarations
 //=====================
@@ -18,11 +20,24 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		namespace HelperStructs 
+		namespace HelperStructs
 		{
 			struct sMeshData;
 		}
 		class cMesh;
+	}
+}
+
+namespace eae6320
+{
+	namespace Gameplay
+	{
+		class cbController;
+		enum eControllerType : uint8_t
+		{
+			NO_CONTROLLER,
+			DEFAULT_GAMEOBJECT_CONTROLLER
+		};
 	}
 }
 
@@ -43,7 +58,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D,const Math::sVector& i_position,const Graphics::HelperStructs::sMeshData& i_meshData, char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
+			static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, const Graphics::HelperStructs::sMeshData& i_meshData, char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const Gameplay::eControllerType i_controllerType);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject3D);
 
@@ -54,6 +69,13 @@ namespace eae6320
 
 			cResult CleanUp();
 
+			//Update
+			//------
+
+			void UpdateBasedOnSimulationInput() const;
+			void UpdateBasedOnSimulationTime(const float i_elapsedSecondCount_sinceLastUpdate);
+			void PredictSimulationBasedOnElapsedTime(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
+
 			// Render
 			//-------
 
@@ -63,15 +85,17 @@ namespace eae6320
 
 			// Initialization / Clean Up
 			//--------------------------
-			explicit cGameobject3D(const Math::sVector& i_position);
+			explicit cGameobject3D(const Math::sVector& i_position, const Gameplay::eControllerType i_controllerType);
 			~cGameobject3D() { CleanUp(); }
 
 			// Data
 			//=====
 
 		public:
-			Transform::sTransform m_transform;
+			Transform::sPredictionTransform m_predictionTransform;
 		private:
+			Transform::sTransform m_transform;
+			Gameplay::cbController* m_controller;
 			Graphics::cMesh* m_mesh;
 			Graphics::cEffect::Handle m_effect;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();

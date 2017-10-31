@@ -80,6 +80,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameobject", "Engine\Gameob
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Engine\Physics\Physics.vcxproj", "{30E6BB9F-138D-4B44-9733-869263F7BAD5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameplay", "ExampleGame_\Gameplay\Gameplay.vcxproj", "{746DE02E-0930-4014-A1A0-0FF5F943622E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -320,6 +322,14 @@ Global
 		{30E6BB9F-138D-4B44-9733-869263F7BAD5}.Release|x64.Build.0 = Release|x64
 		{30E6BB9F-138D-4B44-9733-869263F7BAD5}.Release|x86.ActiveCfg = Release|Win32
 		{30E6BB9F-138D-4B44-9733-869263F7BAD5}.Release|x86.Build.0 = Release|Win32
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Debug|x64.ActiveCfg = Debug|x64
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Debug|x64.Build.0 = Debug|x64
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Debug|x86.ActiveCfg = Debug|Win32
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Debug|x86.Build.0 = Debug|Win32
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x64.ActiveCfg = Release|x64
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x64.Build.0 = Release|x64
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x86.ActiveCfg = Release|Win32
+		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -355,6 +365,7 @@ Global
 		{37D50792-7ACF-496D-9239-2D656A57509C} = {31B05C03-4BB2-4A0D-B621-B41DA6B0F57E}
 		{0446A807-E675-4D15-B534-E22FBB695670} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 		{30E6BB9F-138D-4B44-9733-869263F7BAD5} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
+		{746DE02E-0930-4014-A1A0-0FF5F943622E} = {AC0EBDC3-8723-4A43-9112-DB863C2C3694}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A89F366F-0B7F-464F-90A8-A4828B273298}

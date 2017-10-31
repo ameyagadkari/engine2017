@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClInclude Include="cGameobject2D.h" />
     <ClInclude Include="cGameobject3D.h" />
+    <ClInclude Include="cbController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cGameobject2D.cpp" />

@@ -46,20 +46,6 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
 		s_isPaused = !s_isPaused;
 		s_isPaused ? SetSimulationRate(0.0f) : SetSimulationRate(1.0f);
 	}
-
-	// Game is not paused
-	if (!s_isPaused)
-	{
-		// Change Simulation Rate based on whether the user is pressing the S key?
-		UserInput::IsKeyPressed(UserInput::KeyCodes::S) ? SetSimulationRate(0.5f) : SetSimulationRate(1.0f);
-	}
-
-	// Is the user pressing the SPACE key?
-	{
-		//Change the bottom left sprite's texture
-		//s_2D_GameObject[4]->m_useAlternateTexture = UserInput::IsKeyPressed(UserInput::KeyCodes::SPACE);
-
-	}
 }
 
 void eae6320::cExampleGame::UpdateBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
@@ -79,8 +65,36 @@ void eae6320::cExampleGame::UpdateBasedOnTime(const float i_elapsedSecondCount_s
 	}
 }
 
+void eae6320::cExampleGame::UpdateSimulationBasedOnInput()
+{
+	// Update 3D Gameobjects
+	{
+		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+		{
+			s_3D_GameObject[i]->UpdateBasedOnSimulationInput();
+		}
+	}
+}
+void eae6320::cExampleGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
+{
+	// Update 3D Gameobjects
+	{
+		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+		{
+			s_3D_GameObject[i]->UpdateBasedOnSimulationTime(i_elapsedSecondCount_sinceLastUpdate);
+		}
+	}
+}
+
 void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
+	// Predict 3D Gameobjects
+	{
+		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+		{
+			s_3D_GameObject[i]->PredictSimulationBasedOnElapsedTime(i_elapsedSecondCount_sinceLastSimulationUpdate);
+		}
+	}
 	// Submit Clear Color to Graphics
 	{
 		Graphics::ColorFormats::sColor clearColor;
@@ -183,7 +197,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -230,7 +244,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.75f, 0.75f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.75f, 0.75f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0, Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

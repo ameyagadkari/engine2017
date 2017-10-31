@@ -34,12 +34,6 @@ namespace eae6320
 
 			sLocalAxes localAxes;
 			Math::sVector position;
-
-		private:
-
-			// Data
-			//=====
-
 			Math::cQuaternion orientationQuaternion;
 			Math::sVector orientationEular;
 

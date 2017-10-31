@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="cbController.h" />
     <ClInclude Include="cGameobject2D.h" />
     <ClInclude Include="cGameobject3D.h" />
   </ItemGroup>
