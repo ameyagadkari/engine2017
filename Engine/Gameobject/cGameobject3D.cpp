@@ -157,10 +157,10 @@ void eae6320::Gameobject::cGameobject3D::PredictSimulationBasedOnElapsedTime(con
 {
 	if (m_controller)
 	{
+		m_predictionTransform.position = m_transform.position;
+		m_predictionTransform.orientation = m_transform.orientationQuaternion;
 		m_controller->UpdatePosition(i_elapsedSecondCount_sinceLastSimulationUpdate, m_predictionTransform);
 		m_controller->UpdateOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate, m_predictionTransform);
-		m_transform.position = m_predictionTransform.position;
-		m_transform.orientationQuaternion = m_predictionTransform.orientation;
 	}
 }
 

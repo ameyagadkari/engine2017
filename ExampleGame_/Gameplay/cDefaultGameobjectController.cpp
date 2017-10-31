@@ -12,7 +12,7 @@
 
 namespace
 {
-	constexpr auto velocityMagnitude = 0.01f;
+	constexpr auto velocityMagnitude = 1.0f;
 	bool isThereInput = false;
 }
 
