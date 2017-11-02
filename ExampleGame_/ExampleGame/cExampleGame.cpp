@@ -11,7 +11,6 @@
 #include <Engine/Graphics/Graphics.h>
 #include <Engine/Graphics/MeshHelperStructs.h>
 #include <Engine/Graphics/VertexFormats.h>
-#include <Engine/Graphics/ColorFormats.h>
 #include <Engine/Camera/Camera.h>
 #include <Engine/Camera/cbCamera.h>
 #include <Engine/Camera/cFirstPersonCamera.h>
@@ -120,15 +119,21 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 		Camera::GetCurrentCamera()->PredictPosition(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	}
 
-	// Submit Clear Color to Graphics
+	// Submit Clear Color
 	{
-		Graphics::ColorFormats::sColor clearColor;
+		/*Graphics::ColorFormats::sColor clearColor;
 		if (!clearColor.SetColor(0.0f, 0.0f, 0.0f))
 		{
 			EAE6320_ASSERT(false);
 			Logging::OutputError("All the SetColor parameters must be [0.0, 1.0]");
-		}
-		Graphics::SubmitClearColor(clearColor);
+		}*/
+		Graphics::SubmitClearColor();
+	}
+
+	// Submit Clear Depth
+	{
+		//constexpr auto depth = 1.0f;
+		Graphics::SubmitClearDepth();
 	}
 
 	// Submit Current Camera
@@ -165,6 +170,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	}
 	// Creating all 3D gameobjects
 	{
+		constexpr auto depthBufferingEnabled = 0x02;
 		{
 			const Graphics::HelperStructs::sMeshData meshData(16, 5, 9);
 			{
@@ -231,7 +237,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -278,7 +284,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.75f, 0.75f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", 0, Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.75f, 0.75f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

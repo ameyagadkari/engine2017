@@ -7,9 +7,11 @@
 
 // Include Files
 //==============
+#include "ColorFormats.h"
+
+#include <Engine/Results/Results.h>
 
 #include <cstdint>
-#include <Engine/Results/Results.h>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
@@ -63,7 +65,8 @@ namespace eae6320
 		// of how the application submits the total elapsed times
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
-		void SubmitClearColor(const ColorFormats::sColor& i_clearColor);
+		void SubmitClearColor(const ColorFormats::sColor i_clearColor = ColorFormats::sColor());
+		void SubmitClearDepth(const float i_clearDepth = 1.0f);
 		void SubmitCamera(Camera::cbCamera*const& i_camera);
 		void SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D);
 		void SubmitGameobject3D(Gameobject::cGameobject3D*const& i_gameObject3D);
@@ -91,12 +94,12 @@ namespace eae6320
 		struct sInitializationParameters
 		{
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HWND mainWindow = NULL;
-#if defined( EAE6320_PLATFORM_D3D )
-			uint16_t resolutionWidth, resolutionHeight;
-#elif defined( EAE6320_PLATFORM_GL )
-			HINSTANCE thisInstanceOfTheApplication = NULL;
-#endif
+			HWND mainWindow = nullptr;
+	#if defined( EAE6320_PLATFORM_D3D )
+				uint16_t resolutionWidth, resolutionHeight;
+	#elif defined( EAE6320_PLATFORM_GL )
+				HINSTANCE thisInstanceOfTheApplication = nullptr;
+	#endif
 #endif
 		};
 

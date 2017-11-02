@@ -37,10 +37,11 @@ namespace
 	// it must cache whatever is necessary in order to render a frame
 	struct sDataRequiredToRenderAFrame
 	{
-		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
-		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
 		std::vector<eae6320::Gameobject::cGameobject2D*> gameobjects2D_perFrame;
 		std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_perFrame;
+		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
+		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
+		float clearDepth_perFrame;
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -58,9 +59,6 @@ namespace
 	// and the application loop thread can start submitting data for the following frame
 	// (the application loop thread waits for the signal)
 	eae6320::Concurrency::cEvent s_whenDataForANewFrameCanBeSubmittedFromApplicationThread;
-
-	// Effect/Sprite pair vector
-	//-------------
 }
 
 // Interface
@@ -77,10 +75,16 @@ void eae6320::Graphics::SubmitElapsedTime(const float i_elapsedSecondCount_syste
 	constantData_perFrame.g_elapsedSecondCount_simulationTime = i_elapsedSecondCount_simulationTime;
 }
 
-void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor& i_clearColor)
+void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor i_clearColor)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
+}
+
+void eae6320::Graphics::SubmitClearDepth(const float i_depth)
+{
+	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+	s_dataBeingSubmittedByApplicationThread->clearDepth_perFrame = i_depth;
 }
 
 void eae6320::Graphics::SubmitCamera(Camera::cbCamera*const& i_camera)
@@ -167,7 +171,9 @@ void eae6320::Graphics::RenderFrame()
 	// Every frame an entirely new image will be created.
 	// Before drawing anything, then, the previous image will be erased
 	// by "clearing" the image buffer (filling it with a solid color)
+	// and by "clearing" the depth buffer
 	g_context.ClearImageBuffer(s_dataBeingRenderedByRenderThread->clearColor_perFrame);
+	g_context.ClearDepthBuffer(s_dataBeingRenderedByRenderThread->clearDepth_perFrame);
 
 	// Update the per-frame constant buffer
 	{

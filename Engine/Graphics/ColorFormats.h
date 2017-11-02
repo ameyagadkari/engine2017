@@ -21,7 +21,7 @@ namespace eae6320
 		{
 			struct sColor
 			{
-				sColor() :r(1.0f), g(1.0f), b(1.0f), a(1.0f) {}
+				sColor() :r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 				sColor(const sColor&) = default;
 				sColor& operator=(const sColor&) = default;
 				cResult SetColor(const float i_r, const float i_g, const float i_b, const float i_a = 1.0f);

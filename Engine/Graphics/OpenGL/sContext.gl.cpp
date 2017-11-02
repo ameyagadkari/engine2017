@@ -34,7 +34,7 @@ eae6320::cResult eae6320::Graphics::sContext::Initialize(const sInitializationPa
 	// Load any required OpenGL extensions
 	{
 		std::string errorMessage;
-		if (!(result = OpenGlExtensions::Load(&errorMessage)))
+		if (!((result = OpenGlExtensions::Load(&errorMessage))))
 		{
 			EAE6320_ASSERTF(false, errorMessage.c_str());
 			Logging::OutputError(errorMessage.c_str());
@@ -42,7 +42,7 @@ eae6320::cResult eae6320::Graphics::sContext::Initialize(const sInitializationPa
 		}
 	}
 	// Create an OpenGL rendering context
-	if (!(result = CreateRenderingContext()))
+	if (!((result = CreateRenderingContext())))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
@@ -57,9 +57,9 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 {
 	auto result = Results::success;
 
-	if (openGlRenderingContext != NULL)
+	if (openGlRenderingContext != nullptr)
 	{
-		if (wglMakeCurrent(deviceContext, NULL) != FALSE)
+		if (wglMakeCurrent(deviceContext, nullptr) != FALSE)
 		{
 			if (wglDeleteContext(openGlRenderingContext) == FALSE)
 			{
@@ -82,17 +82,17 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 			EAE6320_ASSERTF(false, windowsErrorMessage.c_str());
 			Logging::OutputError("Windows failed to unset the current OpenGL rendering context: %s", windowsErrorMessage.c_str());
 		}
-		openGlRenderingContext = NULL;
+		openGlRenderingContext = nullptr;
 	}
 
-	if (deviceContext != NULL)
+	if (deviceContext != nullptr)
 	{
 		// The documentation says that this call isn't necessary when CS_OWNDC is used
 		ReleaseDC(windowBeingRenderedTo, deviceContext);
-		deviceContext = NULL;
+		deviceContext = nullptr;
 	}
 
-	windowBeingRenderedTo = NULL;
+	windowBeingRenderedTo = nullptr;
 
 	return result;
 }
@@ -114,10 +114,24 @@ void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_
 	}
 }
 
+void eae6320::Graphics::sContext::ClearDepthBuffer(const float i_depth) const
+{
+	{
+		glDepthMask(GL_TRUE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+		glClearDepth(i_depth);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	{
+		constexpr GLbitfield clearDepth = GL_DEPTH_BUFFER_BIT;
+		glClear(clearDepth);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
+}
+
 void eae6320::Graphics::sContext::BufferSwap() const
 {
-	const auto deviceContext = g_context.deviceContext;
-	EAE6320_ASSERT(deviceContext != NULL);
+	EAE6320_ASSERT(deviceContext != nullptr);
 	const auto glResult = SwapBuffers(deviceContext);
 	EAE6320_ASSERT(glResult != FALSE);
 }
@@ -134,7 +148,7 @@ namespace
 		// Get the device context
 		{
 			g_context.deviceContext = GetDC(g_context.windowBeingRenderedTo);
-			if (g_context.deviceContext == NULL)
+			if (g_context.deviceContext == nullptr)
 			{
 				EAE6320_ASSERTF(false, "Couldn't get device context");
 				eae6320::Logging::OutputError("Windows failed to get the device context");
@@ -229,9 +243,9 @@ namespace
 					// NULL terminator
 					NULL
 				};
-				constexpr HGLRC noSharedContexts = NULL;
+				constexpr HGLRC noSharedContexts = nullptr;
 				g_context.openGlRenderingContext = wglCreateContextAttribsARB(g_context.deviceContext, noSharedContexts, desiredAttributes);
-				if (g_context.openGlRenderingContext == NULL)
+				if (g_context.openGlRenderingContext == nullptr)
 				{
 					DWORD errorCode;
 					const auto windowsErrorMessage = eae6320::Windows::GetLastSystemError(&errorCode);

@@ -14,36 +14,37 @@
 #include "Graphics.h"
 
 #include <Engine/Results/Results.h>
+#include "ColorFormats.h"
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include <Engine/Windows/Includes.h>
+#include <Engine/Windows/Includes.h>
 
-	#if defined( EAE6320_PLATFORM_GL )
-		#include "OpenGL/Includes.h"
-	#endif
+#if defined( EAE6320_PLATFORM_GL )
+#include "OpenGL/Includes.h"
+#endif
 #endif
 
 // Forward Declarations
 //=====================
 
 #if defined( EAE6320_PLATFORM_D3D )
-	struct ID3D11Device;
-	struct ID3D11DeviceContext;
-	struct IDXGISwapChain;
-	struct ID3D11RenderTargetView;
-	struct ID3D11DepthStencilView;
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct IDXGISwapChain;
+struct ID3D11RenderTargetView;
+struct ID3D11DepthStencilView;
 #endif
 
-	namespace eae6320
+namespace eae6320
+{
+	namespace Graphics
 	{
-		namespace Graphics
+		namespace ColorFormats
 		{
-			namespace ColorFormats
-			{
-				struct sColor;
-			}
+			struct sColor;
 		}
 	}
+}
 
 // Class Declaration
 //==================
@@ -77,8 +78,8 @@ namespace eae6320
 			// A depth/stencil view allows a texture to have depth rendered to it
 			ID3D11DepthStencilView* depthStencilView = nullptr;
 #elif defined( EAE6320_PLATFORM_GL )
-			HDC deviceContext = NULL;
-			HGLRC openGlRenderingContext = NULL;
+			HDC deviceContext = nullptr;
+			HGLRC openGlRenderingContext = nullptr;
 #endif
 
 			// Interface
@@ -92,7 +93,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			cResult Initialize( const sInitializationParameters& i_initializationParameters );
+			cResult Initialize(const sInitializationParameters& i_initializationParameters);
 			cResult CleanUp();
 
 			~sContext();
@@ -101,6 +102,7 @@ namespace eae6320
 			//-------
 
 			void ClearImageBuffer(const ColorFormats::sColor i_color) const;
+			void ClearDepthBuffer(const float i_depth) const;
 			void BufferSwap() const;
 
 			// Implementation

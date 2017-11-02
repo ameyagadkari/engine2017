@@ -31,14 +31,14 @@ eae6320::cResult eae6320::Graphics::sContext::Initialize( const sInitializationP
 	windowBeingRenderedTo = i_initializationParameters.mainWindow;
 
 	// Create an interface to a Direct3D device
-	if ( !( result = CreateDevice( i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight ) ) )
+	if ( !( (result = CreateDevice( i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight )) ) )
 	{
 		EAE6320_ASSERT( false );
 		goto OnExit;
 	}
 
 	// Initialize the views
-	if (!(result = InitializeViews(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight)))
+	if (!((result = InitializeViews(i_initializationParameters.resolutionWidth, i_initializationParameters.resolutionHeight))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
@@ -51,7 +51,7 @@ OnExit:
 
 eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 {
-	auto result = Results::success;
+	const auto result = Results::success;
 
 	if (renderTargetView)
 	{
@@ -79,7 +79,7 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 		swapChain = nullptr;
 	}
 
-	windowBeingRenderedTo = NULL;
+	windowBeingRenderedTo = nullptr;
 
 	return result;
 }
@@ -89,20 +89,21 @@ eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 
 void eae6320::Graphics::sContext::ClearImageBuffer(const ColorFormats::sColor i_color) const
 {
-	auto* const direct3dImmediateContext = g_context.direct3DImmediateContext;
-	EAE6320_ASSERT(direct3dImmediateContext);
-	{
-		EAE6320_ASSERT(renderTargetView);
+	EAE6320_ASSERT(direct3DImmediateContext);
+	EAE6320_ASSERT(renderTargetView);
+	const float color[4] = { i_color.R(), i_color.G(), i_color.B(), i_color.A() };
+	direct3DImmediateContext->ClearRenderTargetView(renderTargetView, color);
+}
 
-		// Black is usually used
-		const float clearColor[4] = { i_color.R(), i_color.G(), i_color.B(), i_color.A() };
-		direct3dImmediateContext->ClearRenderTargetView(renderTargetView, clearColor);
-	}
+void eae6320::Graphics::sContext::ClearDepthBuffer(const float i_depth) const
+{
+	EAE6320_ASSERT(depthStencilView);
+	constexpr uint8_t stencilValue = 0; // Arbitrary if stencil isn't used
+	direct3DImmediateContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, i_depth, stencilValue);
 }
 
 void eae6320::Graphics::sContext::BufferSwap() const
 {
-	auto* const swapChain = g_context.swapChain;
 	EAE6320_ASSERT(swapChain);
 	constexpr unsigned int swapImmediately = 0;
 	constexpr unsigned int presentNextFrame = 0;
@@ -121,7 +122,7 @@ namespace
 
 		IDXGIAdapter* const useDefaultAdapter = nullptr;
 		constexpr D3D_DRIVER_TYPE useHardwareRendering = D3D_DRIVER_TYPE_HARDWARE;
-		constexpr HMODULE dontUseSoftwareRendering = NULL;
+		constexpr HMODULE dontUseSoftwareRendering = nullptr;
 		constexpr unsigned int flags = D3D11_CREATE_DEVICE_SINGLETHREADED
 #ifdef EAE6320_GRAPHICS_ISDEVICEDEBUGINFOENABLED
 			| D3D11_CREATE_DEVICE_DEBUG
@@ -161,17 +162,17 @@ namespace
 			swapChainDescription.Flags = 0;
 		}
 		D3D_FEATURE_LEVEL highestSupportedFeatureLevel;
-		const auto d3dResult = D3D11CreateDeviceAndSwapChain( useDefaultAdapter, useHardwareRendering, dontUseSoftwareRendering,
+		const auto d3DResult = D3D11CreateDeviceAndSwapChain( useDefaultAdapter, useHardwareRendering, dontUseSoftwareRendering,
 			flags, useDefaultFeatureLevels, requestedFeatureLevelCount, sdkVersion, &swapChainDescription,
 			&g_context.swapChain, &g_context.direct3DDevice, &highestSupportedFeatureLevel, &g_context.direct3DImmediateContext );
-		if ( SUCCEEDED( d3dResult ) )
+		if ( SUCCEEDED( d3DResult ) )
 		{
 			return eae6320::Results::success;
 		}
 		else
 		{
 			EAE6320_ASSERT( false );
-			eae6320::Logging::OutputError( "Direct3D failed to create a Direct3D11 device with HRESULT %#010x", d3dResult );
+			eae6320::Logging::OutputError( "Direct3D failed to create a Direct3D11 device with HRESULT %#010x", d3DResult );
 			return eae6320::Results::Failure;
 		}
 	}
@@ -184,10 +185,10 @@ namespace
 		ID3D11Texture2D* depthBuffer = nullptr;
 
 		auto& g_context = eae6320::Graphics::sContext::g_context;
-		auto* const direct3dDevice = g_context.direct3DDevice;
-		EAE6320_ASSERT(direct3dDevice);
-		auto* const direct3dImmediateContext = g_context.direct3DImmediateContext;
-		EAE6320_ASSERT(direct3dImmediateContext);
+		auto* const direct3DDevice = g_context.direct3DDevice;
+		EAE6320_ASSERT(direct3DDevice);
+		auto* const direct3DImmediateContext = g_context.direct3DImmediateContext;
+		EAE6320_ASSERT(direct3DImmediateContext);
 
 		// Create a "render target view" of the back buffer
 		// (the back buffer was already created by the call to D3D11CreateDeviceAndSwapChain(),
@@ -197,24 +198,24 @@ namespace
 			// Get the back buffer from the swap chain
 			{
 				constexpr unsigned int bufferIndex = 0;	// This must be 0 since the swap chain is discarded
-				const auto d3dResult = g_context.swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
-				if (FAILED(d3dResult))
+				const auto d3DResult = g_context.swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+				if (FAILED(d3DResult))
 				{
 					result = eae6320::Results::Failure;
-					EAE6320_ASSERTF(false, "Couldn't get the back buffer from the swap chain (HRESULT %#010x)", d3dResult);
-					eae6320::Logging::OutputError("Direct3D failed to get the back buffer from the swap chain (HRESULT %#010x)", d3dResult);
+					EAE6320_ASSERTF(false, "Couldn't get the back buffer from the swap chain (HRESULT %#010x)", d3DResult);
+					eae6320::Logging::OutputError("Direct3D failed to get the back buffer from the swap chain (HRESULT %#010x)", d3DResult);
 					goto OnExit;
 				}
 			}
 			// Create the view
 			{
 				constexpr D3D11_RENDER_TARGET_VIEW_DESC* const accessAllSubResources = nullptr;
-				const auto d3dResult = direct3dDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &g_context.renderTargetView);
-				if (FAILED(d3dResult))
+				const auto d3DResult = direct3DDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &g_context.renderTargetView);
+				if (FAILED(d3DResult))
 				{
 					result = eae6320::Results::Failure;
-					EAE6320_ASSERTF(false, "Couldn't create render target view (HRESULT %#010x)", d3dResult);
-					eae6320::Logging::OutputError("Direct3D failed to create the render target view (HRESULT %#010x)", d3dResult);
+					EAE6320_ASSERTF(false, "Couldn't create render target view (HRESULT %#010x)", d3DResult);
+					eae6320::Logging::OutputError("Direct3D failed to create the render target view (HRESULT %#010x)", d3DResult);
 					goto OnExit;
 				}
 			}
@@ -244,24 +245,24 @@ namespace
 				// The GPU renders to the depth/stencil buffer and so there is no initial data
 				// (like there would be with a traditional texture loaded from disk)
 				constexpr D3D11_SUBRESOURCE_DATA* const noInitialData = nullptr;
-				const auto d3dResult = direct3dDevice->CreateTexture2D(&textureDescription, noInitialData, &depthBuffer);
-				if (FAILED(d3dResult))
+				const auto d3DResult = direct3DDevice->CreateTexture2D(&textureDescription, noInitialData, &depthBuffer);
+				if (FAILED(d3DResult))
 				{
 					result = eae6320::Results::Failure;
-					EAE6320_ASSERTF(false, "Couldn't create depth buffer (HRESULT %#010x)", d3dResult);
-					eae6320::Logging::OutputError("Direct3D failed to create the depth buffer resource (HRESULT %#010x)", d3dResult);
+					EAE6320_ASSERTF(false, "Couldn't create depth buffer (HRESULT %#010x)", d3DResult);
+					eae6320::Logging::OutputError("Direct3D failed to create the depth buffer resource (HRESULT %#010x)", d3DResult);
 					goto OnExit;
 				}
 			}
 			// Create the view
 			{
 				constexpr D3D11_DEPTH_STENCIL_VIEW_DESC* const noSubResources = nullptr;
-				const auto d3dResult = direct3dDevice->CreateDepthStencilView(depthBuffer, noSubResources, &g_context.depthStencilView);
-				if (FAILED(d3dResult))
+				const auto d3DResult = direct3DDevice->CreateDepthStencilView(depthBuffer, noSubResources, &g_context.depthStencilView);
+				if (FAILED(d3DResult))
 				{
 					result = eae6320::Results::Failure;
-					EAE6320_ASSERTF(false, "Couldn't create depth stencil view (HRESULT %#010x)", d3dResult);
-					eae6320::Logging::OutputError("Direct3D failed to create the depth stencil view (HRESULT %#010x)", d3dResult);
+					EAE6320_ASSERTF(false, "Couldn't create depth stencil view (HRESULT %#010x)", d3DResult);
+					eae6320::Logging::OutputError("Direct3D failed to create the depth stencil view (HRESULT %#010x)", d3DResult);
 					goto OnExit;
 				}
 			}
@@ -270,7 +271,7 @@ namespace
 		// Bind the views
 		{
 			constexpr unsigned int renderTargetCount = 1;
-			direct3dImmediateContext->OMSetRenderTargets(renderTargetCount, &g_context.renderTargetView, g_context.depthStencilView);
+			direct3DImmediateContext->OMSetRenderTargets(renderTargetCount, &g_context.renderTargetView, g_context.depthStencilView);
 		}
 		// Specify that the entire render target should be visible
 		{
@@ -283,7 +284,7 @@ namespace
 				viewPort.MaxDepth = 1.0f;
 			}
 			constexpr unsigned int viewPortCount = 1;
-			direct3dImmediateContext->RSSetViewports(viewPortCount, &viewPort);
+			direct3DImmediateContext->RSSetViewports(viewPortCount, &viewPort);
 		}
 
 	OnExit:
