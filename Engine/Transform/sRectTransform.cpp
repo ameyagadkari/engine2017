@@ -56,8 +56,7 @@ void eae6320::Transform::sRectTransform::GetScreenPosition(Graphics::HelperStruc
 		uint16_t screenWidth, screenHeight;
 		UserSettings::GetDesiredInitialResolutionWidth(screenWidth);
 		UserSettings::GetDesiredInitialResolutionHeight(screenHeight);
-		EAE6320_ASSERT(screenWidth);
-		EAE6320_ASSERT(screenHeight);
+		EAE6320_ASSERT(screenWidth && screenHeight);
 		s_widthMultiplier = 2.0f / screenWidth;
 		s_heightMultiplier = 2.0f / screenHeight;
 		s_isInitialized = true;

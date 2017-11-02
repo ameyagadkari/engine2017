@@ -43,7 +43,7 @@
 //==========
 #if defined( EAE6320_PLATFORM_GL )
 
-	#define mul(a, b) a * b 
+	#define mul(i_mat4, i_vec4) i_mat4 * i_vec4 
 
 #endif
 
@@ -105,10 +105,12 @@ DeclareSamplerStateObject( g_color_samplerState, 0 )
 
 DeclareConstantBuffer( g_constantBuffer_perFrame, 0)
 {
+	float4x4 g_transform_worldToCamera;
+	float4x4 g_transform_cameraToProjected;
+  
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
-	// For float4 alignment
-	float2 g_padding;
+	float2 g_padding; // For float4 alignment
 };
 
 DeclareConstantBuffer( g_constantBuffer_perMaterial, 1)
@@ -118,5 +120,5 @@ DeclareConstantBuffer( g_constantBuffer_perMaterial, 1)
 
 DeclareConstantBuffer( g_constantBuffer_perDrawCall, 2)
 {
-	float4 g_position;
+	float4x4 g_transform_localToWorld;
 };

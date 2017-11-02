@@ -31,32 +31,32 @@ void eae6320::Gameplay::DefaultController::UpdateOrientation(const float i_elaps
 
 void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTransform& i_transform)
 {
-	const auto isWPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::W);
-	const auto isSPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::S);
-	const auto isAPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::A);
-	const auto isDPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::D);
+	const auto isUpPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::UP);
+	const auto isDownPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::DOWN);
+	const auto isLeftPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::LEFT);
+	const auto isRightPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::RIGHT);
 
-	if (!(isWPressed && isSPressed))
+	if (!(isUpPressed && isDownPressed))
 	{
-		if (isWPressed)
+		if (isUpPressed)
 		{
 			isThereInput = true;
 			m_rigidBodyState.velocity += i_transform.localAxes.up;
 		}
-		if (isSPressed)
+		if (isDownPressed)
 		{
 			isThereInput = true;
 			m_rigidBodyState.velocity -= i_transform.localAxes.up;
 		}
 	}
-	if (!(isDPressed && isAPressed))
+	if (!(isRightPressed && isLeftPressed))
 	{
-		if (isDPressed)
+		if (isRightPressed)
 		{
 			isThereInput = true;
 			m_rigidBodyState.velocity += i_transform.localAxes.right;
 		}
-		if (isAPressed)
+		if (isLeftPressed)
 		{
 			isThereInput = true;
 			m_rigidBodyState.velocity -= i_transform.localAxes.right;

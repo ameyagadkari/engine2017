@@ -45,6 +45,16 @@ void main()
 #endif
 
 {
-	o_position = vec4( g_position.xyz + i_position, 1.0 );
-	o_color = i_color;
+	// Calculate the position of this vertex on screen
+	{
+		float4 vertexPosition_local = float4( i_position, 1.0 );
+		float4 vertexPosition_world = mul( g_transform_localToWorld, vertexPosition_local);
+		float4 vertexPosition_camera = mul( g_transform_worldToCamera, vertexPosition_world);
+		o_position = mul( g_transform_cameraToProjected, vertexPosition_camera);
+	}
+	
+	// Pass the input color and the texture coordinates to the fragment shader unchanged
+	{
+		o_color = i_color;
+	}
 }

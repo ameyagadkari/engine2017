@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleGame", "ExampleGame", "{AC0EBDC3-8723-4A43-9112-DB863C2C3694}"
 EndProject
@@ -81,6 +81,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Engine\Physics\Physics.vcxproj", "{30E6BB9F-138D-4B44-9733-869263F7BAD5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameplay", "ExampleGame_\Gameplay\Gameplay.vcxproj", "{746DE02E-0930-4014-A1A0-0FF5F943622E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Camera", "Engine\Camera\Camera.vcxproj", "{90D84820-2844-4453-817F-AE86D6C53267}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -330,6 +332,14 @@ Global
 		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x64.Build.0 = Release|x64
 		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x86.ActiveCfg = Release|Win32
 		{746DE02E-0930-4014-A1A0-0FF5F943622E}.Release|x86.Build.0 = Release|Win32
+		{90D84820-2844-4453-817F-AE86D6C53267}.Debug|x64.ActiveCfg = Debug|x64
+		{90D84820-2844-4453-817F-AE86D6C53267}.Debug|x64.Build.0 = Debug|x64
+		{90D84820-2844-4453-817F-AE86D6C53267}.Debug|x86.ActiveCfg = Debug|Win32
+		{90D84820-2844-4453-817F-AE86D6C53267}.Debug|x86.Build.0 = Debug|Win32
+		{90D84820-2844-4453-817F-AE86D6C53267}.Release|x64.ActiveCfg = Release|x64
+		{90D84820-2844-4453-817F-AE86D6C53267}.Release|x64.Build.0 = Release|x64
+		{90D84820-2844-4453-817F-AE86D6C53267}.Release|x86.ActiveCfg = Release|Win32
+		{90D84820-2844-4453-817F-AE86D6C53267}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -366,6 +376,7 @@ Global
 		{0446A807-E675-4D15-B534-E22FBB695670} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 		{30E6BB9F-138D-4B44-9733-869263F7BAD5} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 		{746DE02E-0930-4014-A1A0-0FF5F943622E} = {AC0EBDC3-8723-4A43-9112-DB863C2C3694}
+		{90D84820-2844-4453-817F-AE86D6C53267} = {E5C51EF7-81D3-4030-A4CE-0D2D666CEF4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A89F366F-0B7F-464F-90A8-A4828B273298}

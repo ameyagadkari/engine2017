@@ -23,6 +23,6 @@ void main(
 
 	)
 {
-	o_position = float4( g_position.xyz + i_position, 1.0 );
+	o_position = float4( i_position, 1.0 );
 	o_color = i_color;
 }
