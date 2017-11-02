@@ -78,7 +78,7 @@ namespace eae6320
 			ID3D11Buffer* m_indexBuffer = nullptr;
 			// D3D has an "input layout" object that associates the layout of the vertex format struct
 			// with the input from a vertex shader
-			ID3D11InputLayout* m_vertexInputLayout = nullptr;
+			static ID3D11InputLayout* ms_vertexInputLayout;
 #elif defined( EAE6320_PLATFORM_GL )
 			// A vertex array encapsulates the vertex data, index data and the vertex input layout
 			GLuint m_vertexArrayId;

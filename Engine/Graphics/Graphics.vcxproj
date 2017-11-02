@@ -272,6 +272,7 @@
     </ClCompile>
     <ClCompile Include="sContext.cpp" />
     <ClCompile Include="SpriteHelperStructs.cpp" />
+    <ClCompile Include="VertexFormats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />

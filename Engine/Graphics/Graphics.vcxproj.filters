@@ -107,6 +107,7 @@
     </ClCompile>
     <ClCompile Include="SpriteHelperStructs.cpp" />
     <ClCompile Include="MeshHelperStructs.cpp" />
+    <ClCompile Include="VertexFormats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cRenderState.inl" />

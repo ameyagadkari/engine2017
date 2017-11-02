@@ -15,6 +15,8 @@
 // Static Data Initialization
 //===========================
 
+ID3D11InputLayout* eae6320::Graphics::cSprite::ms_vertexInputLayout = nullptr;
+
 namespace
 {
 	// Since a sprite is always a quad the vertex count will always be 4
@@ -29,12 +31,13 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTransform& i_rectTransform)
 {
-	cResult result;
+	auto result = Results::success;
 
 	auto* const direct3DDevice = sContext::g_context.direct3DDevice;
 	EAE6320_ASSERT(direct3DDevice);
 
 	// Initialize vertex format
+	if (!ms_vertexInputLayout)
 	{
 		// Load the compiled binary vertex shader for the input layout
 		Platform::sDataFromFile vertexShaderDataFromFile;
@@ -88,12 +91,12 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 			}
 
 			const auto d3DResult = direct3DDevice->CreateInputLayout(layoutDescription, vertexElementCount,
-				vertexShaderDataFromFile.data, vertexShaderDataFromFile.size, &m_vertexInputLayout);
+				vertexShaderDataFromFile.data, vertexShaderDataFromFile.size, &ms_vertexInputLayout);
 			if (FAILED(d3DResult))
 			{
 				result = Results::Failure;
-				EAE6320_ASSERTF(false, "Geometry vertex input layout creation failed (HRESULT %#010x)", d3DResult);
-				Logging::OutputError("Direct3D failed to create the geometry vertex input layout (HRESULT %#010x)", d3DResult);
+				EAE6320_ASSERTF(false, "Sprite vertex input layout creation failed (HRESULT %#010x)", d3DResult);
+				Logging::OutputError("Direct3D failed to create the sprite vertex input layout (HRESULT %#010x)", d3DResult);
 				vertexShaderDataFromFile.Free();
 				goto OnExit;
 			}
@@ -103,7 +106,7 @@ eae6320::cResult eae6320::Graphics::cSprite::Initialize(const Transform::sRectTr
 		else
 		{
 			EAE6320_ASSERTF(false, errorMessage.c_str());
-			Logging::OutputError("The geometry vertex input layout shader couldn't be loaded: %s", errorMessage.c_str());
+			Logging::OutputError("The sprite vertex input layout shader couldn't be loaded: %s", errorMessage.c_str());
 			goto OnExit;
 		}
 	}
@@ -155,10 +158,10 @@ eae6320::cResult eae6320::Graphics::cSprite::CleanUp()
 		m_vertexBuffer->Release();
 		m_vertexBuffer = nullptr;
 	}
-	if (m_vertexInputLayout)
+	if (ms_vertexInputLayout)
 	{
-		m_vertexInputLayout->Release();
-		m_vertexInputLayout = nullptr;
+		ms_vertexInputLayout->Release();
+		ms_vertexInputLayout = nullptr;
 	}
 
 	return result;
@@ -179,17 +182,22 @@ void eae6320::Graphics::cSprite::Draw() const
 		constexpr unsigned int bufferOffset = 0;
 		direct3DImmediateContext->IASetVertexBuffers(startingSlot, vertexBufferCount, &m_vertexBuffer, &bufferStride, &bufferOffset);
 	}
-	// Specify what kind of data the vertex buffer holds
-	// Set the layout (which defines how to interpret a single vertex)
+
+	if (VertexFormats::g_layoutType != VertexFormats::SPRITE)
 	{
-		EAE6320_ASSERT(m_vertexInputLayout);
-		direct3DImmediateContext->IASetInputLayout(m_vertexInputLayout);
+		VertexFormats::g_layoutType = VertexFormats::SPRITE;
+		// Specify what kind of data the vertex buffer holds
+		// Set the layout (which defines how to interpret a single vertex)
+		{
+			EAE6320_ASSERT(ms_vertexInputLayout);
+			direct3DImmediateContext->IASetInputLayout(ms_vertexInputLayout);
+		}
+		// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
+		// the vertex buffer was defined as a triangle stri[
+		// (meaning that every primitive is a triangle but only the first will be defined by three vertices
+		//  the rest of the triangles will use the previous two vertices and the next vertex)
+		direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	}
-	// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
-	// the vertex buffer was defined as a triangle stri[
-	// (meaning that every primitive is a triangle but only the first will be defined by three vertices
-	//  the rest of the triangles will use the previous two vertices and the next vertex)
-	direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	// Render triangles from the currently-bound vertex buffer
 	{

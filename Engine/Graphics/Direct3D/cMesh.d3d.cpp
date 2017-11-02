@@ -15,6 +15,8 @@
 // Static Data Initialization
 //===========================
 
+ID3D11InputLayout* eae6320::Graphics::cMesh::ms_vertexInputLayout = nullptr;
+
 namespace
 {
 	constexpr unsigned int s_indicesPerTriangle = 3;
@@ -36,12 +38,13 @@ namespace
 
 eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMeshData& i_meshData)
 {
-	cResult result;
+	auto result = Results::success;
 
 	auto* const direct3DDevice = sContext::g_context.direct3DDevice;
 	EAE6320_ASSERT(direct3DDevice);
 
 	// Initialize vertex format
+	if (!ms_vertexInputLayout)
 	{
 		// Load the compiled binary vertex shader for the input layout
 		Platform::sDataFromFile vertexShaderDataFromFile;
@@ -95,12 +98,12 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 			}
 
 			const auto d3DResult = direct3DDevice->CreateInputLayout(layoutDescription, vertexElementCount,
-				vertexShaderDataFromFile.data, vertexShaderDataFromFile.size, &m_vertexInputLayout);
+				vertexShaderDataFromFile.data, vertexShaderDataFromFile.size, &ms_vertexInputLayout);
 			if (FAILED(d3DResult))
 			{
 				result = Results::Failure;
-				EAE6320_ASSERTF(false, "Geometry vertex input layout creation failed (HRESULT %#010x)", d3DResult);
-				Logging::OutputError("Direct3D failed to create the geometry vertex input layout (HRESULT %#010x)", d3DResult);
+				EAE6320_ASSERTF(false, "Mesh vertex input layout creation failed (HRESULT %#010x)", d3DResult);
+				Logging::OutputError("Direct3D failed to create the Mesh vertex input layout (HRESULT %#010x)", d3DResult);
 				vertexShaderDataFromFile.Free();
 				goto OnExit;
 			}
@@ -110,7 +113,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		else
 		{
 			EAE6320_ASSERTF(false, errorMessage.c_str());
-			Logging::OutputError("The geometry vertex input layout shader couldn't be loaded: %s", errorMessage.c_str());
+			Logging::OutputError("The mesh vertex input layout shader couldn't be loaded: %s", errorMessage.c_str());
 			goto OnExit;
 		}
 	}
@@ -161,12 +164,12 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		}
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
-			EAE6320_ASSERT(i_meshData.indexData);		
+			EAE6320_ASSERT(i_meshData.indexData);
 			const auto numberOfTriangles = i_meshData.numberOfIndices / s_indicesPerTriangle;
 			m_isIndexing16Bit ?
 				Reverse(reinterpret_cast<uint16_t*>(i_meshData.indexData), numberOfTriangles) :
 				Reverse(reinterpret_cast<uint32_t*>(i_meshData.indexData), numberOfTriangles);
-			
+
 			initialData.pSysMem = i_meshData.indexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
@@ -200,10 +203,10 @@ eae6320::cResult eae6320::Graphics::cMesh::CleanUp()
 		m_indexBuffer->Release();
 		m_indexBuffer = nullptr;
 	}
-	if (m_vertexInputLayout)
+	if (ms_vertexInputLayout)
 	{
-		m_vertexInputLayout->Release();
-		m_vertexInputLayout = nullptr;
+		ms_vertexInputLayout->Release();
+		ms_vertexInputLayout = nullptr;
 	}
 
 	return result;
@@ -233,16 +236,21 @@ void eae6320::Graphics::cMesh::Draw() const
 		constexpr unsigned int offset = 0;
 		direct3DImmediateContext->IASetIndexBuffer(m_indexBuffer, dxgiFormat, offset);
 	}
-	// Specify what kind of data the vertex buffer holds
-	// Set the layout (which defines how to interpret a single vertex)
+
+	if (VertexFormats::g_layoutType != VertexFormats::MESH)
 	{
-		EAE6320_ASSERT(m_vertexInputLayout);
-		direct3DImmediateContext->IASetInputLayout(m_vertexInputLayout);
+		VertexFormats::g_layoutType = VertexFormats::MESH;
+		// Specify what kind of data the vertex buffer holds
+		// Set the layout (which defines how to interpret a single vertex)
+		{
+			EAE6320_ASSERT(ms_vertexInputLayout);
+			direct3DImmediateContext->IASetInputLayout(ms_vertexInputLayout);
+		}
+		// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
+		// the vertex buffer was defined as a triangle list
+		// (meaning that every primitive is a triangle and will be defined by three vertices)
+		direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	}
-	// Set the topology (which defines how to interpret multiple vertices as a single "primitive";
-	// the vertex buffer was defined as a triangle list
-	// (meaning that every primitive is a triangle and will be defined by three vertices)
-	direct3DImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Render triangles from the currently-bound vertex buffer
 	{
@@ -263,7 +271,7 @@ namespace
 		for (uint32_t i = 0; i < i_numberOfTriangles; i++)
 		{
 			std::swap(o_data[i * s_indicesPerTriangle + 1], o_data[i * s_indicesPerTriangle + 2]);
-		}	
+		}
 	}
 
 	void Reverse(uint32_t*const& o_data, const uint32_t i_numberOfTriangles)

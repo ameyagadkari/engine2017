@@ -358,7 +358,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.0f, -1.0f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -1.0f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

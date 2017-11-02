@@ -6,6 +6,11 @@
 #ifndef EAE6320_GRAPHICS_VERTEX_FORMATS_H
 #define EAE6320_GRAPHICS_VERTEX_FORMATS_H
 
+// Include Files
+//==============
+
+#include <cstdint>
+
 // Vertex Formats
 //===============
 
@@ -15,6 +20,13 @@ namespace eae6320
 	{
 		namespace VertexFormats
 		{
+			enum eLayoutType : uint8_t
+			{
+				UNKNOWN,
+				SPRITE,
+				MESH
+			};
+
 			struct sSprite
 			{
 				// POSITION
@@ -40,6 +52,19 @@ namespace eae6320
 				// Offset = 12
 				uint8_t r, g, b, a;
 			};
+		}
+	}
+}
+
+// Static Data Declaration
+//========================
+namespace eae6320
+{
+	namespace Graphics
+	{
+		namespace VertexFormats
+		{
+			extern eLayoutType g_layoutType;
 		}
 	}
 }
