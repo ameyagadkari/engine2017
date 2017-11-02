@@ -120,6 +120,9 @@ void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_ga
 	ConstantBufferFormats::sPerDrawCall constantData_perDrawCall;
 	constantData_perDrawCall.g_transform_localToWorld = Math::cMatrixTransformation(i_gameObject3D->m_predictionTransform.orientation, i_gameObject3D->m_predictionTransform.position);
 
+	auto& constantData_perFrame = s_dataBeingSubmittedByApplicationThread->constantData_perFrame;
+	constantData_perDrawCall.g_transform_localToProjected = constantData_perFrame.g_transform_cameraToProjected * Math::cMatrixTransformation::ConcatenateAffine(constantData_perFrame.g_transform_worldToCamera, constantData_perDrawCall.g_transform_localToWorld);
+
 	s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
 }
 

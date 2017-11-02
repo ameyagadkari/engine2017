@@ -43,6 +43,7 @@ namespace eae6320
 			struct sPerDrawCall
 			{
 				Math::cMatrixTransformation g_transform_localToWorld;
+				Math::cMatrixTransformation g_transform_localToProjected;
 			};
 		}
 	}

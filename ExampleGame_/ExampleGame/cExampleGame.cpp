@@ -5,7 +5,6 @@
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/UserInput/UserInput.h>
-#include <Engine/Logging/Logging.h>
 #include <Engine/Gameobject/cGameobject2D.h>
 #include <Engine/Gameobject/cGameobject3D.h>
 #include <Engine/Graphics/Graphics.h>

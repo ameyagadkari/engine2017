@@ -121,4 +121,5 @@ DeclareConstantBuffer( g_constantBuffer_perMaterial, 1)
 DeclareConstantBuffer( g_constantBuffer_perDrawCall, 2)
 {
 	float4x4 g_transform_localToWorld;
+	float4x4 g_transform_localToProjected;
 };
