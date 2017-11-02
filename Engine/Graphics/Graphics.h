@@ -10,14 +10,41 @@
 
 #include <cstdint>
 #include <Engine/Results/Results.h>
-#include <Engine/Gameobject/cGameobject2D.h>
-#include <Engine/Gameobject/cGameobject3D.h>
-#include "ColorFormats.h"
-
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
 #endif
+
+// Forward Declarations
+//=====================
+
+namespace eae6320
+{
+	namespace Camera
+	{
+		class cbCamera;
+	}
+}
+
+namespace eae6320
+{
+	namespace Gameobject
+	{
+		class cGameobject2D;
+		class cGameobject3D;
+	}
+}
+
+namespace eae6320
+{
+	namespace Graphics
+	{
+		namespace ColorFormats
+		{
+			struct sColor;
+		}
+	}
+}
 
 // Interface
 //==========
@@ -37,6 +64,7 @@ namespace eae6320
 		// for the frame currently being submitted
 		void SubmitElapsedTime(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_simulationTime);
 		void SubmitClearColor(const ColorFormats::sColor& i_clearColor);
+		void SubmitCamera(Camera::cbCamera*const& i_camera);
 		void SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D);
 		void SubmitGameobject3D(Gameobject::cGameobject3D*const& i_gameObject3D);
 

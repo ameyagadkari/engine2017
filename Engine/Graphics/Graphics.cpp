@@ -7,12 +7,16 @@
 #include "ConstantBufferFormats.h"
 #include "cSamplerState.h"
 #include "sContext.h"
+#include "ColorFormats.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Concurrency/cEvent.h>
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
 #include <Engine/UserOutput/UserOutput.h>
+#include <Engine/Gameobject/cGameobject2D.h>
+#include <Engine/Gameobject/cGameobject3D.h>
+#include <Engine/Camera/cbCamera.h>
 #include <utility>
 
 // Static Data Initialization
@@ -79,9 +83,22 @@ void eae6320::Graphics::SubmitClearColor(const ColorFormats::sColor& i_clearColo
 	s_dataBeingSubmittedByApplicationThread->clearColor_perFrame = i_clearColor;
 }
 
+void eae6320::Graphics::SubmitCamera(Camera::cbCamera*const& i_camera)
+{
+	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+
+	EAE6320_ASSERT(i_camera);
+
+	auto& constantData_perFrame = s_dataBeingSubmittedByApplicationThread->constantData_perFrame;
+	constantData_perFrame.g_transform_worldToCamera = Math::cMatrixTransformation::CreateWorldToCameraTransform(i_camera->m_predictionTransform.orientation, i_camera->m_predictionTransform.position);
+	constantData_perFrame.g_transform_cameraToProjected = i_camera->m_projectedTransformPerspective;
+}
+
 void eae6320::Graphics::SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D)
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
+
+	EAE6320_ASSERT(i_gameObject2D);
 
 	i_gameObject2D->IncrementReferenceCount();
 
@@ -92,11 +109,12 @@ void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_ga
 {
 	EAE6320_ASSERT(s_dataBeingSubmittedByApplicationThread);
 
+	EAE6320_ASSERT(i_gameObject3D);
+
 	i_gameObject3D->IncrementReferenceCount();
 
 	ConstantBufferFormats::sPerDrawCall constantData_perDrawCall;
-	constantData_perDrawCall.g_position.x = i_gameObject3D->m_predictionTransform.position.x;
-	constantData_perDrawCall.g_position.y = i_gameObject3D->m_predictionTransform.position.y;
+	constantData_perDrawCall.g_transform_localToWorld = Math::cMatrixTransformation(i_gameObject3D->m_predictionTransform.orientation, i_gameObject3D->m_predictionTransform.position);
 
 	s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
 }

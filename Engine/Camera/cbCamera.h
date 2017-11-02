@@ -24,6 +24,12 @@ namespace eae6320
 		class cbCamera
 		{
 		public:
+			// Data
+			//=====
+
+			Math::cMatrixTransformation m_projectedTransformPerspective;
+			Transform::sPredictionTransform m_predictionTransform;
+
 			// Initialization / Clean Up
 			//--------------------------
 
@@ -49,13 +55,10 @@ namespace eae6320
 				const float i_nearPlaneDistance = 0.1f,
 				const float i_farPlaneDistance = 100.0f);
 
-		//private:
 			// Data
 			//=====
 
-			Math::cMatrixTransformation m_projectedTransformPerspective;
 			Transform::sTransform m_transform;
-			Transform::sPredictionTransform m_predictionTransform;
 			float m_fieldOfView;
 			float m_nearPlaneDistance;
 			float m_farPlaneDistance;

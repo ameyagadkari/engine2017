@@ -11,6 +11,10 @@
 #include <Engine/Graphics/Graphics.h>
 #include <Engine/Graphics/MeshHelperStructs.h>
 #include <Engine/Graphics/VertexFormats.h>
+#include <Engine/Graphics/ColorFormats.h>
+#include <Engine/Camera/Camera.h>
+#include <Engine/Camera/cbCamera.h>
+#include <Engine/Camera/cFirstPersonCamera.h>
 
 #include <vector>
 
@@ -74,6 +78,16 @@ void eae6320::cExampleGame::UpdateSimulationBasedOnInput()
 			s_3D_GameObject[i]->UpdateBasedOnSimulationInput();
 		}
 	}
+
+	// Change current camera
+	{
+		Camera::ChangeCurrentCamera();
+	}
+
+	//Update current camera
+	{
+		Camera::GetCurrentCamera()->UpdatePosition();
+	}
 }
 void eae6320::cExampleGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
 {
@@ -83,6 +97,11 @@ void eae6320::cExampleGame::UpdateSimulationBasedOnTime(const float i_elapsedSec
 		{
 			s_3D_GameObject[i]->UpdateBasedOnSimulationTime(i_elapsedSecondCount_sinceLastUpdate);
 		}
+	}
+
+	//Update current camera
+	{
+		Camera::GetCurrentCamera()->UpdatePosition(i_elapsedSecondCount_sinceLastUpdate);
 	}
 }
 
@@ -95,6 +114,12 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 			s_3D_GameObject[i]->PredictSimulationBasedOnElapsedTime(i_elapsedSecondCount_sinceLastSimulationUpdate);
 		}
 	}
+
+	// Predict Camera
+	{
+		Camera::GetCurrentCamera()->PredictPosition(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	}
+
 	// Submit Clear Color to Graphics
 	{
 		Graphics::ColorFormats::sColor clearColor;
@@ -104,6 +129,11 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 			Logging::OutputError("All the SetColor parameters must be [0.0, 1.0]");
 		}
 		Graphics::SubmitClearColor(clearColor);
+	}
+
+	// Submit Current Camera
+	{
+		Graphics::SubmitCamera(Camera::GetCurrentCamera());
 	}
 
 	// Submit 3D Gameobjects
@@ -129,6 +159,10 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
 eae6320::cResult eae6320::cExampleGame::Initialize()
 {
 	cResult result;
+	// Create a camera
+	{
+		AddNewCamera(reinterpret_cast<Camera::cbCamera*>(Camera::cFirstPersonCamera::Initialize(Math::sVector(0.0f, 0.0f, 10.0f))));
+	}
 	// Creating all 3D gameobjects
 	{
 		{
@@ -310,17 +344,28 @@ OnExit:
 
 eae6320::cResult eae6320::cExampleGame::CleanUp()
 {
-	for (size_t i = 0; i < s_2D_GameObject_Size; i++)
+	// Clean up cameras
 	{
-		// Clean up 2d gameobject
-		s_2D_GameObject[i]->DecrementReferenceCount();
+		Camera::CleanUp();
 	}
-	s_2D_GameObject.clear();
-	for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+
+	// Clean up 2d gameobject
 	{
-		// Clean up 3d gameobject
-		s_3D_GameObject[i]->DecrementReferenceCount();
+		for (size_t i = 0; i < s_2D_GameObject_Size; i++)
+		{
+			s_2D_GameObject[i]->DecrementReferenceCount();
+		}
+		s_2D_GameObject.clear();
 	}
-	s_3D_GameObject.clear();
+
+	// Clean up 3d gameobject
+	{
+		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+		{
+			s_3D_GameObject[i]->DecrementReferenceCount();
+		}
+		s_3D_GameObject.clear();
+	}
+
 	return Results::success;
 }

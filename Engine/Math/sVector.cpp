@@ -117,17 +117,25 @@ float eae6320::Math::sVector::GetLength() const
 float eae6320::Math::sVector::Normalize()
 {
 	const auto length = GetLength();
-	EAE6320_ASSERTF(length > s_epsilon, "Can't divide by zero");
-	operator /=(length);
-	return length;
+	//EAE6320_ASSERTF(length > s_epsilon, "Can't divide by zero");
+	if (length > s_epsilon)
+	{
+		operator /=(length);
+		return length;
+	}
+	return 0.0f;
 }
 
 eae6320::Math::sVector eae6320::Math::sVector::GetNormalized() const
 {
 	const auto length = GetLength();
-	EAE6320_ASSERTF(length > s_epsilon, "Can't divide by zero");
-	const auto length_reciprocal = 1.0f / length;
-	return sVector(x * length_reciprocal, y * length_reciprocal, z * length_reciprocal);
+	//EAE6320_ASSERTF(length > s_epsilon, "Can't divide by zero");
+	if (length > s_epsilon)
+	{
+		const auto length_reciprocal = 1.0f / length;
+		return sVector(x * length_reciprocal, y * length_reciprocal, z * length_reciprocal);
+	}
+	return zero;
 }
 
 // Comparison
