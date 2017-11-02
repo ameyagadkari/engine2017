@@ -12,15 +12,21 @@
 #include <Engine/Logging/Logging.h>
 #include <Engine/Platform/Platform.h>
 
+// Static Data Initialization
+//===========================
+
+namespace
+{
+	constexpr unsigned int s_indicesPerTriangle = 3;
+}
+
 // Helper Function Declarations
 //=============================
 
 namespace
 {
-	template<typename T>
-	void Swap(T *a, T *b);
-	void Reverse(uint16_t *data, uint16_t end);
-	void Reverse(uint32_t *data, uint32_t end);
+	void Reverse(uint16_t*const& o_data, const uint32_t i_numberOfTriangles);
+	void Reverse(uint32_t*const& o_data, const uint32_t i_numberOfTriangles);
 }
 
 // Implementation
@@ -155,10 +161,12 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		}
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
-			EAE6320_ASSERT(i_meshData.indexData);
+			EAE6320_ASSERT(i_meshData.indexData);		
+			const auto numberOfTriangles = i_meshData.numberOfIndices / s_indicesPerTriangle;
 			m_isIndexing16Bit ?
-				Reverse(reinterpret_cast<uint16_t*>(i_meshData.indexData), m_numberOfIndices - 1) :
-				Reverse(reinterpret_cast<uint32_t*>(i_meshData.indexData), m_numberOfIndices - 1);
+				Reverse(reinterpret_cast<uint16_t*>(i_meshData.indexData), numberOfTriangles) :
+				Reverse(reinterpret_cast<uint32_t*>(i_meshData.indexData), numberOfTriangles);
+			
 			initialData.pSysMem = i_meshData.indexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
@@ -250,36 +258,19 @@ void eae6320::Graphics::cMesh::Draw() const
 
 namespace
 {
-	template<typename T>
-	void Swap(T *a, T *b)
+	void Reverse(uint16_t*const& o_data, const uint32_t i_numberOfTriangles)
 	{
-		if (a != b)
+		for (uint32_t i = 0; i < i_numberOfTriangles; i++)
 		{
-			*a ^= *b;
-			*b ^= *a;
-			*a ^= *b;
-		}
+			std::swap(o_data[i * s_indicesPerTriangle + 1], o_data[i * s_indicesPerTriangle + 2]);
+		}	
 	}
 
-	void Reverse(uint16_t *data, uint16_t end)
+	void Reverse(uint32_t*const& o_data, const uint32_t i_numberOfTriangles)
 	{
-		uint16_t start = 0;
-		while (start < end)
+		for (uint32_t i = 0; i < i_numberOfTriangles; i++)
 		{
-			Swap(data + start, data + end);
-			start++;
-			end--;
-		}
-	}
-
-	void Reverse(uint32_t *data, uint32_t end)
-	{
-		uint32_t start = 0;
-		while (start < end)
-		{
-			Swap(data + start, data + end);
-			start++;
-			end--;
+			std::swap(o_data[i * s_indicesPerTriangle + 1], o_data[i * s_indicesPerTriangle + 2]);
 		}
 	}
 }
