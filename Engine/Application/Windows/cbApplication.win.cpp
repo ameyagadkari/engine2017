@@ -187,7 +187,7 @@ LRESULT CALLBACK eae6320::Application::cbApplication::OnMessageReceivedFromWindo
 		const auto& creationData = *reinterpret_cast<CREATESTRUCT*>(i_lParam);
 		// Retrieve the application pointer that was provided to CreateWindowEx()
 		auto* const application =
-			static_cast<eae6320::Application::cbApplication*>(creationData.lpCreateParams);
+			static_cast<cbApplication*>(creationData.lpCreateParams);
 		EAE6320_ASSERT(application);
 		// Assign the new handle
 		application->m_mainWindow = i_window;
@@ -244,6 +244,29 @@ LRESULT CALLBACK eae6320::Application::cbApplication::OnMessageReceivedFromWindo
 		// Return a value to indicate that this message was handled successfully
 		// (the correct value is different for different messages types;
 		// for WM_NCDESTROY it is 0)
+		return 0;
+	}
+	case WM_MOUSEMOVE:
+	{
+		//POINTS z = MAKEPOINTS(i_lParam);
+		//int xPos = GET_X_LPARAM(i_lParam);
+		//int yPos = GET_Y_LPARAM(i_lParam);
+
+		// Populate a struct defining the track mouse event functionality
+		TRACKMOUSEEVENT trackMouseEvent{};
+		{
+			trackMouseEvent.cbSize = sizeof(trackMouseEvent);
+			trackMouseEvent.hwndTrack = i_window;
+			trackMouseEvent.dwFlags = TME_LEAVE;
+			trackMouseEvent.dwHoverTime = HOVER_DEFAULT;
+		}
+		// Track the mouse event
+		TrackMouseEvent(&trackMouseEvent);
+		return 0;
+	}
+	case WM_MOUSELEAVE:
+	{
+		int z = 0;
 		return 0;
 	}
 	default:;
@@ -444,6 +467,13 @@ namespace
 				long width;
 				long height;
 			} nonClientAreaSize;
+			// Calculate the coordinates to place window about the screen center
+			RECT desktopCoordinates;
+			struct
+			{
+				long x;
+				long y;
+			} screenCenter;
 			{
 				// Get the coordinates of the entire window
 				if (GetWindowRect(o_window, &windowCoordinates) == FALSE)
@@ -467,13 +497,25 @@ namespace
 				nonClientAreaSize.width = (windowCoordinates.right - windowCoordinates.left) - clientDimensions.right;
 				nonClientAreaSize.height = (windowCoordinates.bottom - windowCoordinates.top) - clientDimensions.bottom;
 			}
+			// Get the coordinates of the entire desktop
+			{
+				// Get a handle to the desktop window
+				const HWND hDesktop = GetDesktopWindow();
+				// Get the size of screen to the variable desktop
+				GetWindowRect(hDesktop, &desktopCoordinates);
+				// Calculate the screen centre
+				screenCenter.x = desktopCoordinates.right / 2;
+				screenCenter.y = desktopCoordinates.bottom / 2;
+			}
 			// Resize the window
 			{
 				const int desiredWidth_window = i_resolutionWidth + nonClientAreaSize.width;
 				const int desiredHeight_window = i_resolutionHeight + nonClientAreaSize.height;
+				const int desiredPositionX_window = screenCenter.x - (desiredWidth_window / 2);
+				const int desiredPositionY_window = screenCenter.y - (desiredHeight_window / 2);
 				const BOOL redrawTheWindowAfterItsBeenResized = TRUE;
 				if (MoveWindow(o_window,
-					windowCoordinates.left, windowCoordinates.top, desiredWidth_window, desiredHeight_window,
+					desiredPositionX_window, desiredPositionY_window, desiredWidth_window, desiredHeight_window,
 					redrawTheWindowAfterItsBeenResized) != FALSE)
 				{
 					eae6320::Logging::OutputMessage("Set main window resolution to %u x %u",
