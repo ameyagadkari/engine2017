@@ -8,6 +8,8 @@
 // Include Files
 //==============
 
+#include <Engine/Windows/Includes.h>
+
 #include <cstdint>
 
 // Interface
@@ -17,6 +19,7 @@ namespace eae6320
 {
 	namespace UserInput
 	{
+
 		// Returns if the specified key is currently pressed
 
 		// For standard letter or number keys, the representative ascii char can be used:
@@ -99,6 +102,9 @@ namespace eae6320
 				Z = 0x50,
 			};
 		}
+#if defined( EAE6320_PLATFORM_WINDOWS )
+#include "Windows/UserInput.win.h"
+#endif
 	}
 }
 

@@ -10,6 +10,7 @@
 #include <Engine/UserOutput/UserOutput.h>
 #include <Engine/UserSettings/UserSettings.h>
 #include <Engine/Windows/Functions.h>
+#include <Engine/UserInput/UserInput.h>
 
 // Helper Function Declarations
 //=============================
@@ -246,27 +247,50 @@ LRESULT CALLBACK eae6320::Application::cbApplication::OnMessageReceivedFromWindo
 		// for WM_NCDESTROY it is 0)
 		return 0;
 	}
+	// A window has gained/lost focus
+	case WM_ACTIVATE:
+	{
+		const auto active_status = LOWORD(i_wParam);
+		UserInput::g_isWindowInFocus = active_status == WA_ACTIVE || active_status == WA_CLICKACTIVE;
+		// Return a value to indicate that we processed this message
+		// (the correct value is different for different messages types;
+		// for WM_ACTIVATE it is 0 on success)
+		return 0;
+	}
 	case WM_MOUSEMOVE:
 	{
-		//POINTS z = MAKEPOINTS(i_lParam);
-		//int xPos = GET_X_LPARAM(i_lParam);
-		//int yPos = GET_Y_LPARAM(i_lParam);
+		UserInput::g_mousePoints = MAKEPOINTS(i_lParam);
 
-		// Populate a struct defining the track mouse event functionality
-		TRACKMOUSEEVENT trackMouseEvent{};
+		if (!UserInput::g_isMouseTracked)
 		{
-			trackMouseEvent.cbSize = sizeof(trackMouseEvent);
-			trackMouseEvent.hwndTrack = i_window;
-			trackMouseEvent.dwFlags = TME_LEAVE;
-			trackMouseEvent.dwHoverTime = HOVER_DEFAULT;
+			// Populate a struct defining the track mouse event functionality
+			TRACKMOUSEEVENT trackMouseEvent{};
+			{
+				// Size of the track mouse event struct
+				trackMouseEvent.cbSize = sizeof(trackMouseEvent);
+				// The services requested
+				// We are requesting one service 
+				// To detect when the mouse leaves the client area of the application
+				trackMouseEvent.dwFlags = TME_LEAVE;
+				// A handle to the window to track
+				trackMouseEvent.hwndTrack = i_window;
+				// The hover time-out in milliseconds
+				trackMouseEvent.dwHoverTime = 100;
+			}
+			// Track the mouse event
+			UserInput::g_isMouseTracked = TrackMouseEvent(&trackMouseEvent);
 		}
-		// Track the mouse event
-		TrackMouseEvent(&trackMouseEvent);
+		// Return a value to indicate that we processed this message
+		// (the correct value is different for different messages types;
+		// for WM_MOUSEMOVE it is 0 on success)
 		return 0;
 	}
 	case WM_MOUSELEAVE:
 	{
-		int z = 0;
+		UserInput::g_isMouseTracked = false;
+		// Return a value to indicate that we processed this message
+		// (the correct value is different for different messages types;
+		// for WM_MOUSELEAVE it is 0 on success)
 		return 0;
 	}
 	default:;

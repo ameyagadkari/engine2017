@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="UserInput.h" />
     <ClInclude Include="Windows\ExternalLibraries.win.h" />
+    <ClInclude Include="Windows\UserInput.win.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Windows\UserInput.win.cpp" />

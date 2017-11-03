@@ -3,8 +3,23 @@
 
 #include "../UserInput.h"
 
-#include <Engine/Windows/Includes.h>
 #include <bitset>
+
+// Static Data Initialization
+//===========================
+
+namespace eae6320
+{
+	namespace UserInput
+	{
+		bool g_isWindowInFocus = false;
+		bool g_isMouseTracked = false;
+		POINTS g_mousePoints;
+	}
+}
+
+// Helper Function Declarations
+//=============================
 
 namespace
 {
@@ -17,6 +32,7 @@ namespace
 
 bool eae6320::UserInput::IsKeyPressed(const uint_fast8_t i_keyCode)
 {
+	if (!g_isWindowInFocus)return false;
 	const auto keyState = GetAsyncKeyState(i_keyCode);
 	const short isKeyDownMask = ~1;
 	return (keyState & isKeyDownMask) != 0;
@@ -24,6 +40,7 @@ bool eae6320::UserInput::IsKeyPressed(const uint_fast8_t i_keyCode)
 
 bool eae6320::UserInput::IsKeyPressedOnce(const uint_fast8_t i_keyCode)
 {
+	if (!g_isWindowInFocus)return false;
 	const auto keyState = GetAsyncKeyState(i_keyCode);
 	const short isKeyDownMask = ~1;
 	if ((keyState & isKeyDownMask) != 0 && !keyPress[i_keyCode])
@@ -38,6 +55,7 @@ bool eae6320::UserInput::IsKeyPressedOnce(const uint_fast8_t i_keyCode)
 
 bool eae6320::UserInput::IsKeyPressedAndReleased(const uint_fast8_t i_keyCode)
 {
+	if (!g_isWindowInFocus)return false;
 	const auto keyState = GetAsyncKeyState(i_keyCode);
 	const short isKeyDownMask = ~1;
 	if ((keyState & isKeyDownMask) != 0 && !keyRelease[i_keyCode])

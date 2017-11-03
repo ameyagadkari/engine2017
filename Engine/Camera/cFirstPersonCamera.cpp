@@ -13,6 +13,11 @@
 namespace
 {
 	constexpr auto s_velocityMagnitude = 1.0f;
+	bool s_isFirstMouseMove = false;
+	struct
+	{
+		short lastX, lastY;
+	}mousePosition;
 }
 
 // Interface
@@ -81,7 +86,7 @@ void eae6320::Camera::cFirstPersonCamera::UpdatePosition()
 	if (isThereInput)
 	{
 		m_rigidBodyState.velocity.Normalize();
-		m_rigidBodyState.velocity *= s_velocityMagnitude;		
+		m_rigidBodyState.velocity *= s_velocityMagnitude;
 	}
 	else
 	{
@@ -91,53 +96,44 @@ void eae6320::Camera::cFirstPersonCamera::UpdatePosition()
 
 void eae6320::Camera::cFirstPersonCamera::UpdateOrientation()
 {
-	const auto isTPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::T);
-	const auto isGPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::G);
-	const auto isFPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::F);
-	const auto isHPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::H);
-	const auto isRPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::R);
-	const auto isYPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::Y);
-
+	const auto isAltPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::CONTROL);
 	auto isThereInput = false;
-
-	if (!(isTPressed && isGPressed))
+	if (UserInput::g_isMouseTracked && isAltPressed)
 	{
-		if (isTPressed)
+		if (s_isFirstMouseMove)
 		{
-			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local += m_transform.localAxes.forward;
+			mousePosition.lastX = UserInput::g_mousePoints.x;
+			mousePosition.lastY = UserInput::g_mousePoints.y;
+			s_isFirstMouseMove = false;
 		}
-		if (isGPressed)
+		const auto xOffset = UserInput::g_mousePoints.x - mousePosition.lastX;
+		const auto yOffset = UserInput::g_mousePoints.y - mousePosition.lastY;
+		mousePosition.lastX = UserInput::g_mousePoints.x;
+		mousePosition.lastY = UserInput::g_mousePoints.y;
+		if (xOffset > 0)
 		{
+			m_rigidBodyState.angularVelocity_axis_local -= Math::sVector::up;//m_transform.localAxes.up;
 			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local -= m_transform.localAxes.forward;
+		}
+		else if (xOffset < 0)
+		{
+			m_rigidBodyState.angularVelocity_axis_local += Math::sVector::up;//m_transform.localAxes.up;
+			isThereInput = true;
+		}
+		if (yOffset > 0)
+		{
+			m_rigidBodyState.angularVelocity_axis_local -= Math::sVector::right;//m_transform.localAxes.right;
+			isThereInput = true;
+		}
+		else if (yOffset < 0)
+		{
+			m_rigidBodyState.angularVelocity_axis_local += Math::sVector::right;//m_transform.localAxes.right;
+			isThereInput = true;
 		}
 	}
-	if (!(isHPressed && isFPressed))
+	else
 	{
-		if (isHPressed)
-		{
-			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local += m_transform.localAxes.right;
-		}
-		if (isFPressed)
-		{
-			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local -= m_transform.localAxes.right;
-		}
-	}
-	if (!(isRPressed && isYPressed))
-	{
-		if (isRPressed)
-		{
-			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local += m_transform.localAxes.up;
-		}
-		if (isYPressed)
-		{
-			isThereInput = true;
-			m_rigidBodyState.angularVelocity_axis_local -= m_transform.localAxes.up;
-		}
+		s_isFirstMouseMove = true;
 	}
 	if (isThereInput)
 	{
@@ -147,6 +143,62 @@ void eae6320::Camera::cFirstPersonCamera::UpdateOrientation()
 	{
 		m_rigidBodyState.angularVelocity_axis_local = Math::sVector::zero;
 	}
+	/*const auto isTPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::T);
+	const auto isGPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::G);
+	const auto isFPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::F);
+	const auto isHPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::H);
+	const auto isRPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::R);
+	const auto isYPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::Y);
+
+	auto isThereInput = false;
+
+	/*if (!(isTPressed && isGPressed))
+	{
+		if (isTPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local += Math::sVector::forward;//m_transform.localAxes.forward;
+		}
+		if (isGPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local -= Math::sVector::forward; //m_transform.localAxes.forward;
+		}
+	}
+	if (!(isHPressed && isFPressed))
+	{
+		if (isHPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local += Math::sVector::right;//m_transform.localAxes.right;
+		}
+		if (isFPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local -= Math::sVector::right; //m_transform.localAxes.right;
+		}
+	}
+	if (!(isRPressed && isYPressed))
+	{
+		if (isRPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local += Math::sVector::up; //m_transform.localAxes.up;
+		}
+		if (isYPressed)
+		{
+			isThereInput = true;
+			m_rigidBodyState.angularVelocity_axis_local -= Math::sVector::up; //m_transform.localAxes.up;
+		}
+	}
+	if (isThereInput)
+	{
+		m_rigidBodyState.angularVelocity_axis_local.Normalize();
+	}
+	else
+	{
+		m_rigidBodyState.angularVelocity_axis_local = Math::sVector::zero;
+	}*/
 }
 
 void eae6320::Camera::cFirstPersonCamera::PredictPosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate)
