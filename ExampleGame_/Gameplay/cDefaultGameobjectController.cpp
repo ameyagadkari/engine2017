@@ -12,8 +12,7 @@
 
 namespace
 {
-	constexpr auto velocityMagnitude = 1.0f;
-	bool isThereInput = false;
+	constexpr auto s_velocityMagnitude = 1.0f;
 }
 
 // Interface
@@ -35,6 +34,8 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTran
 	const auto isDownPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::DOWN);
 	const auto isLeftPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::LEFT);
 	const auto isRightPressed = UserInput::IsKeyPressed(UserInput::KeyCodes::RIGHT);
+
+	auto isThereInput = false;
 
 	if (!(isUpPressed && isDownPressed))
 	{
@@ -62,15 +63,14 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTran
 			m_rigidBodyState.velocity -= Math::sVector::right;
 		}
 	}
-	if (!isThereInput)
+	if (isThereInput)
 	{
-		m_rigidBodyState.velocity = Math::sVector::zero;
+		m_rigidBodyState.velocity.Normalize();
+		m_rigidBodyState.velocity *= s_velocityMagnitude;	
 	}
 	else
 	{
-		m_rigidBodyState.velocity.Normalize();
-		m_rigidBodyState.velocity *= velocityMagnitude;
-		isThereInput = false;
+		m_rigidBodyState.velocity = Math::sVector::zero;
 	}
 }
 void eae6320::Gameplay::DefaultController::UpdateOrientation(const Transform::sTransform& i_transform)
