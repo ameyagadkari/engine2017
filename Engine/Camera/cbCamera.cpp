@@ -22,15 +22,15 @@ namespace
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::Camera::cbCamera::cbCamera(const Math::sVector i_position, const Math::sVector i_orientationEular, const float i_fieldOfView, const float i_nearPlaneDistance, const float i_farPlaneDistance)
+eae6320::Camera::cbCamera::cbCamera(const Math::sVector i_position, const Math::cQuaternion i_orientation, const float i_fieldOfView, const float i_nearPlaneDistance, const float i_farPlaneDistance)
 	:
-	m_transform(i_position, i_orientationEular),
+	m_transform(i_position, i_orientation),
 	m_fieldOfView(Math::ConvertDegreesToRadians(i_fieldOfView)),
 	m_nearPlaneDistance(i_nearPlaneDistance),
 	m_farPlaneDistance(i_farPlaneDistance)
 {
 	m_predictionTransform.position = m_transform.position;
-	m_predictionTransform.orientation = m_transform.orientationQuaternion;
+	m_predictionTransform.orientation = m_transform.orientation;
 
 	if (!s_isInitialized)
 	{

@@ -13,12 +13,12 @@
 
 eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_position, const Gameplay::eControllerType i_controllerType)
 	:
-	m_transform(i_position, Math::sVector::zero),
+	m_transform(i_position, Math::cQuaternion()),
 	m_controller(nullptr),
 	m_mesh(nullptr)
 {
 	m_predictionTransform.position = m_transform.position;
-	m_predictionTransform.orientation = m_transform.orientationQuaternion;
+	m_predictionTransform.orientation = m_transform.orientation;
 	switch (i_controllerType)
 	{
 	case Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER:
@@ -158,7 +158,7 @@ void eae6320::Gameobject::cGameobject3D::PredictSimulationBasedOnElapsedTime(con
 	if (m_controller)
 	{
 		m_predictionTransform.position = m_transform.position;
-		m_predictionTransform.orientation = m_transform.orientationQuaternion;
+		m_predictionTransform.orientation = m_transform.orientation;
 		m_controller->UpdatePosition(i_elapsedSecondCount_sinceLastSimulationUpdate, m_predictionTransform);
 		m_controller->UpdateOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate, m_predictionTransform);
 	}

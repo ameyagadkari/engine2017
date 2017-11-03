@@ -27,15 +27,14 @@ namespace eae6320
 			//--------------------------
 
 			sTransform();
-			sTransform(const Math::sVector i_position, const Math::sVector i_orientationEular);	
+			sTransform(const Math::sVector i_position, const Math::cQuaternion i_orientation);
 
 			// Data
 			//=====
 
 			sLocalAxes localAxes;
 			Math::sVector position;
-			Math::cQuaternion orientationQuaternion;
-			Math::sVector orientationEular;
+			Math::cQuaternion orientation;
 
 			// Helper Functions Declaration
 			//-----------------------------

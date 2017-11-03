@@ -26,11 +26,11 @@ namespace eae6320
 		public:
 			static cFirstPersonCamera* Initialize(
 				const Math::sVector i_position = Math::sVector::zero,
-				const Math::sVector i_orientationEular = Math::sVector::zero,
+				const Math::cQuaternion i_orientation = Math::cQuaternion(),
 				const float i_fieldOfView = 45.0f,
 				const float i_nearPlaneDistance = 0.1f,
 				const float i_farPlaneDistance = 100.0f) {
-				return new cFirstPersonCamera(i_position, i_orientationEular, i_fieldOfView, i_nearPlaneDistance, i_farPlaneDistance);
+				return new cFirstPersonCamera(i_position, i_orientation, i_fieldOfView, i_nearPlaneDistance, i_farPlaneDistance);
 			}
 		private:
 			//Data
@@ -43,11 +43,11 @@ namespace eae6320
 			//--------------------------
 			explicit cFirstPersonCamera(
 				const Math::sVector i_position,
-				const Math::sVector i_orientationEular,
+				const Math::cQuaternion i_orientation,
 				const float i_fieldOfView,
 				const float i_nearPlaneDistance,
 				const float i_farPlaneDistance) :
-				cbCamera(i_position, i_orientationEular, i_fieldOfView, i_nearPlaneDistance, i_farPlaneDistance) {}
+				cbCamera(i_position, i_orientation, i_fieldOfView, i_nearPlaneDistance, i_farPlaneDistance) {}
 
 			// Interface
 			//==========

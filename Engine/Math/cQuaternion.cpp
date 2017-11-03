@@ -123,8 +123,8 @@ eae6320::Math::sVector eae6320::Math::cQuaternion::CalculateForwardDirection() c
 eae6320::Math::cQuaternion::cQuaternion( const float i_angleInRadians, const sVector& i_axisOfRotation_normalized )
 {
 	const auto theta_half = i_angleInRadians * 0.5f;
-	m_w = std::cos( theta_half );
-	const auto sin_theta_half = std::sin( theta_half );
+	m_w = cos( theta_half );
+	const auto sin_theta_half = sin( theta_half );
 	m_x = i_axisOfRotation_normalized.x * sin_theta_half;
 	m_y = i_axisOfRotation_normalized.y * sin_theta_half;
 	m_z = i_axisOfRotation_normalized.z * sin_theta_half;

@@ -26,7 +26,7 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const float i_elapsedS
 
 void eae6320::Gameplay::DefaultController::UpdateOrientation(const float i_elapsedSecondCount_sinceLastUpdate, Transform::sTransform& io_transform)
 {
-
+	m_rigidBodyState.UpdateOrientation(i_elapsedSecondCount_sinceLastUpdate, io_transform);
 }
 
 void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTransform& i_transform)
@@ -41,12 +41,12 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTran
 		if (isUpPressed)
 		{
 			isThereInput = true;
-			m_rigidBodyState.velocity += i_transform.localAxes.up;
+			m_rigidBodyState.velocity += Math::sVector::up;
 		}
 		if (isDownPressed)
 		{
 			isThereInput = true;
-			m_rigidBodyState.velocity -= i_transform.localAxes.up;
+			m_rigidBodyState.velocity -= Math::sVector::up;
 		}
 	}
 	if (!(isRightPressed && isLeftPressed))
@@ -54,12 +54,12 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTran
 		if (isRightPressed)
 		{
 			isThereInput = true;
-			m_rigidBodyState.velocity += i_transform.localAxes.right;
+			m_rigidBodyState.velocity += Math::sVector::right;
 		}
 		if (isLeftPressed)
 		{
 			isThereInput = true;
-			m_rigidBodyState.velocity -= i_transform.localAxes.right;
+			m_rigidBodyState.velocity -= Math::sVector::right;
 		}
 	}
 	if (!isThereInput)
@@ -75,7 +75,7 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const Transform::sTran
 }
 void eae6320::Gameplay::DefaultController::UpdateOrientation(const Transform::sTransform& i_transform)
 {
-
+	// No input based orientation update
 }
 
 void eae6320::Gameplay::DefaultController::UpdatePosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform)
@@ -84,5 +84,5 @@ void eae6320::Gameplay::DefaultController::UpdatePosition(const float i_elapsedS
 }
 void eae6320::Gameplay::DefaultController::UpdateOrientation(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform)
 {
-	
+	io_predictionTransform.orientation = m_rigidBodyState.PredictFutureOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate, io_predictionTransform);
 }

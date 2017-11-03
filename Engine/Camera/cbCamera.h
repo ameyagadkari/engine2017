@@ -49,11 +49,11 @@ namespace eae6320
 			//--------------------------
 
 			explicit cbCamera(
-				const Math::sVector i_position = Math::sVector::zero,
-				const Math::sVector i_orientationEular = Math::sVector::zero,
-				const float i_fieldOfView = 45.0f,
-				const float i_nearPlaneDistance = 0.1f,
-				const float i_farPlaneDistance = 100.0f);
+				const Math::sVector i_position,
+				const Math::cQuaternion i_orientation,
+				const float i_fieldOfView,
+				const float i_nearPlaneDistance,
+				const float i_farPlaneDistance);
 
 			// Data
 			//=====

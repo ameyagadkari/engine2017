@@ -69,14 +69,6 @@ void eae6320::cExampleGame::UpdateBasedOnTime(const float i_elapsedSecondCount_s
 
 void eae6320::cExampleGame::UpdateSimulationBasedOnInput()
 {
-	// Update 3D Gameobjects
-	{
-		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
-		{
-			s_3D_GameObject[i]->UpdateBasedOnSimulationInput();
-		}
-	}
-
 	// Change current camera
 	{
 		Camera::ChangeCurrentCamera();
@@ -84,11 +76,27 @@ void eae6320::cExampleGame::UpdateSimulationBasedOnInput()
 
 	//Update current camera
 	{
+		Camera::GetCurrentCamera()->UpdateOrientation();
 		Camera::GetCurrentCamera()->UpdatePosition();
+	}
+
+	// Update 3D Gameobjects
+	{
+		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
+		{
+			s_3D_GameObject[i]->UpdateBasedOnSimulationInput();
+		}
 	}
 }
 void eae6320::cExampleGame::UpdateSimulationBasedOnTime(const float i_elapsedSecondCount_sinceLastUpdate)
 {
+
+	//Update current camera
+	{
+		Camera::GetCurrentCamera()->UpdateOrientation(i_elapsedSecondCount_sinceLastUpdate);
+		Camera::GetCurrentCamera()->UpdatePosition(i_elapsedSecondCount_sinceLastUpdate);
+	}
+
 	// Update 3D Gameobjects
 	{
 		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
@@ -96,26 +104,22 @@ void eae6320::cExampleGame::UpdateSimulationBasedOnTime(const float i_elapsedSec
 			s_3D_GameObject[i]->UpdateBasedOnSimulationTime(i_elapsedSecondCount_sinceLastUpdate);
 		}
 	}
-
-	//Update current camera
-	{
-		Camera::GetCurrentCamera()->UpdatePosition(i_elapsedSecondCount_sinceLastUpdate);
-	}
 }
 
 void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCount_systemTime, const float i_elapsedSecondCount_sinceLastSimulationUpdate)
 {
+	// Predict Camera
+	{
+		Camera::GetCurrentCamera()->PredictOrientation(i_elapsedSecondCount_sinceLastSimulationUpdate);
+		Camera::GetCurrentCamera()->PredictPosition(i_elapsedSecondCount_sinceLastSimulationUpdate);
+	}
+
 	// Predict 3D Gameobjects
 	{
 		for (size_t i = 0; i < s_3D_GameObject_Size; i++)
 		{
 			s_3D_GameObject[i]->PredictSimulationBasedOnElapsedTime(i_elapsedSecondCount_sinceLastSimulationUpdate);
 		}
-	}
-
-	// Predict Camera
-	{
-		Camera::GetCurrentCamera()->PredictPosition(i_elapsedSecondCount_sinceLastSimulationUpdate);
 	}
 
 	// Submit Clear Color

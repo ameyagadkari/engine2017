@@ -2,7 +2,7 @@
 //==============
 
 #include "sTransform.h"
-#include <Engine/Math/Functions.h>
+#include <Engine/Math/cMatrix_transformation.h>
 
 // Interface
 //==========
@@ -12,14 +12,14 @@
 
 eae6320::Transform::sTransform::sTransform() :
 	position(Math::sVector::zero),
-	orientationEular(Math::sVector::zero)
+	orientation(Math::cQuaternion())
 {
 	UpdateLocalAxes();
 }
 
-eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const Math::sVector i_orientationEular) :
+eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const Math::cQuaternion i_orientation) :
 	position(i_position),
-	orientationEular(i_orientationEular)
+	orientation(i_orientation)
 {
 	UpdateLocalAxes();
 }
@@ -29,14 +29,8 @@ eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const
 
 void eae6320::Transform::sTransform::UpdateLocalAxes()
 {
-	//orientationQuaternion =
-		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.x), Math::sVector::right)*
-		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.y), Math::sVector::up)*
-		//Math::cQuaternion(Math::ConvertDegreesToRadians(orientationEular.z), Math::sVector::forward);
-
-	//auto newForward = orientationQuaternion.GetInverse()*Math::sVector::back;
-	auto newForward = orientationQuaternion.CalculateForwardDirection();
-	localAxes.forward = newForward.GetNormalized();
-	localAxes.right = Cross(localAxes.forward, Math::sVector::up).GetNormalized();
-	localAxes.up = Cross(localAxes.right, localAxes.forward).GetNormalized();
+	auto localToWorld = Math::cMatrixTransformation(orientation, position);
+	localAxes.forward = -localToWorld.GetBackDirection();
+	localAxes.right = localToWorld.GetRightDirection();
+	localAxes.up = localToWorld.GetUpDirection();
 }

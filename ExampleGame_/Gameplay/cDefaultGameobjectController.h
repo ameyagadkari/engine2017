@@ -21,7 +21,11 @@ namespace eae6320
 		public:
 			static DefaultController* Initialize() { return new DefaultController(); }
 		private:
-			DefaultController() = default;
+			DefaultController()
+			{
+				m_rigidBodyState.angularSpeed = 1.0f;
+				m_rigidBodyState.angularVelocity_axis_local = Math::sVector(0.0f, 1.0f, 0.0f);
+			}
 
 			//Data
 			//====
