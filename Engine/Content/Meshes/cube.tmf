@@ -1,0 +1,61 @@
+--Mesh Data
+return
+{
+	-- This table contains vertices
+	-- Total number of vertices: 8
+	vertices =
+	{
+		-- Position table contains positions(x,y,z)
+		-- Color table contains colors(r,g,b,a)(a has a default value of 1.0 if you don't specify)
+		{
+			position = {1.0,1.0,1.0},
+			color = {1.0,0.0,0.0,1.0},
+		},
+		{
+			position = {-1.0,1.0,1.0},
+			color = {0.0,1.0,0.0,1.0},
+		},
+		{
+			position = {-1.0,-1.0,1.0},
+			color = {0.0,0.0,1.0,1.0},
+		},
+		{
+			position = {1.0,-1.0,1.0},
+			color = {0.0,1.0,1.0,1.0},
+		},
+		{
+			position = {1.0,1.0,-1.0},
+			color = {1.0,0.0,0.0,1.0},
+		},
+		{
+			position = {-1.0,1.0,-1.0},
+			color = {0.0,1.0,0.0,1.0},
+		},
+		{
+			position = {-1.0,-1.0,-1.0},
+			color = {0.0,0.0,1.0,1.0},
+		},
+		{
+			position = {1.0,-1.0,-1.0},
+			color = {0.0,1.0,1.0,1.0},
+		},
+	},
+	-- This table contains indices(triangles)
+	-- Total number of indices: 36
+	-- Total number of triangles: 12
+	indices =
+	{
+		3,1,2,
+		3,0,1,
+		7,0,3,
+		7,4,0,
+		2,5,6,
+		2,1,5,
+		3,2,6,
+		3,6,7,
+		0,5,1,
+		0,4,5,
+		7,6,5,
+		7,5,4,
+	},
+}
