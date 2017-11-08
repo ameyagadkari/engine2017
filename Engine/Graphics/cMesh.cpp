@@ -268,12 +268,15 @@ namespace
 					{
 						if (!((result = LoadPositionTable(io_luaState, i - 1))))
 						{
-							return result;
+							lua_pop(&io_luaState, 1);
+							goto OnExit;
 						}
 						if (!((result = LoadColorTable(io_luaState, i - 1))))
 						{
-							return result;
+							lua_pop(&io_luaState, 1);
+							goto OnExit;
 						}
+						lua_pop(&io_luaState, 1);
 					}
 					else
 					{
@@ -283,7 +286,6 @@ namespace
 						lua_pop(&io_luaState, 1);
 						goto OnExit;
 					}
-					lua_pop(&io_luaState, 1);
 				}
 			}
 			else
@@ -349,7 +351,7 @@ namespace
 						std::cerr << "No value for key: \"" << i << "\"was found in the table" << std::endl;
 						lua_pop(&io_luaState, 1);
 						goto OnExit;
-			}
+					}
 					if (lua_isnumber(&io_luaState, -1))
 					{
 #if defined( EAE6320_PLATFORM_D3D )
@@ -380,15 +382,15 @@ namespace
 						lua_pop(&io_luaState, 1);
 						goto OnExit;
 					}
-		}
-	}
+				}
+			}
 			else
 			{
 				result = eae6320::Results::invalidFile;
 				std::cerr << "There are " << indexCount << " indices which is incorrect as we are drawing triangles" << std::endl;
 				goto OnExit;
 			}
-}
+		}
 		else
 		{
 			result = eae6320::Results::invalidFile;

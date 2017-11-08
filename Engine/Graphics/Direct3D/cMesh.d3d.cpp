@@ -17,20 +17,6 @@
 
 ID3D11InputLayout* eae6320::Graphics::cMesh::ms_vertexInputLayout = nullptr;
 
-namespace
-{
-	constexpr unsigned int s_indicesPerTriangle = 3;
-}
-
-// Helper Function Declarations
-//=============================
-
-namespace
-{
-	void Reverse(uint16_t*const& o_data, const uint32_t i_numberOfTriangles);
-	void Reverse(uint32_t*const& o_data, const uint32_t i_numberOfTriangles);
-}
-
 // Implementation
 //===============
 
@@ -165,11 +151,6 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
 			EAE6320_ASSERT(i_meshData->indexData);
-			const auto numberOfTriangles = i_meshData->numberOfIndices / s_indicesPerTriangle;
-			m_isIndexing16Bit ?
-				Reverse(reinterpret_cast<uint16_t*>(i_meshData->indexData), numberOfTriangles) :
-				Reverse(reinterpret_cast<uint32_t*>(i_meshData->indexData), numberOfTriangles);
-
 			initialData.pSysMem = i_meshData->indexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
@@ -258,27 +239,5 @@ void eae6320::Graphics::cMesh::Draw() const
 		constexpr unsigned int indexOfFirstIndexToUse = 0;
 		constexpr unsigned int offsetToAddToEachIndex = 0;
 		direct3DImmediateContext->DrawIndexed(m_numberOfIndices, indexOfFirstIndexToUse, offsetToAddToEachIndex);
-	}
-}
-
-// Helper Function Definitions
-//============================
-
-namespace
-{
-	void Reverse(uint16_t*const& o_data, const uint32_t i_numberOfTriangles)
-	{
-		for (uint32_t i = 0; i < i_numberOfTriangles; i++)
-		{
-			std::swap(o_data[i * s_indicesPerTriangle + 1], o_data[i * s_indicesPerTriangle + 2]);
-		}
-	}
-
-	void Reverse(uint32_t*const& o_data, const uint32_t i_numberOfTriangles)
-	{
-		for (uint32_t i = 0; i < i_numberOfTriangles; i++)
-		{
-			std::swap(o_data[i * s_indicesPerTriangle + 1], o_data[i * s_indicesPerTriangle + 2]);
-		}
 	}
 }
