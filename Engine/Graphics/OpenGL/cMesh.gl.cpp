@@ -13,7 +13,7 @@
 
 // Initialization / Clean Up
 
-eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMeshData& i_meshData)
+eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData const*const& i_meshData)
 {
 	auto result = Results::success;
 
@@ -76,9 +76,9 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 	}
 	// Assign the data to the vertex buffer
 	{
-		const auto bufferSize = i_meshData.numberOfVertices * sizeof(VertexFormats::sMesh);
+		const auto bufferSize = i_meshData->numberOfVertices * sizeof(VertexFormats::sMesh);
 		EAE6320_ASSERT(bufferSize < uint64_t(1u) << sizeof(GLsizeiptr) * 8);
-		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(i_meshData.vertexData),
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(i_meshData->vertexData),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const auto errorCode = glGetError();
@@ -120,10 +120,10 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 	}
 	// Assign the data to the index buffer
 	{
-		m_numberOfIndices = i_meshData.numberOfIndices;
-		const auto bufferSize = (m_isIndexing16Bit = (i_meshData.typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
+		m_numberOfIndices = i_meshData->numberOfIndices;
+		const auto bufferSize = (m_isIndexing16Bit = (i_meshData->typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
 		EAE6320_ASSERT(bufferSize < uint64_t(1u) << sizeof(GLsizeiptr) * 8);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(i_meshData.indexData),
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(i_meshData->indexData),
 			// In our class we won't ever read from the buffer
 			GL_STATIC_DRAW);
 		const auto errorCode = glGetError();

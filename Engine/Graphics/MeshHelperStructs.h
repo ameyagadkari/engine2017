@@ -44,6 +44,7 @@ namespace eae6320
 				// Initialization / Clean Up
 				//--------------------------
 
+				sMeshData() = default;
 				sMeshData(const uint8_t i_typeOfIndexData, const uint32_t i_numberOfVertices, const uint32_t i_numberOfIndices);
 				~sMeshData();
 			};

@@ -28,7 +28,7 @@ eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_positio
 	}
 }
 
-eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, const Graphics::HelperStructs::sMeshData& i_meshData, char* const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const Gameplay::eControllerType i_controllerType)
+eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const Gameplay::eControllerType i_controllerType)
 {
 	auto result = Results::success;
 
@@ -69,7 +69,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 
 	// Load the mesh
 	{
-		if (!((result = Graphics::cMesh::Load(newGameobject3D->m_mesh, i_meshData))))
+		if (!((result = Graphics::cMesh::Load(i_meshPath, newGameobject3D->m_mesh))))
 		{
 			EAE6320_ASSERTF(false, "Loading of mesh failed");
 			goto OnExit;

@@ -36,7 +36,7 @@ namespace
 
 // Initialization / Clean Up
 
-eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMeshData& i_meshData)
+eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData const*const& i_meshData)
 {
 	auto result = Results::success;
 
@@ -122,7 +122,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 	{
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = i_meshData.numberOfVertices * sizeof(VertexFormats::sMesh);
+			const auto bufferSize = i_meshData->numberOfVertices * sizeof(VertexFormats::sMesh);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -133,8 +133,8 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		}
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
-			EAE6320_ASSERT(i_meshData.vertexData);
-			initialData.pSysMem = i_meshData.vertexData;
+			EAE6320_ASSERT(i_meshData->vertexData);
+			initialData.pSysMem = i_meshData->vertexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
 
@@ -150,10 +150,10 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 
 	// Index Buffer
 	{
-		m_numberOfIndices = i_meshData.numberOfIndices;
+		m_numberOfIndices = i_meshData->numberOfIndices;
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = (m_isIndexing16Bit = (i_meshData.typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
+			const auto bufferSize = (m_isIndexing16Bit = (i_meshData->typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -164,13 +164,13 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(const HelperStructs::sMesh
 		}
 		D3D11_SUBRESOURCE_DATA initialData{};
 		{
-			EAE6320_ASSERT(i_meshData.indexData);
-			const auto numberOfTriangles = i_meshData.numberOfIndices / s_indicesPerTriangle;
+			EAE6320_ASSERT(i_meshData->indexData);
+			const auto numberOfTriangles = i_meshData->numberOfIndices / s_indicesPerTriangle;
 			m_isIndexing16Bit ?
-				Reverse(reinterpret_cast<uint16_t*>(i_meshData.indexData), numberOfTriangles) :
-				Reverse(reinterpret_cast<uint32_t*>(i_meshData.indexData), numberOfTriangles);
+				Reverse(reinterpret_cast<uint16_t*>(i_meshData->indexData), numberOfTriangles) :
+				Reverse(reinterpret_cast<uint32_t*>(i_meshData->indexData), numberOfTriangles);
 
-			initialData.pSysMem = i_meshData.indexData;
+			initialData.pSysMem = i_meshData->indexData;
 			// (The other data members are ignored for non-texture buffers)
 		}
 

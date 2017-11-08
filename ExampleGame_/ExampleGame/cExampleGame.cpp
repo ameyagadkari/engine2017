@@ -175,7 +175,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	{
 		constexpr auto depthBufferingEnabled = 0x02;
 		{
-			const Graphics::HelperStructs::sMeshData meshData(16, 8, 36);
+			/*const Graphics::HelperStructs::sMeshData meshData(16, 8, 36);
 			{
 				auto& meshVertex = meshData.vertexData[0];
 				meshVertex.x = 1.0f;
@@ -255,8 +255,8 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				meshVertex.g = 255;
 				meshVertex.b = 255;
 				meshVertex.a = 255;
-			}
-			{
+			}*/
+			/*{
 				const auto meshIndex = reinterpret_cast<uint16_t*>(meshData.indexData);
 				meshIndex[0] = 3;
 				meshIndex[1] = 1;
@@ -299,10 +299,10 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				meshIndex[33] = 7;
 				meshIndex[34] = 5;
 				meshIndex[35] = 4;
-			}
+			}*/
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, "data/Meshes/cube.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -310,7 +310,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			s_3D_GameObject.push_back(gameobject3D);
 		}
 		{
-			const Graphics::HelperStructs::sMeshData meshData(16, 4, 6);
+			/*const Graphics::HelperStructs::sMeshData meshData(16, 4, 6);
 			{
 				auto& meshVertex = meshData.vertexData[0];
 				meshVertex.x = 3.0f;
@@ -359,10 +359,10 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				meshIndex[3] = 0;
 				meshIndex[4] = 3;
 				meshIndex[5] = 2;
-			}
+			}*/
 
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -1.0f, 0.0f), meshData, "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -1.0f, 0.0f), "data/Meshes/plane.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

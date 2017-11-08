@@ -8,11 +8,12 @@ A mesh is a 3d representation of an entity on screen
 // Include Files
 //==============
 
+#include <Engine/Assets/cManager.h>
 #include <Engine/Assets/ReferenceCountedAssets.h>
 #include <Engine/Results/Results.h>
-#include <Engine/Graphics/Configuration.h>
 
 #ifdef EAE6320_PLATFORM_GL
+#include <Engine/Graphics/Configuration.h>
 #include "OpenGL/Includes.h"
 #endif
 
@@ -48,11 +49,15 @@ namespace eae6320
 			//==========
 
 		public:
+			// Assets
+			//-------
+			using Handle = Assets::cHandle<cMesh>;
+			static Assets::cManager<cMesh> s_manager;
 
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(cMesh*& o_mesh, const HelperStructs::sMeshData& i_meshData);
+			static cResult Load(const char* const i_path, cMesh*& o_mesh);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMesh);
 
@@ -105,7 +110,7 @@ namespace eae6320
 			cMesh() = default;
 			~cMesh();
 
-			cResult Initialize(const HelperStructs::sMeshData& i_meshData);
+			cResult Initialize(HelperStructs::sMeshData const*const& i_meshData);
 			cResult CleanUp();
 		};
 	}
