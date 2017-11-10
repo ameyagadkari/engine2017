@@ -2,6 +2,7 @@
 //==============
 
 #include "cMesh.h"
+#include "VertexFormats.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
@@ -21,6 +22,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 	auto result = Results::success;
 
 	Platform::sDataFromFile dataFromFile;
+	HelperStructs::sMeshData newMeshDataExtractedFromFile;
 	cMesh* newMesh = nullptr;
 
 	// Load the binary data
@@ -46,17 +48,40 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		}
 	}
 
-	if (newMeshDataExtractedFromFile)
+	// Extract data from loaded mesh file
 	{
-		if (!((result = newMesh->Initialize(newMeshDataExtractedFromFile))))
-		{
-			EAE6320_ASSERTF(false, "Initialization of new mesh failed");
-			goto OnExit;
-		}
+		// Casting data to uint8_t* for pointer arithematic
+
+		auto data = reinterpret_cast<uint8_t*>(dataFromFile.data);
+
+		// Extracting Type Of Index Data		
+
+		newMeshDataExtractedFromFile.type = *reinterpret_cast<IndexDataTypes::eType*>(data);
+
+		// Extracting Vertex Count
+
+		data += sizeof(newMeshDataExtractedFromFile.type);
+		newMeshDataExtractedFromFile.numberOfVertices = *reinterpret_cast<uint32_t*>(data);
+
+		// Extracting Index Count
+
+		data += sizeof(newMeshDataExtractedFromFile.numberOfVertices);
+		newMeshDataExtractedFromFile.numberOfIndices = *reinterpret_cast<uint32_t*>(data);
+
+		// Extracting Vertex Data
+
+		data += sizeof(newMeshDataExtractedFromFile.numberOfIndices);
+		newMeshDataExtractedFromFile.vertexData = reinterpret_cast<VertexFormats::sMesh*>(data);
+
+		// Extracting Index Data
+
+		data += newMeshDataExtractedFromFile.numberOfVertices * sizeof(VertexFormats::sMesh);
+		newMeshDataExtractedFromFile.indexData = data;
 	}
-	else
+
+	if (!((result = newMesh->Initialize(&newMeshDataExtractedFromFile))))
 	{
-		EAE6320_ASSERTF(false, "Initialization of new mesh failed as there was no data extracted from the mesh file");
+		EAE6320_ASSERTF(false, "Initialization of new mesh failed");
 		goto OnExit;
 	}
 
@@ -76,6 +101,9 @@ OnExit:
 		}
 		o_mesh = nullptr;
 	}
+	dataFromFile.Free();
+	newMeshDataExtractedFromFile.vertexData = nullptr;
+	newMeshDataExtractedFromFile.indexData = nullptr;
 
 	return result;
 }

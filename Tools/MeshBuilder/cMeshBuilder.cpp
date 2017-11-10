@@ -380,7 +380,7 @@ namespace
 							indexData32Bit[io_meshData.numberOfIndices - i] = static_cast<uint32_t>(lua_tonumber(&io_luaState, -1));
 						}
 #elif defined( EAE6320_PLATFORM_GL )
-						if (io_meshData.typeOfIndexData == eae6320::Graphics::IndexDataTypes::BIT_16)
+						if (io_meshData.type == eae6320::Graphics::IndexDataTypes::BIT_16)
 						{
 							indexData16Bit[i - 1] = static_cast<uint16_t>(lua_tonumber(&io_luaState, -1));
 						}
