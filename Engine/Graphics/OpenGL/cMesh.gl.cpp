@@ -121,7 +121,8 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 	// Assign the data to the index buffer
 	{
 		m_numberOfIndices = i_meshData->numberOfIndices;
-		const auto bufferSize = (m_isIndexing16Bit = (i_meshData->typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
+		m_type = i_meshData->type;
+		const auto bufferSize = (m_type == IndexDataTypes::BIT_16) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
 		EAE6320_ASSERT(bufferSize < uint64_t(1u) << sizeof(GLsizeiptr) * 8);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferSize), reinterpret_cast<GLvoid*>(i_meshData->indexData),
 			// In our class we won't ever read from the buffer
@@ -369,7 +370,7 @@ void eae6320::Graphics::cMesh::Draw() const
 		// (meaning that every primitive is a triangle and will be defined by three vertices)
 		constexpr GLenum mode = GL_TRIANGLES;
 		// Every index is a 16/32 bit unsigned integer
-		const GLenum indexType = m_isIndexing16Bit ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+		const GLenum indexType = (m_type == IndexDataTypes::BIT_16) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 		// It's possible to start rendering primitives in the middle of the stream
 		constexpr GLvoid* const offset = nullptr;
 		glDrawElements(mode, m_numberOfIndices, indexType, offset);

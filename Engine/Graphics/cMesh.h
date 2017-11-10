@@ -8,12 +8,14 @@ A mesh is a 3d representation of an entity on screen
 // Include Files
 //==============
 
+#include "MeshHelperStructs.h"
+
 #include <Engine/Assets/cManager.h>
 #include <Engine/Assets/ReferenceCountedAssets.h>
 #include <Engine/Results/Results.h>
 
 #ifdef EAE6320_PLATFORM_GL
-#include <Engine/Graphics/Configuration.h>
+#include "Configuration.h"
 #include "OpenGL/Includes.h"
 #endif
 
@@ -29,7 +31,7 @@ namespace eae6320
 {
 	namespace Graphics
 	{
-		namespace HelperStructs 
+		namespace HelperStructs
 		{
 			struct sMeshData;
 		}
@@ -93,13 +95,13 @@ namespace eae6320
 			// and so if debug info is enabled an explicit reference is held
 
 			// A vertex buffer holds the data for each vertex
-			GLuint m_vertexBufferId;
+			GLuint m_vertexBufferId = 0;
 			// An index buffer holds the indices for vertex data in correct order
-			GLuint m_indexBufferId;
+			GLuint m_indexBufferId = 0;
 #endif
 #endif
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
-			bool m_isIndexing16Bit;
+			IndexDataTypes::eType m_type = IndexDataTypes::UNKNOWN;
 
 			// Implementation
 			//===============

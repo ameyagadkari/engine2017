@@ -32,6 +32,8 @@ namespace eae6320
 		// (e.g. the task might have succeeded if more time had been spent,
 		// the task might succeed if tried again at a later time, etc.)
 		constexpr cResult timeOut( IsFailure, System::General, __LINE__, Results::Severity::Warning );
+		// This is returned when a write to a file fails
+		constexpr cResult fileWriteFail(IsFailure, System::General, __LINE__);
 
 		// This can be compared against if the caller wants to know if no value was assigned
 		constexpr cResult undefined;

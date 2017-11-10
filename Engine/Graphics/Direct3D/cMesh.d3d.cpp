@@ -137,9 +137,10 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 	// Index Buffer
 	{
 		m_numberOfIndices = i_meshData->numberOfIndices;
+		m_type = i_meshData->type;
 		D3D11_BUFFER_DESC bufferDescription{};
 		{
-			const auto bufferSize = (m_isIndexing16Bit = (i_meshData->typeOfIndexData == (sizeof(uint16_t) * 8))) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
+			const auto bufferSize = (m_type == IndexDataTypes::BIT_16) ? m_numberOfIndices * sizeof(uint16_t) : m_numberOfIndices * sizeof(uint32_t);
 			EAE6320_ASSERT(bufferSize < (uint64_t(1u) << (sizeof(bufferDescription.ByteWidth) * 8)));
 			bufferDescription.ByteWidth = static_cast<unsigned int>(bufferSize);
 			bufferDescription.Usage = D3D11_USAGE_IMMUTABLE;	// In our class the buffer will never change after it's been created
@@ -212,7 +213,7 @@ void eae6320::Graphics::cMesh::Draw() const
 	{
 		EAE6320_ASSERT(m_indexBuffer);
 		// Every index is a 16/32 bit unsigned integer
-		const auto dxgiFormat = m_isIndexing16Bit ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+		const auto dxgiFormat = (m_type == IndexDataTypes::BIT_16) ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
 		// The indices start at the beginning of the buffer
 		constexpr unsigned int offset = 0;
 		direct3DImmediateContext->IASetIndexBuffer(m_indexBuffer, dxgiFormat, offset);

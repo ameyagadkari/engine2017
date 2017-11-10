@@ -7,33 +7,32 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 
-#include <cstdlib>
-
 // Interface
 //==========
 
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::Graphics::HelperStructs::sMeshData::sMeshData(const uint8_t i_typeOfIndexData, const uint32_t i_numberOfVertices, const uint32_t i_numberOfIndices) :
+eae6320::Graphics::HelperStructs::sMeshData::sMeshData(const IndexDataTypes::eType i_type, const uint32_t i_numberOfVertices, const uint32_t i_numberOfIndices)
+	:
 	numberOfVertices(i_numberOfVertices),
 	numberOfIndices(i_numberOfIndices),
-	typeOfIndexData(i_typeOfIndexData)
+	type(i_type)
 {
-	const auto isTypeOfIndexDataCorrect = ((i_typeOfIndexData == (sizeof(uint16_t) * 8)) || (i_typeOfIndexData == (sizeof(uint32_t) * 8)));
+	const auto isTypeOfIndexDataCorrect = ((type == IndexDataTypes::BIT_16) || (type == IndexDataTypes::BIT_32));
 	if (isTypeOfIndexDataCorrect)
 	{
-		if (i_numberOfVertices > 2)
+		if (numberOfVertices > 2)
 		{
-			if ((!(i_numberOfIndices % 3) && (i_numberOfIndices > 0)))
+			if ((!(numberOfIndices % 3) && (numberOfIndices > 0)))
 			{
-				indexData = (i_typeOfIndexData == (sizeof(uint16_t) * 8)) ? reinterpret_cast<uint16_t*>(malloc(i_numberOfIndices * sizeof(uint16_t))) : nullptr;
+				indexData = (type == IndexDataTypes::BIT_16) ? reinterpret_cast<uint16_t*>(malloc(numberOfIndices * sizeof(uint16_t))) : nullptr;
 				if (!indexData)
 				{
-					indexData = (i_typeOfIndexData == (sizeof(uint32_t) * 8)) ? reinterpret_cast<uint32_t*>(malloc(i_numberOfIndices * sizeof(uint32_t))) : nullptr;
+					indexData = (type == IndexDataTypes::BIT_32) ? reinterpret_cast<uint32_t*>(malloc(numberOfIndices * sizeof(uint32_t))) : nullptr;
 				}
 				EAE6320_ASSERT(indexData);
-				vertexData = reinterpret_cast<VertexFormats::sMesh*>(malloc(i_numberOfVertices * sizeof(VertexFormats::sMesh)));
+				vertexData = reinterpret_cast<VertexFormats::sMesh*>(malloc(numberOfVertices * sizeof(VertexFormats::sMesh)));
 				EAE6320_ASSERT(vertexData);
 			}
 			else
@@ -55,7 +54,7 @@ eae6320::Graphics::HelperStructs::sMeshData::sMeshData(const uint8_t i_typeOfInd
 	}
 }
 
-eae6320::Graphics::HelperStructs::sMeshData::~sMeshData()
+/*eae6320::Graphics::HelperStructs::sMeshData::~sMeshData()
 {
 	if (vertexData)
 	{
@@ -67,4 +66,4 @@ eae6320::Graphics::HelperStructs::sMeshData::~sMeshData()
 		free(indexData);
 		indexData = nullptr;
 	}
-}
+}*/
