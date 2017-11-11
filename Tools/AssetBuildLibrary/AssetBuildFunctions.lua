@@ -312,7 +312,7 @@ function BuildAssets()
 	-- Build the textures and copy them to the installation location
 	do
 		local path_meshBuilder = OutputDir .. "MeshBuilder.exe"
-		do
+		--[[do
 			local mesh_authored = EngineSourceContentDir .. "Meshes/cube.tmf"
 			local mesh_built = GameInstallDir .. "data/Meshes/cube.bmf"
 			CreateDirectoryIfItDoesntExist( mesh_built )
@@ -337,10 +337,10 @@ function BuildAssets()
 				-- If the command wasn't executed then the second return value is an error message
 				OutputErrorMessage( "The command " .. command .. " couldn't be executed: " .. tostring( exitCode ), mesh_authored )
 			end
-		end
+		end]]
 		do
-			local mesh_authored = EngineSourceContentDir .. "Meshes/plane.tmf"
-			local mesh_built = GameInstallDir .. "data/Meshes/plane.bmf"
+			local mesh_authored = EngineSourceContentDir .. "Meshes/plane2.tmf"
+			local mesh_built = GameInstallDir .. "data/Meshes/plane2.bmf"
 			CreateDirectoryIfItDoesntExist( mesh_built )
 			local command = "\"" .. path_meshBuilder .. "\""
 				.. " \"" .. mesh_authored .. "\" \"" .. mesh_built
