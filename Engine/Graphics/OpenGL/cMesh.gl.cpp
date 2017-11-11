@@ -176,11 +176,44 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 			}
 		}
 
-		// Color (1)
-		// 4 uint8_t == 4 bytes
-		// Offset = 8
+		// Texture Coordinates (1)
+		// 2 uint16_t == 4 bytes
+		// Offset = 12
 		{
 			constexpr GLuint vertexElementLocation = 1;
+			constexpr auto elementCount = 2;
+			constexpr GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
+			glVertexAttribPointer(vertexElementLocation, elementCount, GL_HALF_FLOAT, notNormalized, stride,
+				reinterpret_cast<GLvoid*>(offsetof(eae6320::Graphics::VertexFormats::sMesh, u)));
+			const auto errorCode = glGetError();
+			if (errorCode == GL_NO_ERROR)
+			{
+				glEnableVertexAttribArray(vertexElementLocation);
+				const auto errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					result = Results::Failure;
+					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Logging::OutputError("OpenGL failed to enable the TEXTURE_COORDINATES vertex attribute at location %u: %s",
+						vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					goto OnExit;
+				}
+			}
+			else
+			{
+				result = Results::Failure;
+				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Logging::OutputError("OpenGL failed to set the TEXTURE_COORDINATES vertex attribute at location %u: %s",
+					vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				goto OnExit;
+			}
+		}
+
+		// Color (2)
+		// 4 uint8_t == 4 bytes
+		// Offset = 16
+		{
+			constexpr GLuint vertexElementLocation = 2;
 			constexpr auto elementCount = 4;
 			constexpr GLboolean normalized = GL_TRUE;	// The given unsigned bytes should be normalized
 			glVertexAttribPointer(vertexElementLocation, elementCount, GL_UNSIGNED_BYTE, normalized, stride,

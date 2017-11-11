@@ -14,6 +14,7 @@ void main(
 	// Input
 	//======
 	in const float4 i_position : SV_POSITION,
+	in const float2 i_uvs : TEXCOORD,
 	in const float4 i_color : COLOR,
 
 	// Output
@@ -28,7 +29,8 @@ void main(
 // Input
 //======
 
-layout( location = 0 ) in vec4 i_color;
+layout( location = 0 ) in vec2 i_uvs;
+layout( location = 1 ) in vec4 i_color;
 
 // Output
 //=======
@@ -43,5 +45,7 @@ void main()
 #endif
 
 {
-	o_color = i_color;
+	vec4 sampledColor = SampleColor( g_color_texture, g_color_samplerState, i_uvs );
+	
+	o_color = sampledColor * i_color;
 }

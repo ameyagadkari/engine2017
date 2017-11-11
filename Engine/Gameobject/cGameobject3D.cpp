@@ -28,7 +28,7 @@ eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_positio
 	}
 }
 
-eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, const Gameplay::eControllerType i_controllerType)
+eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, char const * const i_texturePath, const Gameplay::eControllerType i_controllerType)
 {
 	auto result = Results::success;
 
@@ -64,6 +64,13 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject3D->m_effect, i_vertexShaderName, i_fragmentShaderName, i_renderState))))
 	{
 		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_effectPath);
+		goto OnExit;
+	}
+
+	// Load the texture
+	if (!((result = Graphics::cTexture::s_manager.Load(i_texturePath, newGameobject3D->m_texture))))
+	{
+		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_texturePath);
 		goto OnExit;
 	}
 
@@ -106,6 +113,20 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::CleanUp()
 	if (m_effect)
 	{
 		const auto localResult = Graphics::cEffect::s_manager.Release(m_effect);
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+
+	// Texture Clean Up
+	if (m_texture)
+	{
+		const auto localResult = Graphics::cTexture::s_manager.Release(m_texture);
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -170,5 +191,6 @@ void eae6320::Gameobject::cGameobject3D::PredictSimulationBasedOnElapsedTime(con
 void eae6320::Gameobject::cGameobject3D::BindAndDraw() const
 {
 	Graphics::cEffect::s_manager.Get(m_effect)->Bind();
+	Graphics::cTexture::s_manager.Get(m_texture)->Bind(0);
 	m_mesh->Draw();
 }

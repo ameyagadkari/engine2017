@@ -45,7 +45,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 			// (by using so-called "semantic" names so that, for example,
 			// "POSITION" here matches with "POSITION" in shader code).
 			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			constexpr unsigned int vertexElementCount = 2;
+			constexpr unsigned int vertexElementCount = 3;
 			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = {};
 			{
 				// Slot 0
@@ -67,11 +67,28 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 
 				// Slot 1
 
+				// TEXTURE_COORDINATES
+				// 2 uint16_t == 4 bytes
+				// Offset = 12
+				{
+					auto& positionElement = layoutDescription[1];
+
+					positionElement.SemanticName = "TEXCOORD";
+					positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					positionElement.Format = DXGI_FORMAT_R16G16_FLOAT;
+					positionElement.InputSlot = 0;
+					positionElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, u);
+					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// Slot 2
+
 				// COLOR
 				// 4 uint8_t == 4 bytes
-				// Offset = 8
+				// Offset = 16
 				{
-					auto& colorElement = layoutDescription[1];
+					auto& colorElement = layoutDescription[2];
 
 					colorElement.SemanticName = "COLOR";
 					colorElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)

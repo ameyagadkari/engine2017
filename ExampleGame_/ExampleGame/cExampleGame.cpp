@@ -173,17 +173,17 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	{
 		constexpr auto depthBufferingEnabled = 0x02;
 		{
-			/*Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, "data/Meshes/cube.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
+			Gameobject::cGameobject3D* gameobject3D;
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, "data/Meshes/ball.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, "data/Textures/ball.btf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
 			}
-			s_3D_GameObject.push_back(gameobject3D);*/
+			s_3D_GameObject.push_back(gameobject3D);
 		}
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -1.0f, 0.0f), "data/Meshes/plane2.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -2.0f, 0.0f), "data/Meshes/floor.bmf", "fake_effect2_path", "mesh.busl", "mesh.busl", depthBufferingEnabled, "data/Textures/floor.btf", Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

@@ -265,6 +265,12 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 			EAE6320_ASSERT(false);
 			goto OnExit;
 		}
+
+		/*if (!((result = cMesh::s_manager.Initialize())))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}*/
 	}
 
 	// Initialize the platform-independent graphics objects
@@ -438,6 +444,17 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 		}
 	}
+	/*{
+		const auto localResult = cMesh::s_manager.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}*/
 	{
 		const auto localResult = cShader::s_manager.CleanUp();
 		if (!localResult)

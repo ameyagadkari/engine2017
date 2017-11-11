@@ -6,10 +6,12 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Graphics/MeshHelperStructs.h>
 #include <Engine/Graphics/VertexFormats.h>
+#include <Engine/Math/cHalf.h>
 #include <External/Lua/Includes.h>
 #include <Tools/AssetBuildLibrary/Functions.h>
 
 #include <fstream>
+
 
 // Helper Function Declarations
 //=============================
@@ -24,6 +26,7 @@ namespace
 	eae6320::cResult LoadIndicesTable(lua_State& io_luaState, sMeshData& io_meshData);
 	eae6320::cResult LoadPositionTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	eae6320::cResult LoadColorTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
+	eae6320::cResult LoadUVTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	uint8_t RoundColorChannel(const float i_value);
 }
 
@@ -250,6 +253,7 @@ namespace
 		}
 		return result;
 	}
+
 	eae6320::cResult LoadVerticesTable(lua_State& io_luaState, sMeshData& io_meshData)
 	{
 		auto result = eae6320::Results::success;
@@ -294,6 +298,11 @@ namespace
 							lua_pop(&io_luaState, 1);
 							goto OnExit;
 						}
+						if (!((result = LoadUVTable(io_luaState, io_meshData, arrayIndex))))
+						{
+							lua_pop(&io_luaState, 1);
+							goto OnExit;
+						}
 						lua_pop(&io_luaState, 1);
 					}
 					else
@@ -324,6 +333,7 @@ namespace
 
 		return result;
 	}
+
 	eae6320::cResult LoadIndicesTable(lua_State& io_luaState, sMeshData& io_meshData)
 	{
 		auto result = eae6320::Results::success;
@@ -419,6 +429,7 @@ namespace
 
 		return result;
 	}
+
 	eae6320::cResult LoadPositionTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index)
 	{
 		auto result = eae6320::Results::success;
@@ -484,6 +495,7 @@ namespace
 
 		return result;
 	}
+
 	eae6320::cResult LoadColorTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index)
 	{
 		auto result = eae6320::Results::success;
@@ -550,6 +562,77 @@ namespace
 
 		return result;
 	}
+
+	eae6320::cResult LoadUVTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index)
+
+	{
+		auto result = eae6320::Results::success;
+		constexpr auto* const key = "uv";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		if (lua_isnil(&io_luaState, -1))
+		{
+			result = eae6320::Results::invalidFile;
+			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", key);
+			goto OnExit;
+		}
+		if (lua_istable(&io_luaState, -1))
+		{
+			const auto uvCount = luaL_len(&io_luaState, -1);
+			float uv[] = { 0.0f,0.0f };
+			if (uvCount == 2)
+			{
+				for (auto i = 1; i <= uvCount; ++i)
+				{
+					lua_pushinteger(&io_luaState, i);
+					lua_gettable(&io_luaState, -2);
+					if (lua_isnil(&io_luaState, -1))
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "No value for key: \"%d\"was found in the table", i);
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+					if (lua_isnumber(&io_luaState, -1))
+					{
+						uv[i - 1] = static_cast<float>(lua_tonumber(&io_luaState, -1));
+						lua_pop(&io_luaState, 1);
+					}
+					else
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "The value isn't a number!");
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+				}
+				io_meshData.vertexData[i_index].u = eae6320::Math::cHalf::MakeHalfFromFloat(uv[0]);
+#if defined( EAE6320_PLATFORM_D3D )
+				io_meshData.vertexData[i_index].v = eae6320::Math::cHalf::MakeHalfFromFloat(1.0f - uv[1]);
+#elif defined( EAE6320_PLATFORM_GL )
+				io_meshData.vertexData[i_index].v = eae6320::Math::cHalf::MakeHalfFromFloat(uv[1]);
+#endif
+			}
+			else
+			{
+				result = eae6320::Results::invalidFile;
+				OutputErrorMessageWithFileInfo(__FILE__, "There are %d texture coordinates instead of 2", uvCount);
+				goto OnExit;
+			}
+		}
+		else
+		{
+			result = eae6320::Results::invalidFile;
+			OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a table (instead of a %s)", key, luaL_typename(&io_luaState, -1));
+			goto OnExit;
+		}
+	OnExit:
+		// Pop the position table
+		lua_pop(&io_luaState, 1);
+
+		return result;
+	}
+
 	uint8_t RoundColorChannel(const float i_value)
 	{
 		if (i_value < 0.0f)return 0;
