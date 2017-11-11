@@ -12,22 +12,8 @@ A gameobject 3d class is a representation for a 3D gameobject on screen
 #include <Engine/Transform/sPredictionTransform.h>
 #include <Engine/Graphics/cTexture.h>
 #include <Engine/Graphics/cEffect.h>
+#include <Engine/Graphics/cMesh.h>
 #include <ExampleGame_/Gameplay/cDefaultGameobjectController.h>
-
-// Forward Declarations
-//=====================
-
-namespace eae6320
-{
-	namespace Graphics
-	{
-		namespace HelperStructs
-		{
-			struct sMeshData;
-		}
-		class cMesh;
-	}
-}
 
 namespace eae6320
 {
@@ -97,7 +83,7 @@ namespace eae6320
 		private:
 			Transform::sTransform m_transform;
 			Gameplay::cbController* m_controller;
-			Graphics::cMesh* m_mesh;
+			Graphics::cMesh::Handle m_mesh;
 			Graphics::cEffect::Handle m_effect;
 			Graphics::cTexture::Handle m_texture;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();

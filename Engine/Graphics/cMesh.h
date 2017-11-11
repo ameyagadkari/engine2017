@@ -8,6 +8,7 @@ A mesh is a 3d representation of an entity on screen
 // Include Files
 //==============
 
+#include "Configuration.h"
 #include "MeshHelperStructs.h"
 
 #include <Engine/Assets/cManager.h>
@@ -15,7 +16,6 @@ A mesh is a 3d representation of an entity on screen
 #include <Engine/Results/Results.h>
 
 #ifdef EAE6320_PLATFORM_GL
-#include "Configuration.h"
 #include "OpenGL/Includes.h"
 #endif
 

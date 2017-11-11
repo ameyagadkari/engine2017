@@ -11,6 +11,11 @@
 #include <new>
 
 
+// Static Data Initialization
+//===========================
+
+eae6320::Assets::cManager<eae6320::Graphics::cMesh> eae6320::Graphics::cMesh::s_manager;
+
 // Interface
 //==========
 

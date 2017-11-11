@@ -14,8 +14,7 @@
 eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_position, const Gameplay::eControllerType i_controllerType)
 	:
 	m_transform(i_position, Math::cQuaternion()),
-	m_controller(nullptr),
-	m_mesh(nullptr)
+	m_controller(nullptr)
 {
 	m_predictionTransform.position = m_transform.position;
 	m_predictionTransform.orientation = m_transform.orientation;
@@ -76,7 +75,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 
 	// Load the mesh
 	{
-		if (!((result = Graphics::cMesh::Load(i_meshPath, newGameobject3D->m_mesh))))
+		if (!((result = Graphics::cMesh::s_manager.Load(i_meshPath, newGameobject3D->m_mesh))))
 		{
 			EAE6320_ASSERTF(false, "Loading of mesh failed");
 			goto OnExit;
@@ -140,7 +139,15 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::CleanUp()
 	// Mesh Clean Up
 	if (m_mesh)
 	{
-		m_mesh->DecrementReferenceCount();
+		const auto localResult = Graphics::cMesh::s_manager.Release(m_mesh);
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
 	}
 
 	// Controller Clean Up
@@ -192,5 +199,5 @@ void eae6320::Gameobject::cGameobject3D::BindAndDraw() const
 {
 	Graphics::cEffect::s_manager.Get(m_effect)->Bind();
 	Graphics::cTexture::s_manager.Get(m_texture)->Bind(0);
-	m_mesh->Draw();
+	Graphics::cMesh::s_manager.Get(m_mesh)->Draw();
 }
