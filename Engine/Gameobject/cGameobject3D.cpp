@@ -27,7 +27,7 @@ eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_positio
 	}
 }
 
-eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState, char const * const i_texturePath, const Gameplay::eControllerType i_controllerType)
+eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, char const * const i_texturePath, const Gameplay::eControllerType i_controllerType)
 {
 	auto result = Results::success;
 
@@ -60,7 +60,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
 
 	// Load the effect
-	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject3D->m_effect, i_vertexShaderName, i_fragmentShaderName, i_renderState))))
+	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject3D->m_effect))))
 	{
 		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_effectPath);
 		goto OnExit;

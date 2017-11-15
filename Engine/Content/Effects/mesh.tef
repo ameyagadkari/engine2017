@@ -1,0 +1,13 @@
+-- Effect File for Mesh
+return
+{
+	shaders = 
+	{
+		vertex = "data/Shaders/Vertex/mesh.busl",
+		fragment = "data/Shaders/Fragment/mesh.busl",
+	},
+	render_states = 
+	{
+		depth_buffering = true,
+	},
+}

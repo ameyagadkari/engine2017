@@ -3,16 +3,12 @@
 
 #include "cEffect.h"
 
+#include <Engine/Platform/Platform.h>
+
 // Static Data Initialization
 //===========================
 
 eae6320::Assets::cManager<eae6320::Graphics::cEffect> eae6320::Graphics::cEffect::s_manager;
-
-namespace
-{
-	const std::string s_relativeVertexShaderPath = "data/Shaders/Vertex/";
-	const std::string s_relativeFragmentShaderPath = "data/Shaders/Fragment/";
-}
 
 // Interface
 //==========
@@ -20,23 +16,27 @@ namespace
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState)
+eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEffect*& o_effect)
 {
 	auto result = Results::success;
 
-	//Platform::sDataFromFile dataFromFile;
+	Platform::sDataFromFile dataFromFile;
+	char* vertexShaderName = nullptr; 
+	char* fragmentShaderName = nullptr;
+	uint8_t renderState = 0xff;
+	uint8_t offsetToAdd = 0;
 	cEffect* newEffect = nullptr;
 
-	/*// Load the binary data
+	// Load the binary data
 	{
 		std::string errorMessage;
-		if (!(result = Platform::LoadBinaryFile(i_path, dataFromFile, &errorMessage)))
+		if (!((result = LoadBinaryFile(i_path, dataFromFile, &errorMessage))))
 		{
 			EAE6320_ASSERTF(false, errorMessage.c_str());
-			Logging::OutputError("Failed to load shader from file %s: %s", i_path, errorMessage.c_str());
+			Logging::OutputError("Failed to load effect from file %s: %s", i_path, errorMessage.c_str());
 			goto OnExit;
 		}
-	}*/
+	}
 
 	// Allocate a new effect
 	{
@@ -49,8 +49,39 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 			goto OnExit;
 		}
 	}
-	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
-	if (!((result = newEffect->Initialize(i_vertexShaderName, i_fragmentShaderName, i_renderState))))
+
+	// Extract data from loaded mesh file
+	{
+		// Casting data to uint8_t* for pointer arithematic
+
+		auto data = reinterpret_cast<uint8_t*>(dataFromFile.data);
+
+		// Extracting Render State Bits	
+
+		renderState = *data;
+
+		// Extracting Offset To Add
+
+		data += sizeof(renderState);
+		offsetToAdd = *data;
+
+		// Extracting Vertex Shader Path
+
+		data += sizeof(offsetToAdd);
+		vertexShaderName = reinterpret_cast<char*>(data);
+
+		// Extracting Offset To Add
+
+		data += offsetToAdd;
+		offsetToAdd = *data;
+
+		// Extracting Fragment Shader Path
+
+		data += sizeof(offsetToAdd);
+		fragmentShaderName = reinterpret_cast<char*>(data);
+	}
+
+	if (!((result = newEffect->Initialize(vertexShaderName, fragmentShaderName, renderState))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;
@@ -72,23 +103,21 @@ OnExit:
 		}
 		o_effect = nullptr;
 	}
-	//dataFromFile.Free();
+	dataFromFile.Free();
 
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState)
+eae6320::cResult eae6320::Graphics::cEffect::Initialize(char const*const i_vertexShaderName, char const*const i_fragmentShaderName, const uint8_t i_renderState)
 {
 	auto result = Results::success;
 
-	if (!((result = cShader::s_manager.Load((s_relativeVertexShaderPath + i_vertexShaderName).c_str(),
-		m_vertexShader, ShaderTypes::Vertex))))
+	if (!((result = cShader::s_manager.Load(i_vertexShaderName, m_vertexShader, ShaderTypes::Vertex))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-	if (!((result = cShader::s_manager.Load((s_relativeFragmentShaderPath + i_fragmentShaderName).c_str(),
-		m_fragmentShader, ShaderTypes::Fragment))))
+	if (!((result = cShader::s_manager.Load(i_fragmentShaderName, m_fragmentShader, ShaderTypes::Fragment))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;

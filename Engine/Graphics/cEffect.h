@@ -31,7 +31,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
+			static cResult Load(const char* const i_path, cEffect*& o_effect);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
 
@@ -69,7 +69,7 @@ namespace eae6320
 			cEffect() = default;
 			~cEffect();
 
-			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
+			cResult Initialize(char const*const i_vertexShaderName, char const*const i_fragmentShaderName, const uint8_t i_renderState);
 			cResult CleanUp();
 
 			// Initialization / Clean Up Platform Dependent

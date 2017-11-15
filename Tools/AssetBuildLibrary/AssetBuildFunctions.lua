@@ -361,7 +361,7 @@ function BuildAssets()
 			end
 		end
 	end
-	-- Build the textures and copy them to the installation location
+	-- Build the meshes and copy them to the installation location
 	do
 		local path_meshBuilder = OutputDir .. "MeshBuilder.exe"
 		do
@@ -414,6 +414,62 @@ function BuildAssets()
 				wereThereErrors = true
 				-- If the command wasn't executed then the second return value is an error message
 				OutputErrorMessage( "The command " .. command .. " couldn't be executed: " .. tostring( exitCode ), mesh_authored )
+			end
+		end
+	end
+	-- Build the effects and copy them to the installation location
+	do
+		local path_effectBuilder = OutputDir .. "EffectBuilder.exe"
+		do
+			local effect_authored = EngineSourceContentDir .. "Effects/mesh.tef"
+			local effect_built = GameInstallDir .. "data/Effects/mesh.bef"
+			CreateDirectoryIfItDoesntExist( effect_built )
+			local command = "\"" .. path_effectBuilder .. "\""
+				.. " \"" .. effect_authored .. "\" \"" .. effect_built
+			local result, exitCode = ExecuteCommand( command )
+			if result then
+				if exitCode == 0 then
+					-- Display a message for each asset
+					print( "Built " .. effect_authored )
+				else
+					wereThereErrors = true
+					-- The builder should already output a descriptive error message if there was an error
+					-- (remember that you write the builder code,
+					-- and so if the build process failed it means that _your_ code has returned an error code)
+					-- but it can be helpful to still return an additional vague error message here
+					-- in case there is a bug in the specific builder that doesn't output an error message
+					OutputErrorMessage( "The command " .. command .. " failed with exit code " .. tostring( exitCode ), effect_authored )
+				end
+			else
+				wereThereErrors = true
+				-- If the command wasn't executed then the second return value is an error message
+				OutputErrorMessage( "The command " .. command .. " couldn't be executed: " .. tostring( exitCode ), effect_authored )
+			end
+		end
+		do
+			local effect_authored = EngineSourceContentDir .. "Effects/sprite.tef"
+			local effect_built = GameInstallDir .. "data/Effects/sprite.bef"
+			CreateDirectoryIfItDoesntExist( effect_built )
+			local command = "\"" .. path_effectBuilder .. "\""
+				.. " \"" .. effect_authored .. "\" \"" .. effect_built
+			local result, exitCode = ExecuteCommand( command )
+			if result then
+				if exitCode == 0 then
+					-- Display a message for each asset
+					print( "Built " .. effect_authored )
+				else
+					wereThereErrors = true
+					-- The builder should already output a descriptive error message if there was an error
+					-- (remember that you write the builder code,
+					-- and so if the build process failed it means that _your_ code has returned an error code)
+					-- but it can be helpful to still return an additional vague error message here
+					-- in case there is a bug in the specific builder that doesn't output an error message
+					OutputErrorMessage( "The command " .. command .. " failed with exit code " .. tostring( exitCode ), effect_authored )
+				end
+			else
+				wereThereErrors = true
+				-- If the command wasn't executed then the second return value is an error message
+				OutputErrorMessage( "The command " .. command .. " couldn't be executed: " .. tostring( exitCode ), effect_authored )
 			end
 		end
 	end
