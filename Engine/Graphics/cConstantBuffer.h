@@ -111,7 +111,7 @@ namespace eae6320
 			cResult Initialize( const void* const i_initialData = nullptr );
 			cResult CleanUp();
 
-			cConstantBuffer( const ConstantBufferTypes i_type );
+			explicit cConstantBuffer( const ConstantBufferTypes i_type );
 			~cConstantBuffer();
 
 			// Data

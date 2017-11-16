@@ -21,8 +21,8 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 	auto result = Results::success;
 
 	Platform::sDataFromFile dataFromFile;
-	char* vertexShaderName = nullptr; 
-	char* fragmentShaderName = nullptr;
+	char* vertexShaderPath = nullptr;
+	char* fragmentShaderPath = nullptr;
 	uint8_t renderState = 0xff;
 	uint8_t offsetToAdd = 0;
 	cEffect* newEffect = nullptr;
@@ -50,7 +50,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		}
 	}
 
-	// Extract data from loaded mesh file
+	// Extract data from loaded effect file
 	{
 		// Casting data to uint8_t* for pointer arithematic
 
@@ -68,7 +68,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		// Extracting Vertex Shader Path
 
 		data += sizeof(offsetToAdd);
-		vertexShaderName = reinterpret_cast<char*>(data);
+		vertexShaderPath = reinterpret_cast<char*>(data);
 
 		// Extracting Offset To Add
 
@@ -78,10 +78,10 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		// Extracting Fragment Shader Path
 
 		data += sizeof(offsetToAdd);
-		fragmentShaderName = reinterpret_cast<char*>(data);
+		fragmentShaderPath = reinterpret_cast<char*>(data);
 	}
 
-	if (!((result = newEffect->Initialize(vertexShaderName, fragmentShaderName, renderState))))
+	if (!((result = newEffect->Initialize(vertexShaderPath, fragmentShaderPath, renderState))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;
@@ -108,27 +108,26 @@ OnExit:
 	return result;
 }
 
-eae6320::cResult eae6320::Graphics::cEffect::Initialize(char const*const i_vertexShaderName, char const*const i_fragmentShaderName, const uint8_t i_renderState)
+eae6320::cResult eae6320::Graphics::cEffect::Initialize(char const*const i_vertexShaderPath, char const*const i_fragmentShaderPath, const uint8_t i_renderState)
 {
 	auto result = Results::success;
 
-	if (!((result = cShader::s_manager.Load(i_vertexShaderName, m_vertexShader, ShaderTypes::Vertex))))
+	if (!((result = cShader::s_manager.Load(i_vertexShaderPath, m_vertexShader, ShaderTypes::Vertex))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-	if (!((result = cShader::s_manager.Load(i_fragmentShaderName, m_fragmentShader, ShaderTypes::Fragment))))
+	if (!((result = cShader::s_manager.Load(i_fragmentShaderPath, m_fragmentShader, ShaderTypes::Fragment))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
+	if (!((result = m_renderState.Initialize(i_renderState))))
 	{
-		if (!((result = m_renderState.Initialize(i_renderState))))
-		{
-			EAE6320_ASSERT(false);
-			goto OnExit;
-		}
+		EAE6320_ASSERT(false);
+		goto OnExit;
 	}
+
 
 	if (!((result = InitializePlatformSpecific())))
 	{

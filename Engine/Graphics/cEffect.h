@@ -69,7 +69,7 @@ namespace eae6320
 			cEffect() = default;
 			~cEffect();
 
-			cResult Initialize(char const*const i_vertexShaderName, char const*const i_fragmentShaderName, const uint8_t i_renderState);
+			cResult Initialize(char const*const i_vertexShaderPath, char const*const i_fragmentShaderPath, const uint8_t i_renderState);
 			cResult CleanUp();
 
 			// Initialization / Clean Up Platform Dependent
