@@ -20,15 +20,12 @@ namespace
 	using namespace eae6320::Assets;
 
 	std::string effectPath;
-	std::string texturePath;
+	std::string texturePath("data/Textures/default.btf");
 	eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial;
 
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState);
-	eae6320::cResult LoadShadersTable(lua_State& io_luaState);
-	eae6320::cResult LoadShaderPath(lua_State& io_luaState, char const*const i_key, std::string& o_path);
-	eae6320::cResult LoadRenderStatesTable(lua_State& io_luaState);
-	eae6320::cResult LoadIndividualRenderState(lua_State& io_luaState, char const*const i_key);
-
+	eae6320::cResult LoadConstantBufferDataTable(lua_State& io_luaState);
+	eae6320::cResult LoadColorTable(lua_State& io_luaState);
 }
 
 // Inherited Implementation
@@ -37,7 +34,7 @@ namespace
 // Build
 //------
 
-eae6320::cResult cEffectBuilder::Build(const std::vector<std::string>&)
+eae6320::cResult cMaterialBuilder::Build(const std::vector<std::string>&)
 {
 	auto result = Results::success;
 
@@ -135,68 +132,28 @@ eae6320::cResult cEffectBuilder::Build(const std::vector<std::string>&)
 	{
 		// Write render state bits
 		{
-			const auto byteCountToWrite = sizeof(renderStateBits);
-			fout.write(reinterpret_cast<const char*>(&renderStateBits), byteCountToWrite);
+			const auto byteCountToWrite = sizeof(constantData_perMaterial);
+			fout.write(reinterpret_cast<const char*>(&constantData_perMaterial), byteCountToWrite);
 			if (!fout.good())
 			{
 				result = Results::fileWriteFail;
-				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for render state bits", byteCountToWrite);
+				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for per material constant data", byteCountToWrite);
 				goto OnExit;
 			}
 		}
-		// Write vertex shader path
+		// Write effect shader path
+		if (!((result = WriteFilePath(fout, effectPath))))
 		{
-			const auto byteCountToWrite = vertexShaderPath.length() + 1;
-
-			// Write length of the path
-			{
-				const auto length = static_cast<uint8_t>(byteCountToWrite);
-				fout.write(reinterpret_cast<const char*>(&length), 1);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write 1 byte for vertex shader path length");
-					goto OnExit;
-				}
-			}
-
-			// Write actual path with null terminator
-			{
-				fout.write(vertexShaderPath.c_str(), byteCountToWrite);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for vertex shader path", byteCountToWrite);
-					goto OnExit;
-				}
-			}
+			result = Results::fileWriteFail;
+			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write effect path");
+			goto OnExit;
 		}
-		// Write fragment shader path
+		// Write texture shader path
+		if (!((result = WriteFilePath(fout, texturePath))))
 		{
-			const auto byteCountToWrite = fragmentShaderPath.length() + 1;
-
-			// Write length of the path
-			{
-				const auto length = static_cast<uint8_t>(byteCountToWrite);
-				fout.write(reinterpret_cast<const char*>(&length), 1);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write 1 byte for fragment shader path length");
-					goto OnExit;
-				}
-			}
-
-			// Write actual path with null terminator
-			{
-				fout.write(fragmentShaderPath.c_str(), byteCountToWrite);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for fragment shader path", byteCountToWrite);
-					goto OnExit;
-				}
-			}
+			result = Results::fileWriteFail;
+			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write texture path");
+			goto OnExit;
 		}
 	}
 
@@ -237,21 +194,27 @@ namespace
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState)
 	{
 		auto result = eae6320::Results::success;
-		if (!((result = LoadShadersTable(io_luaState))))
+		if (!((result = LoadConstantBufferDataTable(io_luaState))))
 		{
 			return result;
 		}
-		if (!((result = LoadRenderStatesTable(io_luaState))))
+		if (!((result = LoadFilePath(io_luaState, "effect", effectPath))))
 		{
+			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get effect path");
+			return result;
+		}
+		if (!((result = LoadFilePath(io_luaState, "texture", texturePath))))
+		{
+			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path");
 			return result;
 		}
 		return result;
 	}
 
-	eae6320::cResult LoadShadersTable(lua_State& io_luaState)
+	eae6320::cResult LoadConstantBufferDataTable(lua_State& io_luaState)
 	{
 		auto result = eae6320::Results::success;
-		constexpr auto* const key = "shaders";
+		constexpr auto* const key = "constant_buffer_data";
 		lua_pushstring(&io_luaState, key);
 		lua_gettable(&io_luaState, -2);
 		if (lua_isnil(&io_luaState, -1))
@@ -262,15 +225,9 @@ namespace
 		}
 		if (lua_istable(&io_luaState, -1))
 		{
-			if (!((result = LoadShaderPath(io_luaState, "vertex", vertexShaderPath))))
+			if (!((result = LoadColorTable(io_luaState))))
 			{
-				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get vertex shader path");
-				goto OnExit;
-			}
-
-			if (!((result = LoadShaderPath(io_luaState, "fragment", fragmentShaderPath))))
-			{
-				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get fragment shader path");
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to load the color table");
 				goto OnExit;
 			}
 		}
@@ -283,78 +240,63 @@ namespace
 
 	OnExit:
 
-		// Pop the shaders table
+		// Pop the constant buffer data table
 		lua_pop(&io_luaState, 1);
 
 		return result;
 	}
 
-	eae6320::cResult LoadShaderPath(lua_State& io_luaState, char const*const i_key, std::string& o_path)
+	eae6320::cResult LoadColorTable(lua_State& io_luaState)
 	{
 		auto result = eae6320::Results::success;
-		lua_pushstring(&io_luaState, i_key);
-		lua_gettable(&io_luaState, -2);
-		if (lua_isnil(&io_luaState, -1))
-		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", i_key);
-			goto OnExit;
-		}
-		if (lua_isstring(&io_luaState, -1))
-		{
-			o_path = lua_tostring(&io_luaState, -1);
-			/*const char * const assetType = "shaders";
-			if (!eae6320::AssetBuild::ConvertSourceRelativePathToBuiltRelativePath(sourceRelativePath, assetType, vertexShaderPathString, &errorMessage))
-			{
-				wereThereErrors = true;
-				fprintf_s(stderr, "Cannot convert Convert Source Relative Path %s To Built Relative Path for Asset Type %s....Error: %s", sourceRelativePath, assetType, errorMessage.c_str());
-				goto OnExit;
-			}
-			vertexShaderPath = _strdup(vertexShaderPathString.c_str());*/
-		}
-		else
-		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a string (instead of a %s)", i_key, luaL_typename(&io_luaState, -1));
-			goto OnExit;
-		}
-
-	OnExit:
-		lua_pop(&io_luaState, 1);
-
-		return result;
-	}
-
-	eae6320::cResult LoadRenderStatesTable(lua_State& io_luaState)
-	{
-		auto result = eae6320::Results::success;
-		constexpr auto* const key = "render_states";
+		constexpr auto* const key = "g_color";
 		lua_pushstring(&io_luaState, key);
 		lua_gettable(&io_luaState, -2);
 		if (lua_isnil(&io_luaState, -1))
 		{
-			renderStateBits = 0;
+			result = eae6320::Results::invalidFile;
+			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", key);
 			goto OnExit;
 		}
 		if (lua_istable(&io_luaState, -1))
 		{
-			if (!((result = LoadIndividualRenderState(io_luaState, "alpha_transparency"))))
+			const auto colorCount = luaL_len(&io_luaState, -1);
+			float rgba[] = { 0.0f,0.0f,0.0f,0.0f };
+			if (colorCount == 4)
 			{
-				goto OnExit;
+				for (auto i = 1; i <= colorCount; ++i)
+				{
+					lua_pushinteger(&io_luaState, i);
+					lua_gettable(&io_luaState, -2);
+					if (lua_isnil(&io_luaState, -1))
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "No value for key: \"%d\"was found in the table", i);
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+					if (lua_isnumber(&io_luaState, -1))
+					{
+						rgba[i - 1] = static_cast<float>(lua_tonumber(&io_luaState, -1));
+						lua_pop(&io_luaState, 1);
+					}
+					else
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "The value isn't a number!");
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+				}
+				constantData_perMaterial.g_color.r = (rgba[0] >= 0.0f) ? ((rgba[0] <= 1.0f) ? rgba[0] : 1.0f) : 0.0f;
+				constantData_perMaterial.g_color.g = (rgba[1] >= 0.0f) ? ((rgba[1] <= 1.0f) ? rgba[1] : 1.0f) : 0.0f;
+				constantData_perMaterial.g_color.b = (rgba[2] >= 0.0f) ? ((rgba[2] <= 1.0f) ? rgba[2] : 1.0f) : 0.0f;
+				constantData_perMaterial.g_color.a = (rgba[3] >= 0.0f) ? ((rgba[3] <= 1.0f) ? rgba[3] : 1.0f) : 0.0f;
 			}
-
-			if (!((result = LoadIndividualRenderState(io_luaState, "depth_buffering"))))
+			else
 			{
-				goto OnExit;
-			}
-
-			if (!((result = LoadIndividualRenderState(io_luaState, "draw_both_triangle_sides"))))
-			{
-				goto OnExit;
-			}
-
-			if (!((result = LoadIndividualRenderState(io_luaState, "wire_frame_mode"))))
-			{
+				result = eae6320::Results::invalidFile;
+				OutputErrorMessageWithFileInfo(__FILE__, "There are %d channels instead of 4", colorCount);
 				goto OnExit;
 			}
 		}
@@ -366,74 +308,8 @@ namespace
 		}
 
 	OnExit:
-
-		// Pop the render states table
 		lua_pop(&io_luaState, 1);
 
 		return result;
 	}
-
-	eae6320::cResult LoadIndividualRenderState(lua_State& io_luaState, char const*const i_key)
-	{
-		auto result = eae6320::Results::success;
-		lua_pushstring(&io_luaState, i_key);
-		lua_gettable(&io_luaState, -2);
-		if (lua_isnil(&io_luaState, -1))
-		{
-			goto OnExit;
-		}
-		if (lua_isboolean(&io_luaState, -1))
-		{
-			if (lua_toboolean(&io_luaState, -1))
-			{
-				if (!strcmp(i_key, "alpha_transparency"))
-				{
-					eae6320::Graphics::RenderStates::EnableAlphaTransparency(renderStateBits);
-				}
-				else if (!strcmp(i_key, "depth_buffering"))
-				{
-					eae6320::Graphics::RenderStates::EnableDepthBuffering(renderStateBits);				
-				}
-				else if (!strcmp(i_key, "draw_both_triangle_sides"))
-				{
-					eae6320::Graphics::RenderStates::EnableDrawingBothTriangleSides(renderStateBits);
-				}
-				else if (!strcmp(i_key, "wire_frame_mode"))
-				{
-					eae6320::Graphics::RenderStates::EnableWireFrameMode(renderStateBits);
-				}
-			}
-			else
-			{
-				if (!strcmp(i_key, "alpha_transparency"))
-				{
-					eae6320::Graphics::RenderStates::DisableAlphaTransparency(renderStateBits);
-				}
-				else if (!strcmp(i_key, "depth_buffering"))
-				{
-					eae6320::Graphics::RenderStates::DisableDepthBuffering(renderStateBits);
-				}
-				else if (!strcmp(i_key, "draw_both_triangle_sides"))
-				{
-					eae6320::Graphics::RenderStates::DisableDrawingBothTriangleSides(renderStateBits);
-				}
-				else if (!strcmp(i_key, "wire_frame_mode"))
-				{
-					eae6320::Graphics::RenderStates::DisableWireFrameMode(renderStateBits);
-				}		
-			}
-		}
-		else
-		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a boolean (instead of a %s)", i_key, luaL_typename(&io_luaState, -1));
-			goto OnExit;
-		}
-
-	OnExit:
-		lua_pop(&io_luaState, 1);
-
-		return result;
-	}
-
 }

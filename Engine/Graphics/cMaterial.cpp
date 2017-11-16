@@ -41,9 +41,9 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 
 	// Extract data from loaded effect file
 	{
-		// Casting data to uint8_t* for pointer arithematic
+		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uint8_t*>(dataFromFile.data);
+		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
 
 		// Extracting Material Constant Buffer Data
 
@@ -52,7 +52,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		// Extracting Offset To Add
 
 		data += sizeof(constantData_perMaterial);
-		offsetToAdd = *data;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
 
 		// Extracting Effect Path
 
@@ -62,7 +62,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		// Extracting Offset To Add
 
 		data += offsetToAdd;
-		offsetToAdd = *data;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
 
 		// Extracting Texture Path
 

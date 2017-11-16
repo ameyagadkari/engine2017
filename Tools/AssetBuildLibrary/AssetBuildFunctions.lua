@@ -309,7 +309,7 @@ function BuildAssets()
 			end
 		end
 		do
-			local texture_authored = EngineSourceContentDir .. "Textures/floor.png"
+			local texture_authored = EngineSourceContentDir .. "Textures/floor.jpg"
 			local texture_built = GameInstallDir .. "data/Textures/floor.btf"
 			CreateDirectoryIfItDoesntExist( texture_built )
 			local command = "\"" .. path_textureBuilder .. "\""
@@ -335,7 +335,7 @@ function BuildAssets()
 			end
 		end
 		do
-			local texture_authored = EngineSourceContentDir .. "Textures/ball.png"
+			local texture_authored = EngineSourceContentDir .. "Textures/ball.jpg"
 			local texture_built = GameInstallDir .. "data/Textures/ball.btf"
 			CreateDirectoryIfItDoesntExist( texture_built )
 			local command = "\"" .. path_textureBuilder .. "\""

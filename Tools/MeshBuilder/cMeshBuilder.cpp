@@ -511,7 +511,7 @@ namespace
 		if (lua_istable(&io_luaState, -1))
 		{
 			const auto colorCount = luaL_len(&io_luaState, -1);
-			float rgba[] = { 0.0f,0.0f,0.0f,0.0f };
+			float rgba[] = { 0.0f,0.0f,0.0f,1.0f };
 			if ((colorCount == 3) || (colorCount == 4))
 			{
 				for (auto i = 1; i <= colorCount; ++i)
