@@ -203,7 +203,7 @@ namespace
 			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get effect path");
 			return result;
 		}
-		if (!((result = LoadFilePath(io_luaState, "texture", texturePath))))
+		if (!((result = LoadFilePath(io_luaState, "texture", texturePath, false))))
 		{
 			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path");
 			return result;
@@ -254,8 +254,6 @@ namespace
 		lua_gettable(&io_luaState, -2);
 		if (lua_isnil(&io_luaState, -1))
 		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", key);
 			goto OnExit;
 		}
 		if (lua_istable(&io_luaState, -1))

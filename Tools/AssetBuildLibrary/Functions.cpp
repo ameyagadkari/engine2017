@@ -1022,15 +1022,18 @@ namespace
 // Helper Function Definitions
 //----------------------------
 
-eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path)
+eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path, const bool i_isRequired)
 {
 	auto result = Results::success;
 	lua_pushstring(&io_luaState, i_key);
 	lua_gettable(&io_luaState, -2);
 	if (lua_isnil(&io_luaState, -1))
 	{
-		result = Results::invalidFile;
-		OutputErrorMessage("No value for key:\"%s\" was found in the table", i_key);
+		if (i_isRequired)
+		{
+			result = Results::invalidFile;
+			OutputErrorMessage("No value for key:\"%s\" was found in the table", i_key);
+		}
 		goto OnExit;
 	}
 	if (lua_isstring(&io_luaState, -1))

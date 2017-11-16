@@ -39,6 +39,18 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		}
 	}
 
+	// Allocate a new material
+	{
+		newMaterial = new (std::nothrow) cMaterial();
+		if (!newMaterial)
+		{
+			result = Results::outOfMemory;
+			EAE6320_ASSERTF(false, "Couldn't allocate memory for the mesh %s", i_path);
+			Logging::OutputError("Failed to allocate memory for the mesh %s", i_path);
+			goto OnExit;
+		}
+	}
+
 	// Extract data from loaded effect file
 	{
 		// Casting data to uintptr_t for pointer arithematic

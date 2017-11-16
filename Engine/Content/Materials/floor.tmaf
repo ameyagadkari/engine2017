@@ -1,0 +1,10 @@
+-- Floor Material File
+return
+{
+	constant_buffer_data = 
+	{
+		
+	},
+	effect = "data/Effects/mesh.bef",
+	texture = "data/Textures/floor.btf",
+}

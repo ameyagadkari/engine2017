@@ -27,7 +27,7 @@ namespace eae6320
 
 		// These functions define functionality that is required by multiple builders
 
-		cResult LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path);
+		cResult LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path, const bool i_isRequired = true);
 		cResult WriteFilePath(std::ofstream& io_fout, const std::string& i_path);
 
 		// Error / Warning Output

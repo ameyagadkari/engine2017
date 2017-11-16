@@ -10,8 +10,7 @@ A gameobject 3d class is a representation for a 3D gameobject on screen
 
 #include <Engine/Transform/sTransform.h>
 #include <Engine/Transform/sPredictionTransform.h>
-#include <Engine/Graphics/cTexture.h>
-#include <Engine/Graphics/cEffect.h>
+#include <Engine/Graphics/cMaterial.h>
 #include <Engine/Graphics/cMesh.h>
 #include <ExampleGame_/Gameplay/cDefaultGameobjectController.h>
 
@@ -45,7 +44,7 @@ namespace eae6320
 			// Initialization / Clean Up
 			//--------------------------
 
-			static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, char const * const i_texturePath, const Gameplay::eControllerType i_controllerType);
+			static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_materialPath, const Gameplay::eControllerType i_controllerType);
 
 			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject3D);
 
@@ -84,8 +83,7 @@ namespace eae6320
 			Transform::sTransform m_transform;
 			Gameplay::cbController* m_controller;
 			Graphics::cMesh::Handle m_mesh;
-			Graphics::cEffect::Handle m_effect;
-			Graphics::cTexture::Handle m_texture;
+			Graphics::cMaterial::Handle m_material;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 		};
 	}

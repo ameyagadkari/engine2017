@@ -27,7 +27,7 @@ eae6320::Gameobject::cGameobject3D::cGameobject3D(const Math::sVector& i_positio
 	}
 }
 
-eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_effectPath, char const * const i_texturePath, const Gameplay::eControllerType i_controllerType)
+eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_materialPath, const Gameplay::eControllerType i_controllerType)
 {
 	auto result = Results::success;
 
@@ -59,17 +59,10 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 	}
 	//if (!(result = newEffect->Initialize(i_path, dataFromFile)))
 
-	// Load the effect
-	if (!((result = Graphics::cEffect::s_manager.Load(i_effectPath, newGameobject3D->m_effect))))
+	// Load the material
+	if (!((result = Graphics::cMaterial::s_manager.Load(i_materialPath, newGameobject3D->m_material))))
 	{
-		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_effectPath);
-		goto OnExit;
-	}
-
-	// Load the texture
-	if (!((result = Graphics::cTexture::s_manager.Load(i_texturePath, newGameobject3D->m_texture))))
-	{
-		EAE6320_ASSERTF(false, "Loading of effect failed: \"%s\"", i_texturePath);
+		EAE6320_ASSERTF(false, "Loading of material failed: \"%s\"", i_materialPath);
 		goto OnExit;
 	}
 
@@ -108,24 +101,10 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::CleanUp()
 {
 	auto result = Results::success;
 
-	// Effect Clean Up
-	if (m_effect)
+	// Material Clean Up
+	if (m_material)
 	{
-		const auto localResult = Graphics::cEffect::s_manager.Release(m_effect);
-		if (!localResult)
-		{
-			EAE6320_ASSERT(false);
-			if (result)
-			{
-				result = localResult;
-			}
-		}
-	}
-
-	// Texture Clean Up
-	if (m_texture)
-	{
-		const auto localResult = Graphics::cTexture::s_manager.Release(m_texture);
+		const auto localResult = Graphics::cMaterial::s_manager.Release(m_material);
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);
@@ -197,7 +176,6 @@ void eae6320::Gameobject::cGameobject3D::PredictSimulationBasedOnElapsedTime(con
 
 void eae6320::Gameobject::cGameobject3D::BindAndDraw() const
 {
-	Graphics::cEffect::s_manager.Get(m_effect)->Bind();
-	Graphics::cTexture::s_manager.Get(m_texture)->Bind(0);
+	Graphics::cMaterial::s_manager.Get(m_material)->Bind();
 	Graphics::cMesh::s_manager.Get(m_mesh)->Draw();
 }

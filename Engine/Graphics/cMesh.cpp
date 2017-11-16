@@ -47,8 +47,8 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		if (!newMesh)
 		{
 			result = Results::outOfMemory;
-			EAE6320_ASSERTF(false, "Couldn't allocate memory for the mesh");
-			Logging::OutputError("Failed to allocate memory for the mesh");
+			EAE6320_ASSERTF(false, "Couldn't allocate memory for the mesh %s", i_path);
+			Logging::OutputError("Failed to allocate memory for the mesh %s", i_path);
 			goto OnExit;
 		}
 	}
