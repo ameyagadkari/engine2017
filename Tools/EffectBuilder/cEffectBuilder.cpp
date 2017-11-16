@@ -24,7 +24,6 @@ namespace
 
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState);
 	eae6320::cResult LoadShadersTable(lua_State& io_luaState);
-	eae6320::cResult LoadShaderPath(lua_State& io_luaState, char const*const i_key, std::string& o_path);
 	eae6320::cResult LoadRenderStatesTable(lua_State& io_luaState);
 	eae6320::cResult LoadIndividualRenderState(lua_State& io_luaState, char const*const i_key);
 
@@ -143,60 +142,22 @@ eae6320::cResult cEffectBuilder::Build(const std::vector<std::string>&)
 				goto OnExit;
 			}
 		}
+
 		// Write vertex shader path
+		if (!((result = WriteFilePath(fout, vertexShaderPath))))
 		{
-			const auto byteCountToWrite = vertexShaderPath.length() + 1;
-
-			// Write length of the path
-			{
-				const auto length = static_cast<uint8_t>(byteCountToWrite);
-				fout.write(reinterpret_cast<const char*>(&length), 1);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write 1 byte for vertex shader path length");
-					goto OnExit;
-				}
-			}
-
-			// Write actual path with null terminator
-			{
-				fout.write(vertexShaderPath.c_str(), byteCountToWrite);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for vertex shader path", byteCountToWrite);
-					goto OnExit;
-				}
-			}
+			result = Results::fileWriteFail;
+			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write vertex shader path");
+			goto OnExit;
 		}
+
 		// Write fragment shader path
+		if (!((result = WriteFilePath(fout, fragmentShaderPath))))
 		{
-			const auto byteCountToWrite = fragmentShaderPath.length() + 1;
-
-			// Write length of the path
-			{
-				const auto length = static_cast<uint8_t>(byteCountToWrite);
-				fout.write(reinterpret_cast<const char*>(&length), 1);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write 1 byte for fragment shader path length");
-					goto OnExit;
-				}
-			}
-
-			// Write actual path with null terminator
-			{
-				fout.write(fragmentShaderPath.c_str(), byteCountToWrite);
-				if (!fout.good())
-				{
-					result = Results::fileWriteFail;
-					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for fragment shader path", byteCountToWrite);
-					goto OnExit;
-				}
-			}
-		}
+			result = Results::fileWriteFail;
+			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write fragment shader path");
+			goto OnExit;
+		}	
 	}
 
 OnExit:
@@ -261,13 +222,13 @@ namespace
 		}
 		if (lua_istable(&io_luaState, -1))
 		{
-			if (!((result = LoadShaderPath(io_luaState, "vertex", vertexShaderPath))))
+			if (!((result = LoadFilePath(io_luaState, "vertex", vertexShaderPath))))
 			{
 				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get vertex shader path");
 				goto OnExit;
 			}
 
-			if (!((result = LoadShaderPath(io_luaState, "fragment", fragmentShaderPath))))
+			if (!((result = LoadFilePath(io_luaState, "fragment", fragmentShaderPath))))
 			{
 				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get fragment shader path");
 				goto OnExit;
@@ -283,42 +244,6 @@ namespace
 	OnExit:
 
 		// Pop the shaders table
-		lua_pop(&io_luaState, 1);
-
-		return result;
-	}
-
-	eae6320::cResult LoadShaderPath(lua_State& io_luaState, char const*const i_key, std::string& o_path)
-	{
-		auto result = eae6320::Results::success;
-		lua_pushstring(&io_luaState, i_key);
-		lua_gettable(&io_luaState, -2);
-		if (lua_isnil(&io_luaState, -1))
-		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", i_key);
-			goto OnExit;
-		}
-		if (lua_isstring(&io_luaState, -1))
-		{
-			o_path = lua_tostring(&io_luaState, -1);
-			/*const char * const assetType = "shaders";
-			if (!eae6320::AssetBuild::ConvertSourceRelativePathToBuiltRelativePath(sourceRelativePath, assetType, vertexShaderPathString, &errorMessage))
-			{
-				wereThereErrors = true;
-				fprintf_s(stderr, "Cannot convert Convert Source Relative Path %s To Built Relative Path for Asset Type %s....Error: %s", sourceRelativePath, assetType, errorMessage.c_str());
-				goto OnExit;
-			}
-			vertexShaderPath = _strdup(vertexShaderPathString.c_str());*/
-		}
-		else
-		{
-			result = eae6320::Results::invalidFile;
-			OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a string (instead of a %s)", i_key, luaL_typename(&io_luaState, -1));
-			goto OnExit;
-		}
-
-	OnExit:
 		lua_pop(&io_luaState, 1);
 
 		return result;
@@ -391,7 +316,7 @@ namespace
 				}
 				else if (!strcmp(i_key, "depth_buffering"))
 				{
-					eae6320::Graphics::RenderStates::EnableDepthBuffering(renderStateBits);				
+					eae6320::Graphics::RenderStates::EnableDepthBuffering(renderStateBits);
 				}
 				else if (!strcmp(i_key, "draw_both_triangle_sides"))
 				{
@@ -419,7 +344,7 @@ namespace
 				else if (!strcmp(i_key, "wire_frame_mode"))
 				{
 					eae6320::Graphics::RenderStates::DisableWireFrameMode(renderStateBits);
-				}		
+				}
 			}
 		}
 		else

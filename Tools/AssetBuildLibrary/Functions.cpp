@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <fstream>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Functions.h>
@@ -1015,4 +1016,78 @@ namespace
 		constexpr auto returnValueCount = 0;
 		return returnValueCount;
 	}
+}
+
+
+// Helper Function Definitions
+//----------------------------
+
+eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path)
+{
+	auto result = Results::success;
+	lua_pushstring(&io_luaState, i_key);
+	lua_gettable(&io_luaState, -2);
+	if (lua_isnil(&io_luaState, -1))
+	{
+		result = Results::invalidFile;
+		OutputErrorMessage("No value for key:\"%s\" was found in the table", i_key);
+		goto OnExit;
+	}
+	if (lua_isstring(&io_luaState, -1))
+	{
+		o_path = lua_tostring(&io_luaState, -1);
+		/*const char * const assetType = "shaders";
+		if (!eae6320::AssetBuild::ConvertSourceRelativePathToBuiltRelativePath(sourceRelativePath, assetType, vertexShaderPathString, &errorMessage))
+		{
+		wereThereErrors = true;
+		fprintf_s(stderr, "Cannot convert Convert Source Relative Path %s To Built Relative Path for Asset Type %s....Error: %s", sourceRelativePath, assetType, errorMessage.c_str());
+		goto OnExit;
+		}
+		vertexShaderPath = _strdup(vertexShaderPathString.c_str());*/
+	}
+	else
+	{
+		result = Results::invalidFile;
+		OutputErrorMessage("The value at \"%s\" must be a string (instead of a %s)", i_key, luaL_typename(&io_luaState, -1));
+		goto OnExit;
+	}
+
+OnExit:
+	lua_pop(&io_luaState, 1);
+
+	return result;
+}
+
+eae6320::cResult eae6320::Assets::WriteFilePath(std::ofstream& io_fout, const std::string& i_path)
+{
+	auto result = Results::success;
+
+	const auto byteCountToWrite = i_path.length() + 1;
+
+	// Write length of the path
+	{
+		const auto length = static_cast<uint8_t>(byteCountToWrite);
+		io_fout.write(reinterpret_cast<const char*>(&length), 1);
+		if (!io_fout.good())
+		{
+			result = Results::fileWriteFail;
+			OutputErrorMessage("Failed to write 1 byte for path length");
+			goto OnExit;
+		}
+	}
+
+	// Write actual path with null terminator
+	{
+		io_fout.write(i_path.c_str(), byteCountToWrite);
+		if (!io_fout.good())
+		{
+			result = Results::fileWriteFail;
+			OutputErrorMessage("Failed to write %zu bytes for file path", byteCountToWrite);
+			goto OnExit;
+		}
+	}
+
+OnExit:
+
+	return result;
 }

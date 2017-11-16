@@ -55,9 +55,9 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 
 	// Extract data from loaded mesh file
 	{
-		// Casting data to uint8_t* for pointer arithematic
+		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uint8_t*>(dataFromFile.data);
+		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
 
 		// Extracting Type Of Index Data		
 
@@ -81,7 +81,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		// Extracting Index Data
 
 		data += newMeshDataExtractedFromFile.numberOfVertices * sizeof(VertexFormats::sMesh);
-		newMeshDataExtractedFromFile.indexData = data;
+		newMeshDataExtractedFromFile.indexData = reinterpret_cast<void*>(data);
 	}
 
 	if (!((result = newMesh->Initialize(&newMeshDataExtractedFromFile))))

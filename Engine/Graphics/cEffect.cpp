@@ -52,18 +52,18 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 
 	// Extract data from loaded effect file
 	{
-		// Casting data to uint8_t* for pointer arithematic
+		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uint8_t*>(dataFromFile.data);
+		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
 
 		// Extracting Render State Bits	
 
-		renderState = *data;
+		renderState = *reinterpret_cast<uint8_t*>(data);
 
 		// Extracting Offset To Add
 
 		data += sizeof(renderState);
-		offsetToAdd = *data;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
 
 		// Extracting Vertex Shader Path
 
@@ -73,7 +73,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		// Extracting Offset To Add
 
 		data += offsetToAdd;
-		offsetToAdd = *data;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
 
 		// Extracting Fragment Shader Path
 
