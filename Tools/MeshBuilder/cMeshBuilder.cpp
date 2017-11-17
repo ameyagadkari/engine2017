@@ -243,11 +243,11 @@ namespace
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState, sMeshData& io_meshData)
 	{
 		auto result = eae6320::Results::success;
-		if (!((result = LoadIndicesTable(io_luaState, io_meshData))))
+		if (!((result = LoadVerticesTable(io_luaState, io_meshData))))
 		{
 			return result;
 		}
-		if (!((result = LoadVerticesTable(io_luaState, io_meshData))))
+		if (!((result = LoadIndicesTable(io_luaState, io_meshData))))
 		{
 			return result;
 		}
@@ -269,10 +269,13 @@ namespace
 		if (lua_istable(&io_luaState, -1))
 		{
 			const auto vertexCount = luaL_len(&io_luaState, -1);
-			if (vertexCount > 2)
+			if (vertexCount > 2 && vertexCount < UINT32_MAX)
 			{
 				io_meshData.numberOfVertices = static_cast<uint32_t>(vertexCount);
 				io_meshData.vertexData = reinterpret_cast<eae6320::Graphics::VertexFormats::sMesh*>(malloc(io_meshData.numberOfVertices * sizeof(eae6320::Graphics::VertexFormats::sMesh)));
+				io_meshData.type = (io_meshData.numberOfVertices > UINT16_MAX) ? eae6320::Graphics::IndexDataTypes::BIT_32 :
+					eae6320::Graphics::IndexDataTypes::BIT_16;
+
 				// Remember that Lua arrays are 1-based and not 0-based!
 				for (auto i = 1; i <= vertexCount; ++i)
 				{
@@ -317,7 +320,7 @@ namespace
 			else
 			{
 				result = eae6320::Results::invalidFile;
-				OutputErrorMessageWithFileInfo(__FILE__, "The number of vertex count should be greater than two as we are drawing triangles");
+				OutputErrorMessageWithFileInfo(__FILE__, "The number of vertex count should be greater than two and less than %d", UINT32_MAX);
 				goto OnExit;
 			}
 		}
@@ -354,15 +357,13 @@ namespace
 				io_meshData.numberOfIndices = static_cast<uint32_t>(indexCount);
 				uint16_t * indexData16Bit = nullptr;
 				uint32_t * indexData32Bit = nullptr;
-				if (io_meshData.numberOfIndices > USHRT_MAX)
-				{
-					io_meshData.type = eae6320::Graphics::IndexDataTypes::BIT_32;
+				if (io_meshData.type == eae6320::Graphics::IndexDataTypes::BIT_32)
+				{			
 					io_meshData.indexData = malloc(io_meshData.numberOfIndices * sizeof(uint32_t));
 					indexData32Bit = reinterpret_cast<uint32_t*>(io_meshData.indexData);
 				}
 				else
 				{
-					io_meshData.type = eae6320::Graphics::IndexDataTypes::BIT_16;
 					io_meshData.indexData = malloc(io_meshData.numberOfIndices * sizeof(uint16_t));
 					indexData16Bit = reinterpret_cast<uint16_t*>(io_meshData.indexData);
 				}

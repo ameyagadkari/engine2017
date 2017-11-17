@@ -1,0 +1,10 @@
+-- Dino Material File
+return
+{
+	constant_buffer_data = 
+	{
+		
+	},
+	effect = "data/Effects/mesh.bef",
+	texture = "data/Textures/dino_body.btf",
+}

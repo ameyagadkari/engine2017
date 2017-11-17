@@ -173,7 +173,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	{
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector::zero, "data/Meshes/ball.bmf", "data/Materials/ball.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(-5.0f, 0.0f, 0.0f), "data/Meshes/ball.bmf", "data/Materials/ball.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -183,6 +183,15 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		{
 			Gameobject::cGameobject3D* gameobject3D;
 			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -2.0f, 0.0f), "data/Meshes/floor.bmf", "data/Materials/floor.bmaf", Gameplay::NO_CONTROLLER))))
+			{
+				EAE6320_ASSERT(false);
+				goto OnExit;
+			}
+			s_3D_GameObject.push_back(gameobject3D);
+		}
+		{
+			Gameobject::cGameobject3D* gameobject3D;
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d3_path", gameobject3D, Math::sVector(0.0f, 0.0f, -10.0f), "data/Meshes/dino.bmf", "data/Materials/dino.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
