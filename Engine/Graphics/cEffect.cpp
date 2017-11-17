@@ -54,31 +54,42 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 	{
 		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		auto currentOffset = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		const auto finalOffset = currentOffset + dataFromFile.size;
 
 		// Extracting Render State Bits	
 
-		renderState = *reinterpret_cast<uint8_t*>(data);
+		renderState = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Offset To Add
 
-		data += sizeof(renderState);
-		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
+		currentOffset += sizeof(renderState);
+		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Vertex Shader Path
 
-		data += sizeof(offsetToAdd);
-		vertexShaderPath = reinterpret_cast<char*>(data);
+		currentOffset += sizeof(offsetToAdd);
+		vertexShaderPath = reinterpret_cast<char*>(currentOffset);
 
 		// Extracting Offset To Add
 
-		data += offsetToAdd;
-		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
+		currentOffset += offsetToAdd;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Fragment Shader Path
 
-		data += sizeof(offsetToAdd);
-		fragmentShaderPath = reinterpret_cast<char*>(data);
+		currentOffset += sizeof(offsetToAdd);
+		fragmentShaderPath = reinterpret_cast<char*>(currentOffset);
+
+		// Check EOF
+		currentOffset += offsetToAdd;
+		if (finalOffset != currentOffset)
+		{
+			result = Results::Failure;
+			EAE6320_ASSERTF(false, "Redundant data found in file: \"%s\"", i_path);
+			Logging::OutputError("Effect file: \"%s\" has redundant data", i_path);
+			goto OnExit;
+		}
 	}
 
 	if (!((result = newEffect->Initialize(vertexShaderPath, fragmentShaderPath, renderState))))

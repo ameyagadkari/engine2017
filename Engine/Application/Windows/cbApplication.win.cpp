@@ -526,7 +526,13 @@ namespace
 				// Get a handle to the desktop window
 				const HWND hDesktop = GetDesktopWindow();
 				// Get the size of screen to the variable desktop
-				GetWindowRect(hDesktop, &desktopCoordinates);
+				if(GetWindowRect(hDesktop, &desktopCoordinates) == FALSE)
+				{
+					const auto errorMessage = eae6320::Windows::GetLastSystemError();
+					EAE6320_ASSERTF(false, "Couldn't get coordinates of the desktop window: %s", errorMessage.c_str());
+					eae6320::Logging::OutputError("Windows failed to get the coordinates of the desktop window: %s", errorMessage.c_str());
+					goto OnError;
+				}
 				// Calculate the screen centre
 				screenCenter.x = desktopCoordinates.right / 2;
 				screenCenter.y = desktopCoordinates.bottom / 2;

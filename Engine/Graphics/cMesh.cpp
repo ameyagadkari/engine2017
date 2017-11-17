@@ -57,31 +57,42 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 	{
 		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		auto currentOffset = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		const auto finalOffset = currentOffset + dataFromFile.size;
 
 		// Extracting Type Of Index Data		
 
-		newMeshDataExtractedFromFile.type = *reinterpret_cast<IndexDataTypes::eType*>(data);
+		newMeshDataExtractedFromFile.type = *reinterpret_cast<IndexDataTypes::eType*>(currentOffset);
 
 		// Extracting Vertex Count
 
-		data += sizeof(newMeshDataExtractedFromFile.type);
-		newMeshDataExtractedFromFile.numberOfVertices = *reinterpret_cast<uint32_t*>(data);
+		currentOffset += sizeof(newMeshDataExtractedFromFile.type);
+		newMeshDataExtractedFromFile.numberOfVertices = *reinterpret_cast<uint32_t*>(currentOffset);
 
 		// Extracting Index Count
 
-		data += sizeof(newMeshDataExtractedFromFile.numberOfVertices);
-		newMeshDataExtractedFromFile.numberOfIndices = *reinterpret_cast<uint32_t*>(data);
+		currentOffset += sizeof(newMeshDataExtractedFromFile.numberOfVertices);
+		newMeshDataExtractedFromFile.numberOfIndices = *reinterpret_cast<uint32_t*>(currentOffset);
 
 		// Extracting Vertex Data
 
-		data += sizeof(newMeshDataExtractedFromFile.numberOfIndices);
-		newMeshDataExtractedFromFile.vertexData = reinterpret_cast<VertexFormats::sMesh*>(data);
+		currentOffset += sizeof(newMeshDataExtractedFromFile.numberOfIndices);
+		newMeshDataExtractedFromFile.vertexData = reinterpret_cast<VertexFormats::sMesh*>(currentOffset);
 
 		// Extracting Index Data
 
-		data += newMeshDataExtractedFromFile.numberOfVertices * sizeof(VertexFormats::sMesh);
-		newMeshDataExtractedFromFile.indexData = reinterpret_cast<void*>(data);
+		currentOffset += newMeshDataExtractedFromFile.numberOfVertices * sizeof(VertexFormats::sMesh);
+		newMeshDataExtractedFromFile.indexData = reinterpret_cast<void*>(currentOffset);
+
+		// Check EOF
+		currentOffset += newMeshDataExtractedFromFile.numberOfIndices * (newMeshDataExtractedFromFile.type == IndexDataTypes::BIT_16 ? sizeof(uint16_t) : sizeof(uint32_t));
+		if(finalOffset != currentOffset)
+		{
+			result = Results::Failure;
+			EAE6320_ASSERTF(false, "Redundant data found in file: \"%s\"", i_path);
+			Logging::OutputError("Mesh file: \"%s\" has redundant data", i_path);
+			goto OnExit;
+		}
 	}
 
 	if (!((result = newMesh->Initialize(&newMeshDataExtractedFromFile))))

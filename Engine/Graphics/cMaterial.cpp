@@ -55,31 +55,42 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 	{
 		// Casting data to uintptr_t for pointer arithematic
 
-		auto data = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		auto currentOffset = reinterpret_cast<uintptr_t>(dataFromFile.data);
+		const auto finalOffset = currentOffset + dataFromFile.size;
 
 		// Extracting Material Constant Buffer Data
 
-		constantData_perMaterial = *reinterpret_cast<ConstantBufferFormats::sPerMaterial*>(data);
+		constantData_perMaterial = *reinterpret_cast<ConstantBufferFormats::sPerMaterial*>(currentOffset);
 
 		// Extracting Offset To Add
 
-		data += sizeof(constantData_perMaterial);
-		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
+		currentOffset += sizeof(constantData_perMaterial);
+		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Effect Path
 
-		data += sizeof(offsetToAdd);
-		effectPath = reinterpret_cast<char*>(data);
+		currentOffset += sizeof(offsetToAdd);
+		effectPath = reinterpret_cast<char*>(currentOffset);
 
 		// Extracting Offset To Add
 
-		data += offsetToAdd;
-		offsetToAdd = *reinterpret_cast<uint8_t*>(data);
+		currentOffset += offsetToAdd;
+		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Texture Path
 
-		data += sizeof(offsetToAdd);
-		texturePath = reinterpret_cast<char*>(data);
+		currentOffset += sizeof(offsetToAdd);
+		texturePath = reinterpret_cast<char*>(currentOffset);
+
+		// Check EOF
+		currentOffset += offsetToAdd;
+		if (finalOffset != currentOffset)
+		{
+			result = Results::Failure;
+			EAE6320_ASSERTF(false, "Redundant data found in file: \"%s\"", i_path);
+			Logging::OutputError("Material file: \"%s\" has redundant data", i_path);
+			goto OnExit;
+		}
 	}
 
 	if (!((result = newMaterial->Initialize(effectPath, texturePath, &constantData_perMaterial))))

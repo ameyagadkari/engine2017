@@ -296,7 +296,7 @@ namespace
 		EAE6320_ASSERT(i_data);
 
 		// This data should be from the Open() function:
-		// Assign it bad to the platform data structure
+		// Assign it back to the platform data structure
 		// so that it can be deallocated consistently
 		eae6320::Platform::sDataFromFile dataFromFile;
 		dataFromFile.data = const_cast<void*>(i_data);

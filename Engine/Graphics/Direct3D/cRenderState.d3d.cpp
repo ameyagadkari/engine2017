@@ -18,25 +18,25 @@
 void eae6320::Graphics::cRenderState::Bind() const
 {
 	auto* const direct3DImmediateContext = sContext::g_context.direct3DImmediateContext;
-	EAE6320_ASSERT( direct3DImmediateContext );
+	EAE6320_ASSERT(direct3DImmediateContext);
 
 	// Alpha Transparency
 	{
-		EAE6320_ASSERT( m_blendState );
+		EAE6320_ASSERT(m_blendState);
 		const float* const noBlendFactor = nullptr;
 		const auto defaultSampleMask = 0xffffffff;
-		direct3DImmediateContext->OMSetBlendState( m_blendState, noBlendFactor, defaultSampleMask );
+		direct3DImmediateContext->OMSetBlendState(m_blendState, noBlendFactor, defaultSampleMask);
 	}
 	// Depth Buffering
 	{
-		EAE6320_ASSERT( m_depthStencilState );
+		EAE6320_ASSERT(m_depthStencilState);
 		const unsigned int unusedStencilReference = 0;
-		direct3DImmediateContext->OMSetDepthStencilState( m_depthStencilState, unusedStencilReference );
+		direct3DImmediateContext->OMSetDepthStencilState(m_depthStencilState, unusedStencilReference);
 	}
 	// Draw Both Triangle Sides
 	{
-		EAE6320_ASSERT( m_rasterizerState );
-		direct3DImmediateContext->RSSetState( m_rasterizerState );
+		EAE6320_ASSERT(m_rasterizerState);
+		direct3DImmediateContext->RSSetState(m_rasterizerState);
 	}
 }
 
@@ -47,17 +47,17 @@ eae6320::cResult eae6320::Graphics::cRenderState::CleanUp()
 {
 	const auto result = Results::success;
 
-	if ( m_blendState )
+	if (m_blendState)
 	{
 		m_blendState->Release();
 		m_blendState = nullptr;
 	}
-	if ( m_depthStencilState )
+	if (m_depthStencilState)
 	{
 		m_depthStencilState->Release();
 		m_depthStencilState = nullptr;
 	}
-	if ( m_rasterizerState )
+	if (m_rasterizerState)
 	{
 		m_rasterizerState->Release();
 		m_rasterizerState = nullptr;
@@ -88,7 +88,7 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 		blendStateDescription.IndependentBlendEnable = FALSE;
 		{
 			auto& renderTargetBlendDescription = blendStateDescription.RenderTarget[0];
-			if ( IsAlphaTransparencyEnabled() )
+			if (IsAlphaTransparencyEnabled())
 			{
 				renderTargetBlendDescription.BlendEnable = TRUE;
 
@@ -115,12 +115,12 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 			}
 			renderTargetBlendDescription.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		}
-		const auto d3DResult = direct3DDevice->CreateBlendState( &blendStateDescription, &m_blendState );
-		if ( FAILED( d3DResult ) )
+		const auto d3DResult = direct3DDevice->CreateBlendState(&blendStateDescription, &m_blendState);
+		if (FAILED(d3DResult))
 		{
 			result = Results::Failure;
-			EAE6320_ASSERTF( false, "CreateBlendState() failed (HRESULT %#010x)", d3DResult );
-			Logging::OutputError( "Direct3D failed to create a blend render state object from %u with HRESULT %#010x", m_bits, d3DResult );
+			EAE6320_ASSERTF(false, "CreateBlendState() failed (HRESULT %#010x)", d3DResult);
+			Logging::OutputError("Direct3D failed to create a blend render state object from %u with HRESULT %#010x", m_bits, d3DResult);
 			goto OnExit;
 		}
 	}
@@ -137,7 +137,7 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 			depthStateDescription.FrontFace.StencilPassOp = depthStateDescription.BackFace.StencilPassOp =
 			depthStateDescription.FrontFace.StencilFailOp = depthStateDescription.BackFace.StencilFailOp =
 			D3D11_STENCIL_OP_KEEP;
-		if ( IsDepthBufferingEnabled() )
+		if (IsDepthBufferingEnabled())
 		{
 			// The new fragment becomes a pixel if its depth is less than what has previously been written
 			depthStateDescription.DepthEnable = TRUE;
@@ -153,28 +153,26 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 			// Don't write to the depth buffer
 			depthStateDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 		}
-		const auto d3DResult = direct3DDevice->CreateDepthStencilState( &depthStateDescription, &m_depthStencilState );
-		if ( FAILED( d3DResult ) )
+		const auto d3DResult = direct3DDevice->CreateDepthStencilState(&depthStateDescription, &m_depthStencilState);
+		if (FAILED(d3DResult))
 		{
 			result = Results::Failure;
-			EAE6320_ASSERTF( false, "CreateDepthStencilState() failed (HRESULT %#010x)", d3DResult );
-			Logging::OutputError( "Direct3D failed to create a depth/stencil render state object from %u with HRESULT %#010x", m_bits, d3DResult );
+			EAE6320_ASSERTF(false, "CreateDepthStencilState() failed (HRESULT %#010x)", d3DResult);
+			Logging::OutputError("Direct3D failed to create a depth/stencil render state object from %u with HRESULT %#010x", m_bits, d3DResult);
 			goto OnExit;
 		}
 	}
 	// Draw Both Triangle Sides
 	{
-		D3D11_RASTERIZER_DESC rasterizerStateDescription{};	
-		if (IsWireFrameModeEnabled())
-		{
+		D3D11_RASTERIZER_DESC rasterizerStateDescription{};
+
+		rasterizerStateDescription.FillMode =
+			IsWireFrameModeEnabled() ?
 			// Draw wireframe geometry (i.e. not solid)
-			rasterizerStateDescription.FillMode = D3D11_FILL_WIREFRAME;
-		}
-		else
-		{
+			D3D11_FILL_WIREFRAME :
 			// Draw solid geometry (i.e. not wireframe)
-			rasterizerStateDescription.FillMode = D3D11_FILL_SOLID;
-		}
+			D3D11_FILL_SOLID;
+
 		// Triangles use left-handed winding order
 		// (opposite from OpenGL)
 		rasterizerStateDescription.FrontCounterClockwise = FALSE;
@@ -189,22 +187,19 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 		// Disable multisampling/antialiasing
 		rasterizerStateDescription.MultisampleEnable = FALSE;
 		rasterizerStateDescription.AntialiasedLineEnable = FALSE;
-		if ( ShouldBothTriangleSidesBeDrawn() )
-		{
+		rasterizerStateDescription.CullMode =
+			ShouldBothTriangleSidesBeDrawn() ?
 			// Don't cull any triangles
-			rasterizerStateDescription.CullMode = D3D11_CULL_NONE;
-		}
-		else
-		{
+			D3D11_CULL_NONE :
 			// Cull triangles that are facing backwards
-			rasterizerStateDescription.CullMode = D3D11_CULL_BACK;
-		}
-		const auto d3DResult = direct3DDevice->CreateRasterizerState( &rasterizerStateDescription, &m_rasterizerState );
-		if ( FAILED( d3DResult ) )
+			D3D11_CULL_BACK;
+
+		const auto d3DResult = direct3DDevice->CreateRasterizerState(&rasterizerStateDescription, &m_rasterizerState);
+		if (FAILED(d3DResult))
 		{
 			result = Results::Failure;
-			EAE6320_ASSERTF( false, "CreateRasterizerState() failed (HRESULT %#010x)", d3DResult );
-			Logging::OutputError( "Direct3D failed to create a rasterizer render state object from %u with HRESULT %#010x", m_bits, d3DResult );
+			EAE6320_ASSERTF(false, "CreateRasterizerState() failed (HRESULT %#010x)", d3DResult);
+			Logging::OutputError("Direct3D failed to create a rasterizer render state object from %u with HRESULT %#010x", m_bits, d3DResult);
 			goto OnExit;
 		}
 	}
