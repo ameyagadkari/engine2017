@@ -85,6 +85,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Load(const char* const i_path, cMesh*
 		newMeshDataExtractedFromFile.indexData = reinterpret_cast<void*>(currentOffset);
 
 		// Check EOF
+
 		currentOffset += newMeshDataExtractedFromFile.numberOfIndices * (newMeshDataExtractedFromFile.type == IndexDataTypes::BIT_16 ? sizeof(uint16_t) : sizeof(uint32_t));
 		if(finalOffset != currentOffset)
 		{

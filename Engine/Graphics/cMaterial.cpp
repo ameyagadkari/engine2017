@@ -51,7 +51,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		}
 	}
 
-	// Extract data from loaded effect file
+	// Extract data from loaded material file
 	{
 		// Casting data to uintptr_t for pointer arithematic
 
@@ -83,6 +83,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		texturePath = reinterpret_cast<char*>(currentOffset);
 
 		// Check EOF
+
 		currentOffset += offsetToAdd;
 		if (finalOffset != currentOffset)
 		{

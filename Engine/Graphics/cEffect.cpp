@@ -82,6 +82,7 @@ eae6320::cResult eae6320::Graphics::cEffect::Load(const char* const i_path, cEff
 		fragmentShaderPath = reinterpret_cast<char*>(currentOffset);
 
 		// Check EOF
+
 		currentOffset += offsetToAdd;
 		if (finalOffset != currentOffset)
 		{
