@@ -28,6 +28,10 @@ namespace
 	eae6320::cResult LoadColorTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	eae6320::cResult LoadUVTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	uint8_t RoundColorChannel(const float i_value);
+
+	uint32_t originalNumberOfVertices = 0;
+	const uint8_t paddingValue = 0xdd;
+	uint8_t paddingRequired = 0;
 }
 
 // Inherited Implementation
@@ -144,16 +148,10 @@ eae6320::cResult cMeshBuilder::Build(const std::vector<std::string>&)
 
 	// Write the mesh data to a file
 	{
-		// Write type of index data
+		originalNumberOfVertices = newMeshDataExtractedFromFile->numberOfVertices;
+		if (newMeshDataExtractedFromFile->type == Graphics::IndexDataTypes::BIT_32)
 		{
-			const auto byteCountToWrite = sizeof(newMeshDataExtractedFromFile->type);
-			fout.write(reinterpret_cast<const char*>(&newMeshDataExtractedFromFile->type), byteCountToWrite);
-			if (!fout.good())
-			{
-				result = Results::fileWriteFail;
-				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for type of index data", byteCountToWrite);
-				goto OnExit;
-			}
+			newMeshDataExtractedFromFile->numberOfVertices |= (INT32_MAX + 1u);
 		}
 		// Write vertex count
 		{
@@ -177,17 +175,6 @@ eae6320::cResult cMeshBuilder::Build(const std::vector<std::string>&)
 				goto OnExit;
 			}
 		}
-		// Write vertex data
-		{
-			const auto byteCountToWrite = newMeshDataExtractedFromFile->numberOfVertices * sizeof(Graphics::VertexFormats::sMesh);
-			fout.write(reinterpret_cast<const char*>(newMeshDataExtractedFromFile->vertexData), byteCountToWrite);
-			if (!fout.good())
-			{
-				result = Results::fileWriteFail;
-				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for vertex data", byteCountToWrite);
-				goto OnExit;
-			}
-		}
 		// Write index data
 		{
 			const auto byteCountToWrite = (newMeshDataExtractedFromFile->type == Graphics::IndexDataTypes::BIT_16) ? newMeshDataExtractedFromFile->numberOfIndices * sizeof(uint16_t) : newMeshDataExtractedFromFile->numberOfIndices * sizeof(uint32_t);
@@ -196,6 +183,33 @@ eae6320::cResult cMeshBuilder::Build(const std::vector<std::string>&)
 			{
 				result = Results::fileWriteFail;
 				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for index data", byteCountToWrite);
+				goto OnExit;
+			}
+
+			// Calculate and add required padding to align vertex data
+			paddingRequired = byteCountToWrite % alignof(Graphics::VertexFormats::sMesh);
+			if (paddingRequired > 0)
+			{
+				for (uint8_t i = 0; i < paddingRequired; i++)
+				{
+					fout.write(reinterpret_cast<const char*>(paddingValue), 1u);
+					if (!fout.good())
+					{
+						result = Results::fileWriteFail;
+						OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for padding", 1u);
+						goto OnExit;
+					}
+				}
+			}
+		}
+		// Write vertex data
+		{
+			const auto byteCountToWrite = originalNumberOfVertices * sizeof(Graphics::VertexFormats::sMesh);
+			fout.write(reinterpret_cast<const char*>(newMeshDataExtractedFromFile->vertexData), byteCountToWrite);
+			if (!fout.good())
+			{
+				result = Results::fileWriteFail;
+				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for vertex data", byteCountToWrite);
 				goto OnExit;
 			}
 		}
@@ -269,7 +283,7 @@ namespace
 		if (lua_istable(&io_luaState, -1))
 		{
 			const auto vertexCount = luaL_len(&io_luaState, -1);
-			if (vertexCount > 2 && vertexCount < UINT32_MAX)
+			if (vertexCount > 2 && vertexCount < INT32_MAX)
 			{
 				io_meshData.numberOfVertices = static_cast<uint32_t>(vertexCount);
 				io_meshData.vertexData = reinterpret_cast<eae6320::Graphics::VertexFormats::sMesh*>(malloc(io_meshData.numberOfVertices * sizeof(eae6320::Graphics::VertexFormats::sMesh)));
@@ -320,7 +334,7 @@ namespace
 			else
 			{
 				result = eae6320::Results::invalidFile;
-				OutputErrorMessageWithFileInfo(__FILE__, "The number of vertex count should be greater than two and less than %d", UINT32_MAX);
+				OutputErrorMessageWithFileInfo(__FILE__, "The number of vertex count should be greater than two and less than %d", INT32_MAX);
 				goto OnExit;
 			}
 		}
@@ -358,7 +372,7 @@ namespace
 				uint16_t * indexData16Bit = nullptr;
 				uint32_t * indexData32Bit = nullptr;
 				if (io_meshData.type == eae6320::Graphics::IndexDataTypes::BIT_32)
-				{			
+				{
 					io_meshData.indexData = malloc(io_meshData.numberOfIndices * sizeof(uint32_t));
 					indexData32Bit = reinterpret_cast<uint32_t*>(io_meshData.indexData);
 				}
