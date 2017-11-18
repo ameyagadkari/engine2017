@@ -192,7 +192,7 @@ eae6320::cResult cMeshBuilder::Build(const std::vector<std::string>&)
 			{
 				for (uint8_t i = 0; i < paddingRequired; i++)
 				{
-					fout.write(reinterpret_cast<const char*>(paddingValue), 1u);
+					fout.write(reinterpret_cast<const char*>(&paddingValue), 1u);
 					if (!fout.good())
 					{
 						result = Results::fileWriteFail;
