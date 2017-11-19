@@ -1,7 +1,7 @@
 // Header Files
 //=============
 
-#include "cHalf.h"
+#include "Half.h"
 
 // Static Data Initialization
 //===========================
@@ -30,12 +30,19 @@ namespace
 
 	int32_t const maxD = infC - maxC - 1;
 	int32_t const minD = minC - subC - 1;
+
+	union
+	{
+		float m_float;
+		int32_t m_signedInteger;
+		uint32_t m_unsignedInteger;
+	}v, s;
 }
 
 
-uint16_t eae6320::Math::cHalf::MakeHalfFromFloat(const float i_value)
+uint16_t eae6320::Math::MakeHalfFromFloat(const float i_value)
 {
-	Bits v, s;
+	
 	v.m_float = i_value;
 	uint32_t sign = v.m_signedInteger & signN;
 	v.m_signedInteger ^= sign;
@@ -51,16 +58,14 @@ uint16_t eae6320::Math::cHalf::MakeHalfFromFloat(const float i_value)
 	return v.m_unsignedInteger | sign;
 }
 
-float eae6320::Math::cHalf::MakeFloatFromHalf(const uint16_t i_value)
+float eae6320::Math::MakeFloatFromHalf(const uint16_t i_value)
 {
-	Bits v;
 	v.m_unsignedInteger = i_value;
 	auto sign = v.m_signedInteger & signC;
 	v.m_signedInteger ^= sign;
 	sign <<= shiftSign;
 	v.m_signedInteger ^= ((v.m_signedInteger + minD) ^ v.m_signedInteger) & -(v.m_signedInteger > subC);
 	v.m_signedInteger ^= ((v.m_signedInteger + maxD) ^ v.m_signedInteger) & -(v.m_signedInteger > maxC);
-	Bits s;
 	s.m_signedInteger = mulC;
 	s.m_float *= v.m_signedInteger;
 	const auto mask = -(norC > v.m_signedInteger);

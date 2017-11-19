@@ -5,6 +5,7 @@
 #ifndef EAE6320_MATH_FUNCTIONS_H
 #define EAE6320_MATH_FUNCTIONS_H
 
+#include <cstdint>
 #include <type_traits>
 
 namespace eae6320
@@ -15,6 +16,7 @@ namespace eae6320
 		//==========
 
 		float ConvertDegreesToRadians( const float i_degrees );
+		uint16_t ConvertFloatToHalf( const float i_value );
 		float ConvertHorizontalFieldOfViewToVerticalFieldOfView( const float i_horizontalFieldOfView_inRadians,
 			// aspectRatio = width / height
 			const float i_aspectRatio );

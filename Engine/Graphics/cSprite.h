@@ -11,7 +11,6 @@
 
 #include <Engine/Assets/ReferenceCountedAssets.h>
 #include <Engine/Results/Results.h>
-#include <Engine/Math/cHalf.h>
 
 #ifdef EAE6320_PLATFORM_GL
 #include "OpenGL/Includes.h"

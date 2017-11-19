@@ -4,7 +4,7 @@
 // Include Files
 //==============
 
-#include "Engine/Math/cHalf.h"
+#include <Engine/Math/Half.h>
 
 // Helper Structs for Sprites
 //===========================
@@ -36,14 +36,14 @@ namespace eae6320
 
 				uint16_t left, right, top, bottom;
 				explicit sTextureCoordinates(const float i_left = 0.0f, const float i_right = 1.0f, const float i_top = 1.0f, const float i_bottom = 0.0f) :
-					left(Math::cHalf::MakeHalfFromFloat(i_left)),
-					right(Math::cHalf::MakeHalfFromFloat(i_right)),
+					left(Math::MakeHalfFromFloat(i_left)),
+					right(Math::MakeHalfFromFloat(i_right)),
 #if defined( EAE6320_PLATFORM_D3D )
-					top(Math::cHalf::MakeHalfFromFloat(1.0f - i_top)),
-					bottom(Math::cHalf::MakeHalfFromFloat(1.0f - i_bottom))
+					top(Math::MakeHalfFromFloat(1.0f - i_top)),
+					bottom(Math::MakeHalfFromFloat(1.0f - i_bottom))
 #elif defined( EAE6320_PLATFORM_GL )
-					top(Math::cHalf::MakeHalfFromFloat(i_top)),
-					bottom(Math::cHalf::MakeHalfFromFloat(i_bottom))
+					top(Math::MakeHalfFromFloat(i_top)),
+					bottom(Math::MakeHalfFromFloat(i_bottom))
 #endif
 				{}
 			};

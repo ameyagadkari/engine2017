@@ -6,7 +6,7 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Graphics/MeshHelperStructs.h>
 #include <Engine/Graphics/VertexFormats.h>
-#include <Engine/Math/cHalf.h>
+#include <Engine/Math/Half.h>
 #include <External/Lua/Includes.h>
 #include <Tools/AssetBuildLibrary/Functions.h>
 
@@ -621,11 +621,11 @@ namespace
 						goto OnExit;
 					}
 				}
-				io_meshData.vertexData[i_index].u = eae6320::Math::cHalf::MakeHalfFromFloat(uv[0]);
+				io_meshData.vertexData[i_index].u = eae6320::Math::MakeHalfFromFloat(uv[0]);
 #if defined( EAE6320_PLATFORM_D3D )
-				io_meshData.vertexData[i_index].v = eae6320::Math::cHalf::MakeHalfFromFloat(1.0f - uv[1]);
+				io_meshData.vertexData[i_index].v = eae6320::Math::MakeHalfFromFloat(1.0f - uv[1]);
 #elif defined( EAE6320_PLATFORM_GL )
-				io_meshData.vertexData[i_index].v = eae6320::Math::cHalf::MakeHalfFromFloat(uv[1]);
+				io_meshData.vertexData[i_index].v = eae6320::Math::MakeHalfFromFloat(uv[1]);
 #endif
 			}
 			else
