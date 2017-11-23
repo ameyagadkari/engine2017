@@ -110,7 +110,8 @@ DeclareConstantBuffer( g_constantBuffer_perFrame, 0)
   
 	float g_elapsedSecondCount_systemTime;
 	float g_elapsedSecondCount_simulationTime;
-	float2 g_padding; // For float4 alignment
+	// For float4 alignment
+	float2 g_padding; 
 };
 
 DeclareConstantBuffer( g_constantBuffer_perMaterial, 1)

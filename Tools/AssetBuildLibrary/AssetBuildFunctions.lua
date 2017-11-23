@@ -249,11 +249,11 @@ end
 -- Mesh Asset Type
 --------------------
 
-NewAssetTypeInfo( "meshes",
+--[[NewAssetTypeInfo( "meshes",
 	{
 		EAE6320_TODO
 	}
-)
+)]]
 
 -- Shader Asset Type
 --------------------
@@ -479,11 +479,77 @@ function BuildAssets( i_path_assetsToBuild )
 
 	-- Copy the licenses to the installation location
 	do
-		EAE6320_TODO
+		CreateDirectoryIfItDoesntExist( GameLicenseDir )
+		local sourceLicenses = GetFilesInDirectory( LicenseDir )
+		for i, sourceLicense in ipairs( sourceLicenses ) do
+			local sourceFileName = sourceLicense:sub( #LicenseDir + 1 )
+			local targetPath = GameLicenseDir .. sourceFileName
+			-- Decide if the file needs to be copied
+			local shouldFileBeCopied
+			do
+				-- The simplest reason a file should be copied is if it doesn't exist
+				local doesFileExist = DoesFileExist( targetPath )			
+				if doesFileExist then
+					-- Even if the target exists it may be out-of-date.
+					-- If the source has been modified more recently than the target
+					-- then the target should be copied.
+					local lastWriteTime_source = GetLastWriteTime( sourceLicense )
+					local lastWriteTime_target = GetLastWriteTime( targetPath )
+					shouldFileBeCopied = lastWriteTime_source > lastWriteTime_target
+				else
+					shouldFileBeCopied = true;
+				end
+			end
+			-- Copy the file if necessary
+			if shouldFileBeCopied then
+				-- Copy	
+				local result, errorMessage = CopyFile( sourceLicense, targetPath )
+				if result then
+					-- Display a message
+					print( "Installed " .. sourceFileName )
+				else
+					wereThereErrors = true
+					OutputErrorMessage( "The license \"" .. sourceLicense .. "\" couldn't be copied to \"" .. targetPath .. "\": " .. errorMessage )
+				end
+			end
+		end
 	end
+
 	-- Copy the settings file to the installation location
 	do
-		EAE6320_TODO
+		local file_name = "settings.ini"
+		local path_source = OutputDir .. file_name
+		local path_target = GameInstallDir .. file_name
+		-- Decide if the file needs to be copied
+		local shouldFileBeCopied
+		do
+			-- The simplest reason a file should be copied is if it doesn't exist
+			local doesFileExist = DoesFileExist( path_target )
+			if doesFileExist then
+				-- Even if the target exists it may be out-of-date.
+				-- If the source has been modified more recently than the target
+				-- then the target should be copied.
+				local lastWriteTime_source = GetLastWriteTime( path_source )
+				local lastWriteTime_target = GetLastWriteTime( path_target )
+				shouldFileBeCopied = lastWriteTime_source > lastWriteTime_target
+			else
+				shouldFileBeCopied = true;
+			end
+		end
+		-- Copy the file if necessary
+		if shouldFileBeCopied then
+			-- Create the target directory if necessary
+			CreateDirectoryIfItDoesntExist( path_target )
+			-- Copy	
+			local result, errorMessage = CopyFile( path_source, path_target )
+			if result then
+				-- Display a message
+				print( "Copied " .. file_name )
+			else
+				wereThereErrors = true
+				OutputErrorMessage( "The \"" .. file_name .. "\" couldn't be copied from \"" .. OutputDir .. "\" to \"" .. GameInstallDir .. "\": " .. errorMessage )
+			end
+		end
 	end
 
 	return not wereThereErrors
