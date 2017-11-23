@@ -3,8 +3,8 @@ return
 {
 	shaders = 
 	{
-		vertex = "data/Shaders/Vertex/mesh.busl",
-		fragment = "data/Shaders/Fragment/mesh.busl",
+		vertex = "Shaders/Vertex/mesh.tusl",
+		fragment = "Shaders/Fragment/mesh.tusl",
 	},
 	render_states = 
 	{

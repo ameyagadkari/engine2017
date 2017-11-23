@@ -157,7 +157,7 @@ eae6320::cResult cEffectBuilder::Build(const std::vector<std::string>&)
 			result = Results::fileWriteFail;
 			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write fragment shader path");
 			goto OnExit;
-		}	
+		}
 	}
 
 OnExit:
@@ -222,13 +222,13 @@ namespace
 		}
 		if (lua_istable(&io_luaState, -1))
 		{
-			if (!((result = LoadFilePath(io_luaState, "vertex", vertexShaderPath))))
+			if (!((result = LoadFilePath(io_luaState, "vertex", "shaders", vertexShaderPath))))
 			{
 				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get vertex shader path");
 				goto OnExit;
 			}
 
-			if (!((result = LoadFilePath(io_luaState, "fragment", fragmentShaderPath))))
+			if (!((result = LoadFilePath(io_luaState, "fragment", "shaders", fragmentShaderPath))))
 			{
 				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get fragment shader path");
 				goto OnExit;

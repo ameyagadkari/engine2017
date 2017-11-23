@@ -20,7 +20,7 @@ namespace
 	using namespace eae6320::Assets;
 
 	std::string effectPath;
-	std::string texturePath("data/Textures/default.btf");
+	std::string texturePath;
 	eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial;
 
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState);
@@ -198,12 +198,12 @@ namespace
 		{
 			return result;
 		}
-		if (!((result = LoadFilePath(io_luaState, "effect", effectPath))))
+		if (!((result = LoadFilePath(io_luaState, "effect", "effects", effectPath))))
 		{
 			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get effect path");
 			return result;
 		}
-		if (!((result = LoadFilePath(io_luaState, "texture", texturePath, false))))
+		if (!((result = LoadFilePath(io_luaState, "texture", "textures", texturePath, false))))
 		{
 			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path");
 			return result;

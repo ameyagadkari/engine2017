@@ -662,6 +662,10 @@ namespace
 			if (!((result = SaveReferenceToGlobalFunctionInRegistry("BuildAssets", m_fBuildAssets))))
 			{
 				goto OnExit;
+			}		
+			if (!((result = SaveReferenceToGlobalFunctionInRegistry("ConvertSourceRelativePathToBuiltRelativePath", m_fConvertSourceRelativePathToBuiltRelativePath))))
+			{
+				goto OnExit;
 			}
 		}
 
@@ -1185,7 +1189,7 @@ namespace
 // Helper Function Definitions
 //----------------------------
 
-eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path, const bool i_isRequired)
+eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char const*const i_key, char const*const i_assetType, std::string& o_path, const bool i_isRequired)
 {
 	auto result = Results::success;
 	lua_pushstring(&io_luaState, i_key);
@@ -1201,15 +1205,13 @@ eae6320::cResult eae6320::Assets::LoadFilePath(lua_State& io_luaState, char cons
 	}
 	if (lua_isstring(&io_luaState, -1))
 	{
-		o_path = lua_tostring(&io_luaState, -1);
-		/*const char * const assetType = "shaders";
-		if (!eae6320::AssetBuild::ConvertSourceRelativePathToBuiltRelativePath(sourceRelativePath, assetType, vertexShaderPathString, &errorMessage))
+		std::string errorMessage;
+		const auto* const sourceRelativePath = lua_tostring(&io_luaState, -1);
+		if (!((result = ConvertSourceRelativePathToBuiltRelativePath(sourceRelativePath, i_assetType, o_path, &errorMessage))))
 		{
-		wereThereErrors = true;
-		fprintf_s(stderr, "Cannot convert Convert Source Relative Path %s To Built Relative Path for Asset Type %s....Error: %s", sourceRelativePath, assetType, errorMessage.c_str());
-		goto OnExit;
+			OutputErrorMessage("Cannot convert Convert Source Relative Path %s To Built Relative Path for Asset Type %s....Error: %s", sourceRelativePath, i_assetType, errorMessage.c_str());
+			goto OnExit;
 		}
-		vertexShaderPath = _strdup(vertexShaderPathString.c_str());*/
 	}
 	else
 	{

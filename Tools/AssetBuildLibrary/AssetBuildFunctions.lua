@@ -246,27 +246,108 @@ function cbAssetTypeInfo.ShouldTargetBeBuilt( i_lastWriteTime_builtAsset )
 	return false
 end
 
--- Mesh Asset Type
+
+-- Material Asset Type
+----------------------
+
+NewAssetTypeInfo( "materials",
+	{
+		GetBuilderRelativePath = function()
+			return "MaterialBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+			return i_sourceRelativePath:gsub("[^.]+$","bmaf")
+		end,
+		RegisterReferencedAssets = function( i_sourceRelativePath )
+		local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+			if DoesFileExist( sourceAbsolutePath ) then
+				local material = dofile( sourceAbsolutePath )
+				if type( material ) ~= "table" then
+					OutputErrorMessage( "The material file (\"" .. i_sourceRelativePath .. "\" must return a table", i_sourceRelativePath )
+				end				
+				local path_effect = material.effect
+				local path_effect_type = type( path_effect )
+				if path_effect_type ~= "string" then
+					OutputErrorMessage( "The effect path must be a string instead of a " .. path_effect_type .. " in material file " .. i_sourceRelativePath)
+				else
+					RegisterAssetToBeBuilt( path_effect, "effects")
+				end
+				local path_texture = material.texture
+				local path_texture_type = type( path_texture )
+				if path_texture_type == "nil" then
+					RegisterAssetToBeBuilt( "Textures/default.tga", "textures")
+				elseif path_texture_type == "string" then
+					RegisterAssetToBeBuilt( path_texture, "textures")
+				else
+					OutputErrorMessage( "The texture path must be a string instead of a " .. path_texture_type .. " in material file " .. i_sourceRelativePath)
+				end					
+			end
+		end,
+	}
+)
+
+
+-- Effect Asset Type
 --------------------
 
---[[NewAssetTypeInfo( "meshes",
+NewAssetTypeInfo( "effects",
 	{
-		EAE6320_TODO
+		GetBuilderRelativePath = function()
+			return "EffectBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+			return i_sourceRelativePath:gsub("[^.]+$","bef")
+		end,	
+		RegisterReferencedAssets = function( i_sourceRelativePath )
+		local sourceAbsolutePath = FindSourceContentAbsolutePathFromRelativePath( i_sourceRelativePath )
+			if DoesFileExist( sourceAbsolutePath ) then
+				local effect = dofile( sourceAbsolutePath )
+				if type( effect ) ~= "table" then
+					OutputErrorMessage( "The effect file (\"" .. i_sourceRelativePath .. "\" must return a table", i_sourceRelativePath )
+				end				
+				local path_vertexShader = effect.shaders.vertex
+				local path_vertexShader_type = type( path_vertexShader )
+				if path_vertexShader_type ~= "string" then
+					OutputErrorMessage( "The vertex shader path must be a string instead of a " .. path_vertexShader_type .. " in effect file " .. i_sourceRelativePath)
+				else
+					RegisterAssetToBeBuilt( path_vertexShader, "shaders", { "vertex" } )
+				end
+				local path_fragmentShader = effect.shaders.fragment
+				local path_fragmentShader_type = type( path_fragmentShader )
+				if path_fragmentShader_type ~= "string" then
+					OutputErrorMessage( "The fragment shader path must be a string instead of a " .. path_fragmentShader_type .. " in effect file " .. i_sourceRelativePath)
+				else
+					RegisterAssetToBeBuilt( path_fragmentShader, "shaders", { "fragment" } )
+				end						
+			end
+		end,
 	}
-)]]
+)
+
+-- Mesh Asset Type
+------------------
+
+NewAssetTypeInfo( "meshes",
+	{
+		GetBuilderRelativePath = function()
+			return "MeshBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+			return i_sourceRelativePath:gsub("[^.]+$","bmf")
+		end,
+	}
+)
 
 -- Shader Asset Type
 --------------------
 
 NewAssetTypeInfo( "shaders",
 	{
-		--[[
-		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
-			-- EAE6320_TODO?
-		end,
-		]]
 		GetBuilderRelativePath = function()
 			return "ShaderBuilder.exe"
+		end,
+		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
+			return i_sourceRelativePath:gsub("[^.]+$","busl")
 		end,
 		ShouldTargetBeBuilt = function( i_lastWriteTime_builtAsset )
 			-- If the shaders.inc file has changed since the last time this shader was built
@@ -281,12 +362,10 @@ NewAssetTypeInfo( "shaders",
 ---------------------
 
 NewAssetTypeInfo( "textures",
-	{
-		--[[
+	{	
 		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
-			-- EAE6320_TODO?
+			return i_sourceRelativePath:gsub("[^.]+$","btf")
 		end,
-		]]
 		GetBuilderRelativePath = function()
 			return "TextureBuilder.exe"
 		end,
@@ -331,7 +410,7 @@ local function BuildAsset( i_assetInfo )
 	do
 		local result, returnValue = ConvertSourceRelativePathToBuiltRelativePath( i_assetInfo.path, assetTypeInfo )
 		if result then
-			path_target = GameInstallDir .. "/data/" .. returnValue
+			path_target = GameInstallDir .. --[["/data/" ..]] returnValue
 		else
 			OutputErrorMessage( returnValue )
 			return false
@@ -574,7 +653,7 @@ function ConvertSourceRelativePathToBuiltRelativePath( i_sourceRelativePath, i_a
 	-- Return the converted path
 	local result, returnValue = pcall( assetTypeInfo.ConvertSourceRelativePathToBuiltRelativePath, i_sourceRelativePath )
 	if result then
-		return true, CreateUniquePath( returnValue )
+		return true, "data/" .. CreateUniquePath( returnValue )
 	else
 		return false, returnValue
 	end

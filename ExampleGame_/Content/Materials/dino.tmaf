@@ -5,6 +5,6 @@ return
 	{
 		
 	},
-	effect = "data/Effects/mesh.bef",
-	texture = "data/Textures/dino_body.btf",
+	effect = "Effects/mesh.tef",
+	texture = "Textures/dino_body.jpg",
 }

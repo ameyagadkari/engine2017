@@ -5,6 +5,6 @@ return
 	{
 		g_color = {0.0,0.5,0.0,1.0},
 	},
-	effect = "data/Effects/mesh.bef",
-	texture = "data/Textures/ball.btf",
+	effect = "Effects/mesh.tef",
+	texture = "Textures/ball.jpg",
 }

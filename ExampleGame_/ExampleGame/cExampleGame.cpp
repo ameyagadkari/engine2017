@@ -173,7 +173,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	{
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(-5.0f, 0.0f, 0.0f), "data/Meshes/ball.bmf", "data/Materials/ball.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d1_path", gameobject3D, Math::sVector(0.0f, 0.0f, 0.0f), "data/Meshes/ball.bmf", "data/Materials/ball.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

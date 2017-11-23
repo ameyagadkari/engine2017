@@ -33,7 +33,7 @@ namespace eae6320
 
 		// These functions define functionality that is required by multiple builders
 
-		cResult LoadFilePath(lua_State& io_luaState, char const*const i_key, std::string& o_path, const bool i_isRequired = true);
+		cResult LoadFilePath(lua_State& io_luaState, char const*const i_key, char const*const i_assetType, std::string& o_path, const bool i_isRequired = true);
 		cResult WriteFilePath(std::ofstream& io_fout, const std::string& i_path);
 
 		// Error / Warning Output
@@ -42,25 +42,25 @@ namespace eae6320
 		// These functions output asset build errors or warnings in the best way for the platform's build tools
 		// (e.g. for Visual Studio the messages are formatted so that they'll show up in the Error List window)
 
-		void OutputErrorMessage( const char* const i_errorMessage, ... );
-		void OutputErrorMessageWithFileInfo( const char* const i_filePath,
-			const char* const i_errorMessage, ... );
-		void OutputErrorMessageWithFileInfo( const char* const i_filePath,
+		void OutputErrorMessage(const char* const i_errorMessage, ...);
+		void OutputErrorMessageWithFileInfo(const char* const i_filePath,
+			const char* const i_errorMessage, ...);
+		void OutputErrorMessageWithFileInfo(const char* const i_filePath,
 			const unsigned int i_lineNumber,
-			const char* const i_errorMessage, ... );
-		void OutputErrorMessageWithFileInfo( const char* const i_filePath,
+			const char* const i_errorMessage, ...);
+		void OutputErrorMessageWithFileInfo(const char* const i_filePath,
 			const unsigned int i_lineNumber, const unsigned int i_columnNumber,
-			const char* const i_errorMessage, ... );
+			const char* const i_errorMessage, ...);
 
-		void OutputWarningMessage( const char* const i_warningMessage, ... );
-		void OutputWarningMessageWithFileInfo( const char* const i_filePath,
-			const char* const i_warningMessage, ... );
-		void OutputWarningMessageWithFileInfo( const char* const i_filePath,
+		void OutputWarningMessage(const char* const i_warningMessage, ...);
+		void OutputWarningMessageWithFileInfo(const char* const i_filePath,
+			const char* const i_warningMessage, ...);
+		void OutputWarningMessageWithFileInfo(const char* const i_filePath,
 			const unsigned int i_lineNumber,
-			const char* const i_warningMessage, ... );
-		void OutputWarningMessageWithFileInfo( const char* const i_filePath,
+			const char* const i_warningMessage, ...);
+		void OutputWarningMessageWithFileInfo(const char* const i_filePath,
 			const unsigned int i_lineNumber, const unsigned int i_columnNumber,
-			const char* const i_warningMessage, ... );
+			const char* const i_warningMessage, ...);
 	}
 }
 
