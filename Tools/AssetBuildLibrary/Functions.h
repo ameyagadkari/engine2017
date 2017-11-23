@@ -20,7 +20,13 @@ namespace eae6320
 {
 	namespace Assets
 	{
-		cResult BuildAssets();
+		cResult BuildAssets(const char* const i_path_assetsToBuild);
+
+		// If an asset ("A") references another asset ("B")
+		// then that reference to B must be converted from a source path to a built path
+		// if it is included in the built A asset
+		cResult ConvertSourceRelativePathToBuiltRelativePath(const char* const i_sourceRelativePath, const char* const i_assetType,
+			std::string& o_builtRelativePath, std::string* o_errorMessage = nullptr);
 
 		// Helper Function Declarations
 		//-----------------------------

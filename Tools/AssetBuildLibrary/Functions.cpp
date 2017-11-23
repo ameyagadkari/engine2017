@@ -30,7 +30,9 @@ namespace
 	public:
 
 		// Lua Functions
-		eae6320::cResult BuildAssets();
+		eae6320::cResult BuildAssets(const char* const i_path_assetsToBuild);
+		eae6320::cResult ConvertSourceRelativePathToBuiltRelativePath(const char* const i_sourceRelativePath, const char* const i_assetType,
+			std::string& o_builtRelativePath, std::string* o_errorMessage);
 
 		// Access
 		lua_State* Get();
@@ -47,6 +49,7 @@ namespace
 
 		// References to Lua functions that are saved in the Lua "registry"
 		int m_fBuildAssets = LUA_NOREF;
+		int m_fConvertSourceRelativePathToBuiltRelativePath = LUA_NOREF;
 
 		// Implementation
 		//---------------
@@ -57,7 +60,7 @@ namespace
 		eae6320::cResult Initialize();
 		eae6320::cResult CleanUp();
 
-		eae6320::cResult SaveReferenceToGlobalFunctionInRegistry(const char* const i_functionName, int &o_functionReference) const;
+		eae6320::cResult SaveReferenceToGlobalFunctionInRegistry(const char* const i_functionName, int &o_functionReference);
 	};
 }
 
@@ -102,9 +105,15 @@ namespace
 // Interface
 //==========
 
-eae6320::cResult eae6320::Assets::BuildAssets()
+eae6320::cResult eae6320::Assets::BuildAssets(const char* const i_path_assetsToBuild)
 {
-	return s_luaState.BuildAssets();
+	return s_luaState.BuildAssets(i_path_assetsToBuild);
+}
+
+eae6320::cResult eae6320::Assets::ConvertSourceRelativePathToBuiltRelativePath(const char* const i_sourceRelativePath, const char* const i_assetType,
+	std::string& o_builtRelativePath, std::string* o_errorMessage)
+{
+	return s_luaState.ConvertSourceRelativePathToBuiltRelativePath(i_sourceRelativePath, i_assetType, o_builtRelativePath, o_errorMessage);
 }
 
 // Error / Warning Output
@@ -131,7 +140,7 @@ void eae6320::Assets::OutputErrorMessageWithFileInfo(const char* const i_filePat
 	const char* const i_errorMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_errorMessage);
@@ -149,7 +158,7 @@ void eae6320::Assets::OutputErrorMessageWithFileInfo(const char* const i_filePat
 	const char* const i_errorMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_errorMessage);
@@ -167,7 +176,7 @@ void eae6320::Assets::OutputErrorMessageWithFileInfo(const char* const i_filePat
 	const char* const i_errorMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_errorMessage);
@@ -183,7 +192,7 @@ void eae6320::Assets::OutputErrorMessageWithFileInfo(const char* const i_filePat
 void eae6320::Assets::OutputWarningMessage(const char* const i_warningMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_warningMessage);
@@ -201,7 +210,7 @@ void eae6320::Assets::OutputWarningMessageWithFileInfo(const char* const i_fileP
 	const char* const i_warningMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_warningMessage);
@@ -219,7 +228,7 @@ void eae6320::Assets::OutputWarningMessageWithFileInfo(const char* const i_fileP
 	const char* const i_warningMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_warningMessage);
@@ -237,7 +246,7 @@ void eae6320::Assets::OutputWarningMessageWithFileInfo(const char* const i_fileP
 	const char* const i_warningMessage, ...)
 {
 	std::string formattedMessage;
-	eae6320::cResult result;
+	cResult result;
 	{
 		va_list insertions;
 		va_start(insertions, i_warningMessage);
@@ -260,9 +269,9 @@ namespace
 
 	// Lua Functions
 
-	eae6320::cResult cLuaState::BuildAssets()
+	eae6320::cResult cLuaState::BuildAssets(const char* const i_path_assetsToBuild)
 	{
-		eae6320::cResult result;
+		auto result = eae6320::Results::success;
 
 		// Initialize the Lua environment if necessary
 		if (luaState || ((result = Initialize())))
@@ -275,10 +284,13 @@ namespace
 			if (type == LUA_TFUNCTION)
 			{
 				// Call the function
-				constexpr auto returnValueCount = 1;
+				constexpr int returnValueCount = 1;
 				{
-					constexpr auto argumentCount = 0;
-					constexpr auto noErrorHandler = 0;
+					constexpr int argumentCount = 1;
+					{
+						lua_pushstring(luaState, i_path_assetsToBuild);
+					}
+					constexpr int noErrorHandler = 0;
 					const auto luaResult = lua_pcall(luaState, argumentCount, returnValueCount, noErrorHandler);
 					if (luaResult != LUA_OK)
 					{
@@ -339,6 +351,162 @@ namespace
 		return result;
 	}
 
+	eae6320::cResult cLuaState::ConvertSourceRelativePathToBuiltRelativePath(const char* const i_sourceRelativePath, const char* const i_assetType,
+		std::string& o_builtRelativePath, std::string* o_errorMessage)
+	{
+		auto result = eae6320::Results::success;
+
+		// Initialize the Lua environment if necessary
+		if (luaState || ((result = Initialize())))
+		{
+			EAE6320_ASSERT(lua_gettop(luaState) == 0);
+
+			// Push the Lua function on the stack
+			EAE6320_ASSERT((m_fConvertSourceRelativePathToBuiltRelativePath != LUA_NOREF) && (m_fConvertSourceRelativePathToBuiltRelativePath != LUA_REFNIL));
+			const auto type = lua_rawgeti(luaState, LUA_REGISTRYINDEX, m_fConvertSourceRelativePathToBuiltRelativePath);
+			if (type == LUA_TFUNCTION)
+			{
+				// Call the function
+				constexpr int returnValueCount = 2;
+				{
+					constexpr int argumentCount = 2;
+					{
+						lua_pushstring(luaState, i_sourceRelativePath);
+						lua_pushstring(luaState, i_assetType);
+					}
+					constexpr int noErrorHandler = 0;
+					const auto luaResult = lua_pcall(luaState, argumentCount, returnValueCount, noErrorHandler);
+					if (luaResult != LUA_OK)
+					{
+						// The error message should already be formatted for output
+						std::cerr << lua_tostring(luaState, -1) << std::endl;
+						// Pop the error message
+						lua_pop(luaState, 1);
+						switch (luaResult)
+						{
+						case LUA_ERRMEM:
+						{
+							result = eae6320::Results::outOfMemory;
+						}
+						break;
+						default:
+						{
+							result = eae6320::Results::Failure;
+						}
+						}
+
+						goto OnExit;
+					}
+				}
+				// Check the return values
+				{
+					if (lua_isboolean(luaState, -2))
+					{
+						const auto wereThereErrors = !lua_toboolean(luaState, -2);
+						if (!wereThereErrors)
+						{
+							if (lua_isstring(luaState, -1))
+							{
+								o_builtRelativePath = lua_tostring(luaState, -1);
+							}
+							else
+							{
+								result = eae6320::Results::Failure;
+								if (o_errorMessage)
+								{
+									std::ostringstream errorMessage;
+									errorMessage << "ConvertSourceRelativePathToBuiltRelativePath() returned success but then a "
+										<< luaL_typename(luaState, -1) << " instead of a string";
+									*o_errorMessage = errorMessage.str();
+								}
+								else
+								{
+									eae6320::Assets::OutputErrorMessage(
+										"ConvertSourceRelativePathToBuiltRelativePath() returned success but then a %s instead of a string",
+										luaL_typename(luaState, -1));
+								}
+							}
+						}
+						else
+						{
+							result = eae6320::Results::Failure;
+							if (lua_isstring(luaState, -1))
+							{
+								if (o_errorMessage)
+								{
+									*o_errorMessage = lua_tostring(luaState, -1);
+								}
+								else
+								{
+									eae6320::Assets::OutputErrorMessage(lua_tostring(luaState, -1));
+								}
+							}
+							else
+							{
+								if (o_errorMessage)
+								{
+									std::ostringstream errorMessage;
+									errorMessage << "On failure ConvertSourceRelativePathToBuiltRelativePath() should return a string error message as return value #2, not a "
+										<< luaL_typename(luaState, -1);
+									*o_errorMessage = errorMessage.str();
+								}
+								else
+								{
+									eae6320::Assets::OutputErrorMessage(
+										"On failure ConvertSourceRelativePathToBuiltRelativePath() should return a string error message as return value #2, not a %s",
+										luaL_typename(luaState, -1));
+								}
+							}
+						}
+					}
+					else
+					{
+						result = eae6320::Results::Failure;
+						if (o_errorMessage)
+						{
+							std::ostringstream errorMessage;
+							errorMessage << "On failure ConvertSourceRelativePathToBuiltRelativePath() should return a boolean as return value #1, not a "
+								<< luaL_typename(luaState, -2);
+							*o_errorMessage = errorMessage.str();
+						}
+						else
+						{
+							eae6320::Assets::OutputErrorMessage("ConvertSourceRelativePathToBuiltRelativePath() should return a boolean as return value #1, not a %s",
+								luaL_typename(luaState, -2));
+						}
+					}
+					// Pop the returned values
+					lua_pop(luaState, returnValueCount);
+				}
+			}
+			else
+			{
+				result = eae6320::Results::Failure;
+				if (o_errorMessage)
+				{
+					std::ostringstream errorMessage;
+					errorMessage << "The reference for the Lua ConvertSourceRelativePathToBuiltRelativePath() function returned a "
+						<< lua_typename(luaState, type) << " instead of a function."
+						" This shouldn't happen if the asset build library was initialized successfully";
+					*o_errorMessage = errorMessage.str();
+				}
+				else
+				{
+					eae6320::Assets::OutputErrorMessageWithFileInfo(__FILE__, __LINE__,
+						"The reference for the Lua ConvertSourceRelativePathToBuiltRelativePath() function returned a %s instead of a function."
+						" This shouldn't happen if the asset build library was initialized successfully",
+						lua_typename(luaState, type));
+				}
+				goto OnExit;
+			}
+		}
+
+	OnExit:
+
+		EAE6320_ASSERT(!luaState || (lua_gettop(luaState) == 0));
+		return result;
+	}
+
 	// Access
 
 	lua_State *cLuaState::Get()
@@ -364,7 +532,7 @@ namespace
 
 	eae6320::cResult cLuaState::Initialize()
 	{
-		eae6320::cResult result;
+		auto result = eae6320::Results::success;
 
 		// Create a new Lua state
 		{
@@ -435,9 +603,9 @@ namespace
 					if (luaResult == LUA_OK)
 					{
 						// Execute the "chunk" so that the Lua functions are available in the Lua environment
-						constexpr auto argumentCount = 0;
-						constexpr auto returnValueCount = 0;
-						constexpr auto noErrorHandler = 0;
+						constexpr int argumentCount = 0;
+						constexpr int returnValueCount = 0;
+						constexpr int noErrorHandler = 0;
 						const auto luaResult = lua_pcall(luaState, argumentCount, returnValueCount, noErrorHandler);
 						if (luaResult != LUA_OK)
 						{
@@ -513,7 +681,7 @@ namespace
 
 	eae6320::cResult cLuaState::CleanUp()
 	{
-		const auto result = eae6320::Results::success;
+		auto result = eae6320::Results::success;
 
 		if (luaState)
 		{
@@ -532,7 +700,7 @@ namespace
 		return result;
 	}
 
-	eae6320::cResult cLuaState::SaveReferenceToGlobalFunctionInRegistry(const char* const i_functionName, int &o_functionReference) const
+	eae6320::cResult cLuaState::SaveReferenceToGlobalFunctionInRegistry(const char* const i_functionName, int &o_functionReference)
 	{
 		auto result = eae6320::Results::success;
 
@@ -662,7 +830,7 @@ namespace
 		else
 		{
 			return luaL_error(io_luaState,
-				"Argument #1 must be a string (instead of a %s)",
+				"Argument #2 must be a string (instead of a %s)",
 				luaL_typename(io_luaState, 2));
 		}
 
@@ -671,21 +839,21 @@ namespace
 			std::string errorMessage;
 			// There are many reasons that a source should be rebuilt,
 			// and so even if the target already exists it should just be written over
-			constexpr auto noErrorIfTargetAlreadyExists = false;
+			constexpr bool noErrorIfTargetAlreadyExists = false;
 			// Since we rely on timestamps to determine when a target was built
 			// its file time should be updated when the source gets copied
-			constexpr auto updateTheTargetFileTime = true;
+			constexpr bool updateTheTargetFileTime = true;
 			if (eae6320::Platform::CopyFile(i_path_source, i_path_target, noErrorIfTargetAlreadyExists, updateTheTargetFileTime, &errorMessage))
 			{
 				lua_pushboolean(io_luaState, true);
-				constexpr auto returnValueCount = 1;
+				constexpr int returnValueCount = 1;
 				return returnValueCount;
 			}
 			else
 			{
 				lua_pushboolean(io_luaState, false);
 				lua_pushstring(io_luaState, errorMessage.c_str());
-				constexpr auto returnValueCount = 2;
+				constexpr int returnValueCount = 2;
 				return returnValueCount;
 			}
 		}
@@ -709,16 +877,12 @@ namespace
 		std::string errorMessage;
 		if (eae6320::Platform::CreateDirectoryIfItDoesntExist(i_path, &errorMessage))
 		{
-			lua_pushboolean(io_luaState, true);
-			constexpr auto returnValueCount = 1;
+			constexpr int returnValueCount = 0;
 			return returnValueCount;
 		}
 		else
 		{
-			lua_pushboolean(io_luaState, false);
-			lua_pushstring(io_luaState, errorMessage.c_str());
-			constexpr auto returnValueCount = 2;
-			return returnValueCount;
+			return luaL_error(io_luaState, errorMessage.c_str());
 		}
 	}
 
@@ -741,14 +905,14 @@ namespace
 		if (eae6320::Platform::DoesFileExist(i_path, &errorMessage))
 		{
 			lua_pushboolean(io_luaState, true);
-			constexpr auto returnValueCount = 1;
+			constexpr int returnValueCount = 1;
 			return returnValueCount;
 		}
 		else
 		{
 			lua_pushboolean(io_luaState, false);
 			lua_pushstring(io_luaState, errorMessage.c_str());
-			constexpr auto returnValueCount = 2;
+			constexpr int returnValueCount = 2;
 			return returnValueCount;
 		}
 	}
@@ -774,14 +938,14 @@ namespace
 		{
 			lua_pushboolean(io_luaState, true);
 			lua_pushinteger(io_luaState, exitCode);
-			constexpr auto returnValueCount = 2;
+			constexpr int returnValueCount = 2;
 			return returnValueCount;
 		}
 		else
 		{
 			lua_pushboolean(io_luaState, false);
 			lua_pushstring(io_luaState, errorMessage.c_str());
-			constexpr auto returnValueCount = 2;
+			constexpr int returnValueCount = 2;
 			return returnValueCount;
 		}
 	}
@@ -806,14 +970,14 @@ namespace
 		if (eae6320::Platform::GetEnvironmentVariable(i_key, value, &errorMessage))
 		{
 			lua_pushstring(io_luaState, value.c_str());
-			constexpr auto returnValueCount = 1;
+			constexpr int returnValueCount = 1;
 			return returnValueCount;
 		}
 		else
 		{
 			lua_pushnil(io_luaState);
 			lua_pushstring(io_luaState, errorMessage.c_str());
-			constexpr auto returnValueCount = 2;
+			constexpr int returnValueCount = 2;
 			return returnValueCount;
 		}
 	}
@@ -833,7 +997,7 @@ namespace
 				luaL_typename(io_luaState, 1));
 		}
 		// Argument #2: An optional indication of whether the directory's subdirectories should be searched recursively
-		auto i_shouldSubdirectoriesBeSearchedRecursively = true;
+		bool i_shouldSubdirectoriesBeSearchedRecursively = true;
 		if (!lua_isnoneornil(io_luaState, 2))
 		{
 			if (lua_isboolean(io_luaState, 2))
@@ -854,7 +1018,7 @@ namespace
 		{
 			const auto arraySize = paths.size();
 			EAE6320_ASSERT(arraySize < (uint64_t(1) << (sizeof(int) * 8)));
-			constexpr auto noDictionaryEntries = 0;
+			constexpr int noDictionaryEntries = 0;
 			lua_createtable(io_luaState, static_cast<int>(arraySize), noDictionaryEntries);
 			for (size_t i = 0; i < arraySize; ++i)
 			{
@@ -862,7 +1026,7 @@ namespace
 				lua_pushstring(io_luaState, paths[i].c_str());
 				lua_settable(io_luaState, -3);
 			}
-			constexpr auto returnValueCount = 1;
+			constexpr int returnValueCount = 1;
 			return returnValueCount;
 		}
 		else
@@ -892,7 +1056,7 @@ namespace
 		if (eae6320::Platform::GetLastWriteTime(i_path, lastWriteTime, &errorMessage))
 		{
 			lua_pushnumber(io_luaState, static_cast<lua_Number>(lastWriteTime));
-			constexpr auto returnValueCount = 1;
+			constexpr int returnValueCount = 1;
 			return returnValueCount;
 		}
 		else
@@ -920,7 +1084,7 @@ namespace
 		std::string errorMessage;
 		if (eae6320::Platform::InvalidateLastWriteTime(i_path, &errorMessage))
 		{
-			constexpr auto returnValueCount = 0;
+			constexpr int returnValueCount = 0;
 			return returnValueCount;
 		}
 		else
@@ -969,7 +1133,7 @@ namespace
 			eae6320::Assets::OutputErrorMessage(i_errorMessage);
 		}
 
-		constexpr auto returnValueCount = 0;
+		constexpr int returnValueCount = 0;
 		return returnValueCount;
 	}
 
@@ -1013,11 +1177,10 @@ namespace
 			eae6320::Assets::OutputWarningMessage(i_warningMessage);
 		}
 
-		constexpr auto returnValueCount = 0;
+		constexpr int returnValueCount = 0;
 		return returnValueCount;
 	}
 }
-
 
 // Helper Function Definitions
 //----------------------------
