@@ -189,7 +189,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 			}
 			s_3D_GameObject.push_back(gameobject3D);
 		}
-		{
+		/*{
 			Gameobject::cGameobject3D* gameobject3D;
 			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d3_path", gameobject3D, Math::sVector(0.0f, 0.0f, -10.0f), "data/Meshes/dino.bmf", "data/Materials/dino.bmaf", Gameplay::DEFAULT_GAMEOBJECT_CONTROLLER))))
 			{
@@ -197,7 +197,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 				goto OnExit;
 			}
 			s_3D_GameObject.push_back(gameobject3D);
-		}
+		}*/
 	}
 	// Creating all 2D gameobjects
 	{

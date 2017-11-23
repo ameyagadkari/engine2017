@@ -6,25 +6,22 @@ return
 {
 	meshes =
 	{
-		EAE6320_TODO
 	},
 	shaders =
 	{
-		-- EAE6320_TODO:
-		-- These are some examples showing how to use the optional argument,
-		-- but with my disk layout and file extension.
-		-- You need to update the paths to match your content
-		-- and then add the other shaders that you use.
-		{ path = "Shaders/Vertex/vertexInputLayout_mesh.shader", arguments = { "vertex" } },
-		{ path = "Shaders/Vertex/vertexInputLayout_sprite.shader", arguments = { "vertex" } },
+		{ path = "Shaders/Vertex/mesh.tusl", arguments = { "vertex" } },
+		{ path = "Shaders/Fragment/mesh.tusl", arguments = { "fragment" } },
+		{ path = "Shaders/Vertex/sprite.tusl", arguments = { "vertex" } },
+		{ path = "Shaders/Fragment/sprite.tusl", arguments = { "fragment" } },
+		{ path = "Shaders/Vertex/vertexInputLayout_mesh.tusl", arguments = { "vertex" } },
+		{ path = "Shaders/Vertex/vertexInputLayout_sprite.tusl", arguments = { "vertex" } },
 	},
 	textures =
 	{
-		-- EAE6320_TODO:
-		-- These are some examples with my disk layout.
-		-- You need to update the paths to match your content
-		-- and then add the other textures that you use.
-		"Images/eaeAlien.png",
-		"Images/eaeGamePad.png",
+		"Textures/ball.jpg",
+		"Textures/floor.jpg",
+		"Textures/happy.png",
+		"Textures/sad.png",
+		"Textures/smiling.png",
 	},
 }
