@@ -61,7 +61,7 @@ namespace
 
 eae6320::cResult eae6320::Assets::cShaderBuilder::Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments) const
 {
-	cResult result;
+	auto result = Results::success;
 
 	std::string shaderSourcePreProcessed;
 	if (!((result = PreProcessShaderSource(m_path_source, shaderSourcePreProcessed))))
@@ -90,7 +90,7 @@ namespace
 	eae6320::cResult BuildAndVerifyGeneratedShaderSource(const char* const i_path_source, const char* const i_path_target,
 		const eae6320::Graphics::ShaderTypes::eType i_shaderType, const std::string& i_source)
 	{
-		eae6320::cResult result;
+		auto result = eae6320::Results::success;
 
 		HINSTANCE hInstance = nullptr;
 		eae6320::Windows::OpenGl::sHiddenWindowInfo hiddenWindowInfo;
@@ -324,7 +324,7 @@ namespace
 												patternReplace = stringBuilder.str();
 											}
 										}
-										default: ;
+										default:;
 										}
 									}
 									const auto convertedErrors = regex_replace(compilationInfo, patternMatch, patternReplace);
@@ -399,7 +399,7 @@ namespace
 
 	eae6320::cResult PreProcessShaderSource(const char* const i_path_source, std::string& o_shaderSource_preProcessed)
 	{
-		eae6320::cResult result;
+		auto result = eae6320::Results::success;
 
 		// Get the content directories to use as #include search paths
 		std::string includeSearchPathArgument_engineSourceContentDir, includeSearchPathArgument_gameSourceContentDir;
@@ -477,7 +477,8 @@ namespace
 			const auto localResult = mcpp_lib_main(static_cast<int>(argumentCount), arguments);
 			if (localResult == EXIT_SUCCESS)
 			{
-				o_shaderSource_preProcessed = mcpp_get_mem_buffer(static_cast<OUTDEST>(eae6320::mcpp::OUTDEST::Out));
+				auto const*const shaderSource_preProcessed = mcpp_get_mem_buffer(static_cast<OUTDEST>(eae6320::mcpp::OUTDEST::Out));
+				o_shaderSource_preProcessed = shaderSource_preProcessed ? shaderSource_preProcessed : "";
 			}
 			else
 			{
@@ -520,7 +521,7 @@ namespace
 
 	eae6320::cResult SaveGeneratedShaderSource(const char* const i_path, const std::string& i_shader)
 	{
-		eae6320::cResult result;
+		auto result = eae6320::Results::success;
 		std::string errorMessage;
 		if (!((result = eae6320::Platform::WriteBinaryFile(i_path, i_shader.c_str(), i_shader.length(), &errorMessage))))
 		{
