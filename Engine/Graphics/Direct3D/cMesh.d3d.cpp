@@ -45,7 +45,7 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 			// (by using so-called "semantic" names so that, for example,
 			// "POSITION" here matches with "POSITION" in shader code).
 			// Note that OpenGL uses arbitrarily assignable number IDs to do the same thing.
-			constexpr unsigned int vertexElementCount = 3;
+			constexpr unsigned int vertexElementCount = 4;
 			D3D11_INPUT_ELEMENT_DESC layoutDescription[vertexElementCount] = {};
 			{
 				// Slot 0
@@ -67,28 +67,45 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 
 				// Slot 1
 
-				// TEXTURE_COORDINATES
-				// 2 uint16_t == 4 bytes
+				// NORMAL
+				// 3 floats == 12 bytes
 				// Offset = 12
 				{
-					auto& positionElement = layoutDescription[1];
+					auto& normalElement = layoutDescription[1];
 
-					positionElement.SemanticName = "TEXCOORD";
-					positionElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
-					positionElement.Format = DXGI_FORMAT_R16G16_FLOAT;
-					positionElement.InputSlot = 0;
-					positionElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, u);
-					positionElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-					positionElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+					normalElement.SemanticName = "NORMAL";
+					normalElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					normalElement.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+					normalElement.InputSlot = 0;
+					normalElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, nx);
+					normalElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					normalElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
 				}
 
 				// Slot 2
 
+				// TEXTURE_COORDINATES
+				// 2 uint16_t == 4 bytes
+				// Offset = 24
+				{
+					auto& uvsElement = layoutDescription[2];
+
+					uvsElement.SemanticName = "TEXCOORD";
+					uvsElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)
+					uvsElement.Format = DXGI_FORMAT_R16G16_FLOAT;
+					uvsElement.InputSlot = 0;
+					uvsElement.AlignedByteOffset = offsetof(eae6320::Graphics::VertexFormats::sMesh, u);
+					uvsElement.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+					uvsElement.InstanceDataStepRate = 0;	// (Must be zero for per-vertex data)
+				}
+
+				// Slot 3
+
 				// COLOR
 				// 4 uint8_t == 4 bytes
-				// Offset = 16
+				// Offset = 28
 				{
-					auto& colorElement = layoutDescription[2];
+					auto& colorElement = layoutDescription[3];
 
 					colorElement.SemanticName = "COLOR";
 					colorElement.SemanticIndex = 0;	// (Semantics without modifying indices at the end can always use zero)

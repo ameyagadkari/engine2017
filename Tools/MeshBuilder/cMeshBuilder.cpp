@@ -25,6 +25,7 @@ namespace
 	eae6320::cResult LoadVerticesTable(lua_State& io_luaState, sMeshData& io_meshData);
 	eae6320::cResult LoadIndicesTable(lua_State& io_luaState, sMeshData& io_meshData);
 	eae6320::cResult LoadPositionTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
+	eae6320::cResult LoadNormalTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	eae6320::cResult LoadColorTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	eae6320::cResult LoadUVTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index);
 	uint8_t RoundColorChannel(const float i_value);
@@ -506,6 +507,72 @@ namespace
 		}
 	OnExit:
 		// Pop the position table
+		lua_pop(&io_luaState, 1);
+
+		return result;
+	}
+
+	eae6320::cResult LoadNormalTable(lua_State& io_luaState, sMeshData& io_meshData, const int i_index)
+	{
+		auto result = eae6320::Results::success;
+		constexpr auto* const key = "normal";
+		lua_pushstring(&io_luaState, key);
+		lua_gettable(&io_luaState, -2);
+		if (lua_isnil(&io_luaState, -1))
+		{
+			result = eae6320::Results::invalidFile;
+			OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", key);
+			goto OnExit;
+		}
+		if (lua_istable(&io_luaState, -1))
+		{
+			const auto normalCount = luaL_len(&io_luaState, -1);
+			float n_xyz[] = { 0.0f,0.0f,0.0f };
+			if (normalCount == 3)
+			{
+				for (auto i = 1; i <= normalCount; ++i)
+				{
+					lua_pushinteger(&io_luaState, i);
+					lua_gettable(&io_luaState, -2);
+					if (lua_isnil(&io_luaState, -1))
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "No value for key: \"%d\"was found in the table", i);
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+					if (lua_isnumber(&io_luaState, -1))
+					{
+						n_xyz[i - 1] = static_cast<float>(lua_tonumber(&io_luaState, -1));
+						lua_pop(&io_luaState, 1);
+					}
+					else
+					{
+						result = eae6320::Results::invalidFile;
+						OutputErrorMessageWithFileInfo(__FILE__, "The value isn't a number!");
+						lua_pop(&io_luaState, 1);
+						goto OnExit;
+					}
+				}
+				io_meshData.vertexData[i_index].nx = n_xyz[0];
+				io_meshData.vertexData[i_index].ny = n_xyz[1];
+				io_meshData.vertexData[i_index].nz = n_xyz[2];
+			}
+			else
+			{
+				result = eae6320::Results::invalidFile;
+				OutputErrorMessageWithFileInfo(__FILE__, "There are %d normal coordinates instead of 3", normalCount);
+				goto OnExit;
+			}
+		}
+		else
+		{
+			result = eae6320::Results::invalidFile;
+			OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a table (instead of a %s)", key, luaL_typename(&io_luaState, -1));
+			goto OnExit;
+		}
+	OnExit:
+		// Pop the normal table
 		lua_pop(&io_luaState, 1);
 
 		return result;

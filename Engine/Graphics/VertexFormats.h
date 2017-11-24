@@ -47,14 +47,19 @@ namespace eae6320
 				// Offset = 0
 				float x, y, z;
 
+				// NORMAL
+				// 3 floats == 12 bytes
+				// Offset = 12
+				float nx, ny, nz;
+
 				// TEXTURE_COORDINATES
 				// 2 uint16_t == 4 bytes
-				// Offset = 12
+				// Offset = 24
 				uint16_t u, v;
 
 				// COLOR
 				// 4 uint8_t == 4 bytes
-				// Offset = 16
+				// Offset = 28
 				uint8_t r, g, b, a;
 			};
 		}

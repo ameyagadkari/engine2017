@@ -14,6 +14,7 @@ void main(
 	// Input
 	//======
 	in const float4 i_position : SV_POSITION,
+	in const float3 i_normal : NORMAL,
 	in const float2 i_uvs : TEXCOORD,
 	in const float4 i_color : COLOR,
 
@@ -30,7 +31,8 @@ void main(
 //======
 
 layout( location = 0 ) in vec2 i_uvs;
-layout( location = 1 ) in vec4 i_color;
+layout( location = 1 ) in vec3 i_normal;
+layout( location = 2 ) in vec4 i_color;
 
 // Output
 //=======

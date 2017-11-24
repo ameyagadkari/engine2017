@@ -176,11 +176,44 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 			}
 		}
 
-		// Texture Coordinates (1)
-		// 2 uint16_t == 4 bytes
+		// Normal (1)
+		// 3 floats == 12 bytes
 		// Offset = 12
 		{
 			constexpr GLuint vertexElementLocation = 1;
+			constexpr auto elementCount = 3;
+			constexpr GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
+			glVertexAttribPointer(vertexElementLocation, elementCount, GL_FLOAT, notNormalized, stride,
+				reinterpret_cast<GLvoid*>(offsetof(eae6320::Graphics::VertexFormats::sMesh, nx)));
+			const auto errorCode = glGetError();
+			if (errorCode == GL_NO_ERROR)
+			{
+				glEnableVertexAttribArray(vertexElementLocation);
+				const auto errorCode = glGetError();
+				if (errorCode != GL_NO_ERROR)
+				{
+					result = Results::Failure;
+					EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					Logging::OutputError("OpenGL failed to enable the POSITION vertex attribute at location %u: %s",
+						vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+					goto OnExit;
+				}
+			}
+			else
+			{
+				result = Results::Failure;
+				EAE6320_ASSERTF(false, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				Logging::OutputError("OpenGL failed to set the POSITION vertex attribute at location %u: %s",
+					vertexElementLocation, reinterpret_cast<const char*>(gluErrorString(errorCode)));
+				goto OnExit;
+			}
+		}
+
+		// Texture Coordinates (2)
+		// 2 uint16_t == 4 bytes
+		// Offset = 24
+		{
+			constexpr GLuint vertexElementLocation = 2;
 			constexpr auto elementCount = 2;
 			constexpr GLboolean notNormalized = GL_FALSE;	// The given floats should be used as-is
 			glVertexAttribPointer(vertexElementLocation, elementCount, GL_HALF_FLOAT, notNormalized, stride,
@@ -209,11 +242,11 @@ eae6320::cResult eae6320::Graphics::cMesh::Initialize(HelperStructs::sMeshData c
 			}
 		}
 
-		// Color (2)
+		// Color (3)
 		// 4 uint8_t == 4 bytes
-		// Offset = 16
+		// Offset = 28
 		{
-			constexpr GLuint vertexElementLocation = 2;
+			constexpr GLuint vertexElementLocation = 3;
 			constexpr auto elementCount = 4;
 			constexpr GLboolean normalized = GL_TRUE;	// The given unsigned bytes should be normalized
 			glVertexAttribPointer(vertexElementLocation, elementCount, GL_UNSIGNED_BYTE, normalized, stride,
