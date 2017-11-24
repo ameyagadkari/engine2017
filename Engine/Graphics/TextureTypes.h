@@ -31,7 +31,8 @@ namespace eae6320
 				DISPLACEMENT,
 				DISTORTION,
 
-				COUNT
+				UNKNOWN,
+				COUNT = UNKNOWN
 			};
 		}
 		namespace TextureTypes

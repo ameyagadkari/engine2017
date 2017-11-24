@@ -10,6 +10,7 @@ A material is an encapsulation for a texture, a constant buffer and an effect.
 #include "cEffect.h"
 #include "cTexture.h"
 #include "cConstantBuffer.h"
+#include "TextureTypes.h"
 
 // Class Declaration
 //==================
@@ -52,8 +53,12 @@ namespace eae6320
 		private:
 
 			cConstantBuffer m_constantBuffer_perMaterial;
+			struct
+			{
+				cTexture::Handle m_texture;
+				TextureUnit::eUnitNumber m_unitNumber = TextureUnit::UNKNOWN;
+			}m_maps[TextureUnit::COUNT];
 			cEffect::Handle m_effect;
-			cTexture::Handle m_texture;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
 			// Implementation
@@ -67,7 +72,7 @@ namespace eae6320
 			cMaterial() :m_constantBuffer_perMaterial(ConstantBufferTypes::PerMaterial) {}
 			~cMaterial();
 
-			cResult Initialize(char const*const i_effectPath, char const*const i_texturepath, void const*const i_data);
+			cResult Initialize(char const*const i_effectPath, char const*const*const i_texturepaths, void const*const i_data);
 			cResult CleanUp();
 
 		};

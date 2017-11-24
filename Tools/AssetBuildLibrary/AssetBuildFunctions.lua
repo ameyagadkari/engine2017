@@ -272,15 +272,23 @@ NewAssetTypeInfo( "materials",
 				else
 					RegisterAssetToBeBuilt( path_effect, "effects")
 				end
-				local path_texture = material.texture
-				local path_texture_type = type( path_texture )
-				if path_texture_type == "nil" then
-					RegisterAssetToBeBuilt( "Textures/default.tga", "textures")
-				elseif path_texture_type == "string" then
-					RegisterAssetToBeBuilt( path_texture, "textures")
+				if type( material.textures ) ~= "table" then
+					OutputErrorMessage( "Textures in (\"" .. i_sourceRelativePath .. "\" must be a table", i_sourceRelativePath )
 				else
-					OutputErrorMessage( "The texture path must be a string instead of a " .. path_texture_type .. " in material file " .. i_sourceRelativePath)
-				end					
+					local number_of_textures = 0
+					for key, path_texture in pairs( material.textures ) do
+						local path_texture_type = type( path_texture )
+						if path_texture_type ~= "string" then
+							OutputErrorMessage( "The texture path must be a string instead of a " .. path_texture_type .. " in material file ".. i_sourceRelativePath)
+						else
+							RegisterAssetToBeBuilt( path_texture, "textures")
+							number_of_textures = number_of_textures + 1
+						end
+					end
+					if ( number_of_textures == 0 ) then
+						OutputErrorMessage( "No textures found in material file. Please put in default.tga as color_map " .. i_sourceRelativePath)
+					end
+				end
 			end
 		end,
 	}

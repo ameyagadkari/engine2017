@@ -23,10 +23,11 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 
 	Platform::sDataFromFile dataFromFile;
 	char* effectPath = nullptr;
-	char* texturePath = nullptr;
+	uint8_t textureTypeMask = 0u;
 	ConstantBufferFormats::sPerMaterial constantData_perMaterial;
-	uint8_t offsetToAdd = 0;
+	uint8_t offsetToAdd = 0u;
 	cMaterial* newMaterial = nullptr;
+	char** texturePaths = nullptr;
 
 	// Load the binary data
 	{
@@ -45,10 +46,19 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		if (!newMaterial)
 		{
 			result = Results::outOfMemory;
-			EAE6320_ASSERTF(false, "Couldn't allocate memory for the mesh %s", i_path);
-			Logging::OutputError("Failed to allocate memory for the mesh %s", i_path);
+			EAE6320_ASSERTF(false, "Couldn't allocate memory for the material %s", i_path);
+			Logging::OutputError("Failed to allocate memory for the material %s", i_path);
 			goto OnExit;
 		}
+	}
+
+	texturePaths = new (std::nothrow) char*[TextureUnit::COUNT]();
+	if (!texturePaths)
+	{
+		result = Results::outOfMemory;
+		EAE6320_ASSERTF(false, "Couldn't allocate memory for the all texture path pointers %s", i_path);
+		Logging::OutputError("Failed to allocate memory for the all texture path pointers %s", i_path);
+		goto OnExit;
 	}
 
 	// Extract data from loaded material file
@@ -62,9 +72,14 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 
 		constantData_perMaterial = *reinterpret_cast<ConstantBufferFormats::sPerMaterial*>(currentOffset);
 
-		// Extracting Offset To Add
+		// Extracting Texture Type Mask
 
 		currentOffset += sizeof(constantData_perMaterial);
+		textureTypeMask = *reinterpret_cast<uint8_t*>(currentOffset);
+
+		// Extracting Offset To Add
+
+		currentOffset += sizeof(textureTypeMask);
 		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
 		// Extracting Effect Path
@@ -72,15 +87,107 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		currentOffset += sizeof(offsetToAdd);
 		effectPath = reinterpret_cast<char*>(currentOffset);
 
-		// Extracting Offset To Add
+		// Extracting all texture maps
 
-		currentOffset += offsetToAdd;
-		offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+		{
+			// Color Map
+			if (TextureTypes::IsColorMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
 
-		// Extracting Texture Path
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
 
-		currentOffset += sizeof(offsetToAdd);
-		texturePath = reinterpret_cast<char*>(currentOffset);
+				// Extracting Color Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::COLOR] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Specular Map
+			if (TextureTypes::IsSpecularMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Specular Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::SPECULAR] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Normal Map
+			if (TextureTypes::IsNormalMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Normal Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::NORMAL] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Bump Map
+			if (TextureTypes::IsBumpMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Bump Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::BUMP] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Emissive Map
+			if (TextureTypes::IsEmissiveMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Emissive Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::EMISSIVE] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Displacement Map
+			if (TextureTypes::IsDisplacementMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Displacement Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::DISPLACEMENT] = reinterpret_cast<char*>(currentOffset);
+			}
+
+			// Distortion Map
+			if (TextureTypes::IsDistortionMapPresent(textureTypeMask))
+			{
+				// Extracting Offset To Add
+
+				currentOffset += offsetToAdd;
+				offsetToAdd = *reinterpret_cast<uint8_t*>(currentOffset);
+
+				// Extracting Distortion Map Path
+
+				currentOffset += sizeof(offsetToAdd);
+				texturePaths[TextureUnit::DISTORTION] = reinterpret_cast<char*>(currentOffset);
+			}
+		}
 
 		// Check EOF
 
@@ -94,7 +201,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Load(const char* const i_path, cM
 		}
 	}
 
-	if (!((result = newMaterial->Initialize(effectPath, texturePath, &constantData_perMaterial))))
+	if (!((result = newMaterial->Initialize(effectPath, texturePaths, &constantData_perMaterial))))
 	{
 		EAE6320_ASSERTF(false, "Initialization of new effect failed");
 		goto OnExit;
@@ -117,6 +224,10 @@ OnExit:
 		o_material = nullptr;
 	}
 	dataFromFile.Free();
+	if (texturePaths)
+	{
+		delete[] texturePaths;
+	}
 
 	return result;
 }
@@ -136,10 +247,16 @@ void eae6320::Graphics::cMaterial::Bind() const
 
 	// Binding the texture
 	{
-		EAE6320_ASSERT(m_texture);
-		auto const*const texture = cTexture::s_manager.Get(m_texture);
-		EAE6320_ASSERT(texture);
-		texture->Bind(0);
+		for (auto i = 0u; i < TextureUnit::COUNT; i++)
+		{
+			if (m_maps[i].m_texture)
+			{
+				auto const*const texture = cTexture::s_manager.Get(m_maps[i].m_texture);
+				EAE6320_ASSERT(texture);
+				// If open gl bind sampler to this unit too
+				texture->Bind(m_maps[i].m_unitNumber);
+			}
+		}
 	}
 
 	// Binding the constant buffer
@@ -153,20 +270,34 @@ void eae6320::Graphics::cMaterial::Bind() const
 // Initialization / Clean Up
 //--------------------------
 
-eae6320::cResult eae6320::Graphics::cMaterial::Initialize(char const*const i_effectPath, char const*const i_texturepath, void const*const i_data)
+eae6320::cResult eae6320::Graphics::cMaterial::Initialize(char const*const i_effectPath, char const*const*const i_texturepaths, void const*const i_data)
 {
 	auto result = Results::success;
+
+	// Load the effect
 
 	if (!((result = cEffect::s_manager.Load(i_effectPath, m_effect))))
 	{
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
-	if (!((result = cTexture::s_manager.Load(i_texturepath, m_texture))))
+
+	// Load all the texture maps
+
+	for (auto i = 0u; i < TextureUnit::COUNT; i++)
 	{
-		EAE6320_ASSERT(false);
-		goto OnExit;
+		if (i_texturepaths[i])
+		{
+			if (!((result = cTexture::s_manager.Load(i_texturepaths[i], m_maps[i].m_texture))))
+			{
+				EAE6320_ASSERT(false);
+				goto OnExit;
+			}
+			m_maps[i].m_unitNumber = static_cast<TextureUnit::eUnitNumber>(i);
+		}
 	}
+
+	// Initialize the constant buffer for this material
 	if (!((result = m_constantBuffer_perMaterial.Initialize(i_data))))
 	{
 		EAE6320_ASSERT(false);
@@ -195,16 +326,20 @@ eae6320::cResult eae6320::Graphics::cMaterial::CleanUp()
 		}
 	}
 
-	// Texture Clean Up
-	if (m_texture)
+	// Textures Clean Up
+	for (auto i = 0u; i < TextureUnit::COUNT; i++)
 	{
-		const auto localResult = cTexture::s_manager.Release(m_texture);
-		if (!localResult)
+		if (m_maps[i].m_texture)
 		{
-			EAE6320_ASSERT(false);
-			if (result)
+			m_maps[i].m_unitNumber = TextureUnit::UNKNOWN;
+			const auto localResult = cTexture::s_manager.Release(m_maps[i].m_texture);
+			if (!localResult)
 			{
-				result = localResult;
+				EAE6320_ASSERT(false);
+				if (result)
+				{
+					result = localResult;
+				}
 			}
 		}
 	}
