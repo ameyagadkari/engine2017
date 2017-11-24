@@ -1,0 +1,13 @@
+-- UnLit Effect for a mesh
+return
+{
+	shaders = 
+	{
+		vertex = "Shaders/Vertex/unlit.tusl",
+		fragment = "Shaders/Fragment/unlit.tusl",
+	},
+	render_states = 
+	{
+		depth_buffering = true,
+	},
+}

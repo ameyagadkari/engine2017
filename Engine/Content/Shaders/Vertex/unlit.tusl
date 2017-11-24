@@ -1,5 +1,5 @@
 /*
-	This is mesh vertex shader
+	This is unlit mesh vertex shader
 */
 
 #include <Shaders/shaders.inc>
@@ -51,11 +51,6 @@ void main()
 {
 	// Calculate the position of this vertex on screen
 	{
-		/*float4 vertexPosition_local = float4( i_position, 1.0 );
-		float4 vertexPosition_world = mul( g_transform_localToWorld, vertexPosition_local );
-		float4 vertexPosition_camera = mul( g_transform_worldToCamera, vertexPosition_world );
-		o_position = mul( g_transform_cameraToProjected, vertexPosition_camera );*/
-		
 		o_position = mul( g_transform_localToProjected, float4( i_position, 1.0 ) );
 	}
 	

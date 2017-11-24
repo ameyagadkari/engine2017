@@ -5,6 +5,7 @@
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Graphics/ConstantBufferFormats.h>
+#include <Engine/Graphics/TextureTypes.h>
 #include <External/Lua/Includes.h>
 #include <Tools/AssetBuildLibrary/Functions.h>
 
@@ -18,13 +19,16 @@
 namespace
 {
 	using namespace eae6320::Assets;
+	using namespace eae6320::Graphics::TextureUnit;
 
 	std::string effectPath;
-	std::string texturePath;
+	std::vector<std::string> texturePaths(COUNT);
+	uint8_t textureTypeMask = 0u;
 	eae6320::Graphics::ConstantBufferFormats::sPerMaterial constantData_perMaterial;
 
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState);
 	eae6320::cResult LoadConstantBufferDataTable(lua_State& io_luaState);
+	eae6320::cResult LoadTextureAllPaths(lua_State& io_luaState);
 	eae6320::cResult LoadColorTable(lua_State& io_luaState);
 }
 
@@ -128,9 +132,9 @@ eae6320::cResult cMaterialBuilder::Build(const std::vector<std::string>&)
 
 	lua_pop(luaState, 1);
 
-	// Write the effect data to a file
+	// Write the material data to a file
 	{
-		// Write render state bits
+		// Write constant data per material
 		{
 			const auto byteCountToWrite = sizeof(constantData_perMaterial);
 			fout.write(reinterpret_cast<const char*>(&constantData_perMaterial), byteCountToWrite);
@@ -141,19 +145,39 @@ eae6320::cResult cMaterialBuilder::Build(const std::vector<std::string>&)
 				goto OnExit;
 			}
 		}
-		// Write effect shader path
+
+		// Write texture type mask
+		{
+			const auto byteCountToWrite = sizeof(textureTypeMask);
+			fout.write(reinterpret_cast<const char*>(&textureTypeMask), byteCountToWrite);
+			if (!fout.good())
+			{
+				result = Results::fileWriteFail;
+				OutputErrorMessageWithFileInfo(m_path_target, "Failed to write %zu bytes for render state bits", byteCountToWrite);
+				goto OnExit;
+			}
+		}
+
+		// Write effect path
 		if (!((result = WriteFilePath(fout, effectPath))))
 		{
 			result = Results::fileWriteFail;
 			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write effect path");
 			goto OnExit;
 		}
-		// Write texture shader path
-		if (!((result = WriteFilePath(fout, texturePath))))
+
+		for (const auto& texturePath : texturePaths)
 		{
-			result = Results::fileWriteFail;
-			OutputErrorMessageWithFileInfo(m_path_target, "Failed to write texture path");
-			goto OnExit;
+			if (texturePath.length())
+			{
+				// Write texture path
+				if (!((result = WriteFilePath(fout, texturePath))))
+				{
+					result = Results::fileWriteFail;
+					OutputErrorMessageWithFileInfo(m_path_target, "Failed to write texture path");
+					goto OnExit;
+				}
+			}
 		}
 	}
 
@@ -194,21 +218,62 @@ namespace
 	eae6320::cResult LoadBaseTable(lua_State& io_luaState)
 	{
 		auto result = eae6320::Results::success;
-		if (!((result = LoadConstantBufferDataTable(io_luaState))))
+
+		// Load Constant Buffer Table
+
 		{
+			if (!((result = LoadConstantBufferDataTable(io_luaState))))
+			{
+				return result;
+			}
+		}
+
+		// Load Effect Path
+
+		{
+			constexpr auto* const key = "effect";
+			constexpr auto* const assetType = "effects";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, effectPath))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get effect path");
+				return result;
+			}
+		}
+
+		// Load Texture Paths Table
+
+		{
+			constexpr auto* const key = "textures";
+			lua_pushstring(&io_luaState, key);
+			lua_gettable(&io_luaState, -2);
+			if (lua_isnil(&io_luaState, -1))
+			{
+				result = eae6320::Results::invalidFile;
+				OutputErrorMessageWithFileInfo(__FILE__, "No value for key:\"%s\" was found in the table", key);
+				goto OnExit;
+			}
+			if (lua_istable(&io_luaState, -1))
+			{
+				if (!((result = LoadTextureAllPaths(io_luaState))))
+				{
+					OutputErrorMessageWithFileInfo(__FILE__, "Failed to load all texture paths");
+					goto OnExit;
+				}
+			}
+			else
+			{
+				result = eae6320::Results::invalidFile;
+				OutputErrorMessageWithFileInfo(__FILE__, "The value at \"%s\" must be a table (instead of a %s)", key, luaL_typename(&io_luaState, -1));
+				goto OnExit;
+			}
+
+		OnExit:
+
+			// Pop the texture paths table
+			lua_pop(&io_luaState, 1);
+
 			return result;
 		}
-		if (!((result = LoadFilePath(io_luaState, "effect", "effects", effectPath))))
-		{
-			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get effect path");
-			return result;
-		}
-		if (!((result = LoadFilePath(io_luaState, "texture", "textures", texturePath, false))))
-		{
-			OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path");
-			return result;
-		}
-		return result;
 	}
 
 	eae6320::cResult LoadConstantBufferDataTable(lua_State& io_luaState)
@@ -242,6 +307,119 @@ namespace
 
 		// Pop the constant buffer data table
 		lua_pop(&io_luaState, 1);
+
+		return result;
+	}
+
+	eae6320::cResult LoadTextureAllPaths(lua_State& io_luaState)
+	{
+		auto result = eae6320::Results::success;
+
+		// Load Texture Path (Color Map)
+
+		constexpr auto* const assetType = "textures";
+		{
+			constexpr auto* const key = "color_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[COLOR]))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Color Map)");
+				return result;
+			}
+			if (texturePaths[COLOR].length())
+			{
+				eae6320::Graphics::TextureTypes::AddColorMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Specular Map)
+
+		{
+			constexpr auto* const key = "specular_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[SPECULAR], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Specular Map)");
+				return result;
+			}
+			if (texturePaths[SPECULAR].length())
+			{
+				eae6320::Graphics::TextureTypes::AddSpecularMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Normal Map)
+
+		{
+			constexpr auto* const key = "normal_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[NORMAL], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Normal Map)");
+				return result;
+			}
+			if (texturePaths[NORMAL].length())
+			{
+				eae6320::Graphics::TextureTypes::AddNormalMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Bump Map)
+
+		{
+			constexpr auto* const key = "bump_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[BUMP], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Bump Map)");
+				return result;
+			}
+			if (texturePaths[BUMP].length())
+			{
+				eae6320::Graphics::TextureTypes::AddBumpMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Emissive Map)
+
+		{
+			constexpr auto* const key = "emissive_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[EMISSIVE], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Emissive Map)");
+				return result;
+			}
+			if (texturePaths[EMISSIVE].length())
+			{
+				eae6320::Graphics::TextureTypes::AddEmissiveMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Displacement Map)
+
+		{
+			constexpr auto* const key = "displacement_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[DISPLACEMENT], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Displacement Map)");
+				return result;
+			}
+			if (texturePaths[DISPLACEMENT].length())
+			{
+				eae6320::Graphics::TextureTypes::AddDisplacementMap(textureTypeMask);
+			}
+		}
+
+		// Load Texture Path (Distortion Map)
+
+		{
+			constexpr auto* const key = "distortion_map";
+			if (!((result = LoadFilePath(io_luaState, key, assetType, texturePaths[DISTORTION], false))))
+			{
+				OutputErrorMessageWithFileInfo(__FILE__, "Failed to get texture path(Distortion Map)");
+				return result;
+			}
+			if (texturePaths[DISTORTION].length())
+			{
+				eae6320::Graphics::TextureTypes::AddDistortionMap(textureTypeMask);
+			}
+		}
 
 		return result;
 	}

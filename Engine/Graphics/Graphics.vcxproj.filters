@@ -39,6 +39,7 @@
     <ClInclude Include="MeshHelperStructs.h" />
     <ClInclude Include="SpriteHelperStructs.h" />
     <ClInclude Include="cMaterial.h" />
+    <ClInclude Include="TextureTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OpenGL\cConstantBuffer.gl.cpp">

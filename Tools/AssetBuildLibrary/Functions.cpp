@@ -662,7 +662,7 @@ namespace
 			if (!((result = SaveReferenceToGlobalFunctionInRegistry("BuildAssets", m_fBuildAssets))))
 			{
 				goto OnExit;
-			}		
+			}
 			if (!((result = SaveReferenceToGlobalFunctionInRegistry("ConvertSourceRelativePathToBuiltRelativePath", m_fConvertSourceRelativePathToBuiltRelativePath))))
 			{
 				goto OnExit;

@@ -1,5 +1,5 @@
 /*
-	This is sprite fragment shader
+	This is unlit mesh fragment shader
 */
 
 #include <Shaders/shaders.inc>

@@ -184,6 +184,7 @@
     <ClInclude Include="sContext.h" />
     <ClInclude Include="SpriteHelperStructs.h" />
     <ClInclude Include="TextureFormats.h" />
+    <ClInclude Include="TextureTypes.h" />
     <ClInclude Include="VertexFormats.h" />
     <ClInclude Include="Windows\ExternalLibraries.win.h" />
   </ItemGroup>

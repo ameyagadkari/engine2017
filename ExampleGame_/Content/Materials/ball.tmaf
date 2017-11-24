@@ -3,8 +3,11 @@ return
 {
 	constant_buffer_data = 
 	{
-		g_color = {0.0,0.5,0.0,1.0},
+		
 	},
-	effect = "Effects/mesh.tef",
-	texture = "Textures/ball.jpg",
+	effect = "Effects/unlit.tef",
+	textures = 
+	{
+		color_map = "Textures/ColorMaps/ball.jpg",
+	}
 }

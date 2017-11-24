@@ -182,7 +182,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		}
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -2.0f, 0.0f), "data/Meshes/floor.bmf", "data/Materials/floor.bmaf", Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d2_path", gameobject3D, Math::sVector(0.0f, -2.0f, 0.0f), "data/Meshes/floor.bmf", "data/Materials/unlit.bmaf", Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -203,7 +203,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 	{
 		{
 			Gameobject::cGameobject2D* gameobject2D;
-			if (!((result = Gameobject::cGameobject2D::Load("fake_go2d1_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_LEFT, "data/Effects/sprite.bef", "data/Textures/happy.btf", "data/Textures/smiling.btf"))))
+			if (!((result = Gameobject::cGameobject2D::Load("fake_go2d1_path", gameobject2D, 0, 0, 128, 128, Transform::TOP_LEFT, "data/Effects/sprite.bef", "data/Textures/Sprites/happy.btf", "data/Textures/Sprites/smiling.btf"))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -212,7 +212,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		}
 		{
 			Gameobject::cGameobject2D* gameobject2D;
-			if (!((result = Gameobject::cGameobject2D::Load("fake_go2d2_path", gameobject2D, 0, 0, 128, 128, Transform::BOTTOM_RIGHT, "data/Effects/sprite.bef", "data/Textures/sad.btf", "data/Textures/happy.btf"))))
+			if (!((result = Gameobject::cGameobject2D::Load("fake_go2d2_path", gameobject2D, 0, 0, 128, 128, Transform::BOTTOM_RIGHT, "data/Effects/sprite.bef", "data/Textures/Sprites/sad.btf", "data/Textures/Sprites/happy.btf"))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;

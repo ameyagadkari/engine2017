@@ -8,6 +8,7 @@ return
 	{
 		"Materials/ball.tmaf",
 		"Materials/floor.tmaf",
+		"Materials/unlit.tmaf",
 	},
 	meshes =
 	{
@@ -16,24 +17,17 @@ return
 	},
 	effects =
 	{
-		--"Effects/mesh.tef",
 		"Effects/sprite.tef",
 	},
 	shaders =
 	{
-		--[[{ path = "Shaders/Vertex/mesh.tusl", arguments = { "vertex" } },
-		{ path = "Shaders/Fragment/mesh.tusl", arguments = { "fragment" } },
-		{ path = "Shaders/Vertex/sprite.tusl", arguments = { "vertex" } },
-		{ path = "Shaders/Fragment/sprite.tusl", arguments = { "fragment" } },]]
 		{ path = "Shaders/Vertex/vertexInputLayout_mesh.tusl", arguments = { "vertex" } },
 		{ path = "Shaders/Vertex/vertexInputLayout_sprite.tusl", arguments = { "vertex" } },
 	},
 	textures =
 	{
-		--[["Textures/ball.jpg",
-		"Textures/floor.jpg",]]
-		"Textures/happy.png",
-		"Textures/sad.png",
-		"Textures/smiling.png",
+		"Textures/Sprites/happy.png",
+		"Textures/Sprites/sad.png",
+		"Textures/Sprites/smiling.png",
 	},
 }

@@ -5,6 +5,9 @@ return
 	{
 		
 	},
-	effect = "Effects/mesh.tef",
-	texture = "Textures/floor.jpg",
+	effect = "Effects/unlit.tef",
+	textures = 
+	{
+		color_map = "Textures/ColorMaps/floor.jpg",
+	}
 }
