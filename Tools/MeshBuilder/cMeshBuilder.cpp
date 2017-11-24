@@ -311,6 +311,11 @@ namespace
 							lua_pop(&io_luaState, 1);
 							goto OnExit;
 						}
+						if (!((result = LoadNormalTable(io_luaState, io_meshData, arrayIndex))))
+						{
+							lua_pop(&io_luaState, 1);
+							goto OnExit;
+						}
 						if (!((result = LoadColorTable(io_luaState, io_meshData, arrayIndex))))
 						{
 							lua_pop(&io_luaState, 1);
