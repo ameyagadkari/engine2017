@@ -38,10 +38,42 @@ namespace
 	struct sDataRequiredToRenderAFrame
 	{
 		std::vector<eae6320::Gameobject::cGameobject2D*> gameobjects2D_perFrame;
-		std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_perFrame;
+		std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_opaque_perFrame;
+		std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_translucent_perFrame;
 		eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
 		eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
 		float clearDepth_perFrame;
+
+		void CleanUp()
+		{
+			{
+				const auto length = gameobjects3D_opaque_perFrame.size();
+				for (size_t i = 0; i < length; i++)
+				{
+					// Clean up 3d opaque gameobject
+					gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
+				}
+				gameobjects3D_opaque_perFrame.clear();
+			}
+			{
+				const auto length = gameobjects3D_translucent_perFrame.size();
+				for (size_t i = 0; i < length; i++)
+				{
+					// Clean up 3d translucent gameobject
+					gameobjects3D_translucent_perFrame[i].first->DecrementReferenceCount();
+				}
+				gameobjects3D_translucent_perFrame.clear();
+			}
+			{
+				const auto length = gameobjects2D_perFrame.size();
+				for (size_t i = 0; i < length; i++)
+				{
+					// Clean up 2d gameobject
+					gameobjects2D_perFrame[i]->DecrementReferenceCount();
+				}
+				gameobjects2D_perFrame.clear();
+			}
+		}
 	};
 	// In our class there will be two copies of the data required to render a frame:
 	//	* One of them will be getting populated by the data currently being submitted by the application loop thread
@@ -123,7 +155,9 @@ void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_ga
 	auto& constantData_perFrame = s_dataBeingSubmittedByApplicationThread->constantData_perFrame;
 	constantData_perDrawCall.g_transform_localToProjected = constantData_perFrame.g_transform_cameraToProjected * Math::cMatrixTransformation::ConcatenateAffine(constantData_perFrame.g_transform_worldToCamera, constantData_perDrawCall.g_transform_localToWorld);
 
-	s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
+	i_gameObject3D->IsOpaque() ?
+		s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall)) :
+		s_dataBeingSubmittedByApplicationThread->gameobjects3D_translucent_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -185,14 +219,26 @@ void eae6320::Graphics::RenderFrame()
 		s_constantBuffer_perFrame.Update(&constantData_perFrame);
 	}
 
-	// Bind and draw 3d gameobjects
+	// Bind and draw opaque 3d gameobjects
 	{
-		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.size();
 		for (size_t i = 0; i < length; i++)
 		{
-			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].second;
+			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].second;
 			s_constantBuffer_perDrawCall.Update(&constantData_perDrawCall);
-			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->BindAndDraw();
+			s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].first->BindAndDraw();
+		}
+	}
+
+	// Bind and draw translucent 3d gameobjects
+	{
+		// TODO: Sorting is required
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.size();
+		for (size_t i = 0; i < length; i++)
+		{
+			auto& constantData_perDrawCall = s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame[i].second;
+			s_constantBuffer_perDrawCall.Update(&constantData_perDrawCall);
+			s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame[i].first->BindAndDraw();
 		}
 	}
 
@@ -213,14 +259,15 @@ void eae6320::Graphics::RenderFrame()
 	// Once everything has been drawn the data that was submitted for this frame
 	// should be cleaned up and cleared.
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
-	{
-		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+	s_dataBeingRenderedByRenderThread->CleanUp();
+	/*{
+		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.size();
 		for (size_t i = 0; i < length; i++)
 		{
 			// Clean up 3d gameobject
-			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+			s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
 		}
-		s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.clear();
+		s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.clear();
 	}
 	{
 		const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
@@ -230,7 +277,7 @@ void eae6320::Graphics::RenderFrame()
 			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
 		}
 		s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
-	}
+	}*/
 }
 
 // Initialization / Clean Up
@@ -261,6 +308,12 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
 		}
 
 		if (!((result = cTexture::s_manager.Initialize())))
+		{
+			EAE6320_ASSERT(false);
+			goto OnExit;
+		}
+
+		if (!((result = cMaterial::s_manager.Initialize())))
 		{
 			EAE6320_ASSERT(false);
 			goto OnExit;
@@ -336,33 +389,35 @@ OnExit:
 eae6320::cResult eae6320::Graphics::CleanUp()
 {
 	auto result = Results::success;
-	{
+	s_dataBeingSubmittedByApplicationThread->CleanUp();
+	s_dataBeingRenderedByRenderThread->CleanUp();
+	/*{
 		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.empty())
+		if (!s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.empty())
 		{
-			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.size();
+			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.size();
 			for (size_t i = 0; i < length; i++)
 			{
 				// Clean up 3d gameobject
-				s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+				s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
 			}
 
-			s_dataBeingSubmittedByApplicationThread->gameobjects3D_perFrame.clear();
+			s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.clear();
 		}
 
 		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.empty())
+		if (!s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.empty())
 		{
-			const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.size();
+			const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.size();
 			for (size_t i = 0; i < length; i++)
 			{
 				// Clean up 3d gameobject
-				s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame[i].first->DecrementReferenceCount();
+				s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
 			}
-			s_dataBeingRenderedByRenderThread->gameobjects3D_perFrame.clear();
+			s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.clear();
 		}
-	}
-	{
+	}*/
+	/*{
 		// Cleaning up the data submitted by application thread
 		if (!s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.empty())
 		{
@@ -387,7 +442,7 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 			}
 			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
 		}
-	}
+	}*/
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();
@@ -457,6 +512,17 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	}
 	{
 		const auto localResult = cShader::s_manager.CleanUp();
+		if (!localResult)
+		{
+			EAE6320_ASSERT(false);
+			if (result)
+			{
+				result = localResult;
+			}
+		}
+	}
+	{
+		const auto localResult = cMaterial::s_manager.CleanUp();
 		if (!localResult)
 		{
 			EAE6320_ASSERT(false);

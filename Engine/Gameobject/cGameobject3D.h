@@ -67,6 +67,11 @@ namespace eae6320
 
 			void BindAndDraw() const;
 
+			// Opaque Check
+			//-------------
+
+			bool IsOpaque() const { return m_pMaterial->IsOpaque(); }
+
 		private:
 
 			// Initialization / Clean Up
@@ -84,6 +89,8 @@ namespace eae6320
 			Gameplay::cbController* m_controller;
 			Graphics::cMesh::Handle m_mesh;
 			Graphics::cMaterial::Handle m_material;
+			Graphics::cMesh* m_pMesh = nullptr;
+			Graphics::cMaterial* m_pMaterial = nullptr;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 		};
 	}

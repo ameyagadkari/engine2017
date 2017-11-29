@@ -15,14 +15,14 @@ eae6320::cResult eae6320::Graphics::cEffect::InitializePlatformSpecific()
 {
 	// Nothing Special is required to be done here.
 
-	return eae6320::Results::success;
+	return Results::success;
 }
 
 eae6320::cResult eae6320::Graphics::cEffect::CleanUpPlatformSpecific()
 {
 	// Nothing Special is required to be done here.
 
-	return eae6320::Results::success;
+	return Results::success;
 }
 
 // Render

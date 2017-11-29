@@ -47,6 +47,11 @@ namespace eae6320
 
 			void Bind() const;
 
+			// Opaque Check
+			//-------------
+
+			bool IsOpaque() const { return m_pEffect->IsOpaque(); }
+
 			// Data
 			//=====
 
@@ -55,10 +60,12 @@ namespace eae6320
 			cConstantBuffer m_constantBuffer_perMaterial;
 			struct
 			{
+				cTexture* m_pTexture = nullptr;
 				cTexture::Handle m_texture;
 				TextureUnit::eUnitNumber m_unitNumber = TextureUnit::UNKNOWN;
 			}m_maps[TextureUnit::COUNT];
 			cEffect::Handle m_effect;
+			cEffect* m_pEffect = nullptr;
 			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
 			// Implementation

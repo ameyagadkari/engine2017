@@ -193,6 +193,8 @@ local function RegisterAssetToBeBuilt( i_sourceAssetRelativePath, i_assetType, i
 			registeredAssetsToBuild[#registeredAssetsToBuild + 1] = registrationInfo
 			-- And also register any assets that are referenced by this asset
 			assetTypeInfo.RegisterReferencedAssets( uniquePath )
+			-- And also register any assets that are required by this asset
+			assetTypeInfo.RegisterRequiredAssets()
 		else
 			-- If this source asset has already been registered then the information must be identical
 			if assetTypeInfo ~= registrationInfo.assetTypeInfo then
@@ -234,6 +236,15 @@ function cbAssetTypeInfo.RegisterReferencedAssets( i_sourceRelativePath )
 	-- Some asset types reference other assets
 	-- (e.g. materials use textures and effects, and effects use shaders).
 	-- This function registers any assets that are referenced by the given source asset.
+	-- The base class does nothing,
+	-- but you will have to override this function for some asset types.
+end
+
+-- You will need to override the following function for some new asset types, but not for all
+function cbAssetTypeInfo.RegisterRequiredAssets()
+	-- Some asset types require other assets
+	-- (e.g. meshes use vertex input layout shader).
+	-- This function registers any assets that are required by the given source asset.
 	-- The base class does nothing,
 	-- but you will have to override this function for some asset types.
 end
@@ -342,6 +353,10 @@ NewAssetTypeInfo( "meshes",
 		end,
 		ConvertSourceRelativePathToBuiltRelativePath = function( i_sourceRelativePath )
 			return i_sourceRelativePath:gsub("[^.]+$","bmf")
+		end,
+		RegisterRequiredAssets = function()
+			local path_vertexLayoutShader = "Shaders/Vertex/vertexInputLayout_mesh.tusl"
+			RegisterAssetToBeBuilt( path_vertexLayoutShader, "shaders", { "vertex" } )
 		end,
 	}
 )

@@ -5,6 +5,6 @@ return
 	{
 		
 	},
-	effect = "Effects/mesh.tef",
+	effect = "Effects/opaque.tef",
 	texture = "Textures/dino_body.jpg",
 }

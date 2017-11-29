@@ -239,10 +239,8 @@ void eae6320::Graphics::cMaterial::Bind() const
 {
 	// Binding the effect
 	{
-		EAE6320_ASSERT(m_effect);
-		auto const*const effect = cEffect::s_manager.Get(m_effect);
-		EAE6320_ASSERT(effect);
-		effect->Bind();
+		EAE6320_ASSERT(m_pEffect);
+		m_pEffect->Bind();
 	}
 
 	// Binding the texture
@@ -251,10 +249,9 @@ void eae6320::Graphics::cMaterial::Bind() const
 		{
 			if (m_maps[i].m_texture)
 			{
-				auto const*const texture = cTexture::s_manager.Get(m_maps[i].m_texture);
-				EAE6320_ASSERT(texture);
-				// If open gl bind sampler to this unit too
-				texture->Bind(m_maps[i].m_unitNumber);
+				EAE6320_ASSERT(m_maps[i].m_pTexture);
+				// TODO: If open gl bind sampler to this unit too
+				m_maps[i].m_pTexture->Bind(m_maps[i].m_unitNumber);
 			}
 		}
 	}
@@ -281,6 +278,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Initialize(char const*const i_eff
 		EAE6320_ASSERT(false);
 		goto OnExit;
 	}
+	m_pEffect = cEffect::s_manager.Get(m_effect);
 
 	// Load all the texture maps
 
@@ -294,6 +292,7 @@ eae6320::cResult eae6320::Graphics::cMaterial::Initialize(char const*const i_eff
 				goto OnExit;
 			}
 			m_maps[i].m_unitNumber = static_cast<TextureUnit::eUnitNumber>(i);
+			m_maps[i].m_pTexture = cTexture::s_manager.Get(m_maps[i].m_texture);
 		}
 	}
 

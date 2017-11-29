@@ -45,6 +45,11 @@ namespace eae6320
 
 			void Bind() const;
 
+			// Opaque Check
+			//-------------
+
+			bool IsOpaque() const { return !m_renderState.IsAlphaTransparencyEnabled(); }
+
 			// Data
 			//=====
 

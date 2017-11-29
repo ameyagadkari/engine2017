@@ -5,7 +5,7 @@ return
 	{
 		g_color = {0.152941,1.0,0.054901,1.0},
 	},
-	effect = "Effects/unlit.tef",
+	effect = "Effects/opaque.tef",
 	textures = 
 	{
 		color_map = "Textures/default.tga",

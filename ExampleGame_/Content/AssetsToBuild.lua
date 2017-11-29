@@ -7,12 +7,14 @@ return
 	materials =
 	{
 		"Materials/ball.tmaf",
+		"Materials/capsule.tmaf",
+		"Materials/capsule2.tmaf",
 		"Materials/floor.tmaf",
-		"Materials/unlit.tmaf",
 	},
 	meshes =
 	{
 		"Meshes/ball.tmf",
+		"Meshes/capsule.tmf",
 		"Meshes/floor.tmf",
 	},
 	effects =
@@ -21,7 +23,6 @@ return
 	},
 	shaders =
 	{
-		{ path = "Shaders/Vertex/vertexInputLayout_mesh.tusl", arguments = { "vertex" } },
 		{ path = "Shaders/Vertex/vertexInputLayout_sprite.tusl", arguments = { "vertex" } },
 	},
 	textures =

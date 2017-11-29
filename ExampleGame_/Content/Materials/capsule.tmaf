@@ -1,0 +1,13 @@
+-- Floor Material File
+return
+{
+	constant_buffer_data = 
+	{
+		g_color = {1.0,0.0,0.0,0.5},
+	},
+	effect = "Effects/translucent.tef",
+	textures = 
+	{
+		color_map = "Textures/ColorMaps/capsule.jpg",
+	}
+}

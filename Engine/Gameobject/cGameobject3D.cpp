@@ -65,6 +65,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 		EAE6320_ASSERTF(false, "Loading of material failed: \"%s\"", i_materialPath);
 		goto OnExit;
 	}
+	newGameobject3D->m_pMaterial = Graphics::cMaterial::s_manager.Get(newGameobject3D->m_material);
 
 	// Load the mesh
 	{
@@ -74,6 +75,7 @@ eae6320::cResult eae6320::Gameobject::cGameobject3D::Load(const char* const i_pa
 			goto OnExit;
 		}
 	}
+	newGameobject3D->m_pMesh = Graphics::cMesh::s_manager.Get(newGameobject3D->m_mesh);
 
 OnExit:
 
@@ -176,6 +178,9 @@ void eae6320::Gameobject::cGameobject3D::PredictSimulationBasedOnElapsedTime(con
 
 void eae6320::Gameobject::cGameobject3D::BindAndDraw() const
 {
-	Graphics::cMaterial::s_manager.Get(m_material)->Bind();
-	Graphics::cMesh::s_manager.Get(m_mesh)->Draw();
+	EAE6320_ASSERT(m_pMaterial);
+	m_pMaterial->Bind();
+	EAE6320_ASSERT(m_pMesh);
+	m_pMesh->Draw();
 }
+
