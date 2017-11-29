@@ -267,7 +267,12 @@ namespace
 				goto OnExit;
 			}
 
-			if (!((result = LoadIndividualRenderState(io_luaState, "depth_buffering"))))
+			if (!((result = LoadIndividualRenderState(io_luaState, "depth_testing"))))
+			{
+				goto OnExit;
+			}
+
+			if (!((result = LoadIndividualRenderState(io_luaState, "depth_writing"))))
 			{
 				goto OnExit;
 			}
@@ -314,9 +319,13 @@ namespace
 				{
 					eae6320::Graphics::RenderStates::EnableAlphaTransparency(renderStateBits);
 				}
-				else if (!strcmp(i_key, "depth_buffering"))
+				else if (!strcmp(i_key, "depth_testing"))
 				{
-					eae6320::Graphics::RenderStates::EnableDepthBuffering(renderStateBits);
+					eae6320::Graphics::RenderStates::EnableDepthTesting(renderStateBits);
+				}
+				else if (!strcmp(i_key, "depth_writing"))
+				{
+					eae6320::Graphics::RenderStates::EnableDepthWriting(renderStateBits);
 				}
 				else if (!strcmp(i_key, "draw_both_triangle_sides"))
 				{
@@ -333,9 +342,13 @@ namespace
 				{
 					eae6320::Graphics::RenderStates::DisableAlphaTransparency(renderStateBits);
 				}
-				else if (!strcmp(i_key, "depth_buffering"))
+				else if (!strcmp(i_key, "depth_testing"))
 				{
-					eae6320::Graphics::RenderStates::DisableDepthBuffering(renderStateBits);
+					eae6320::Graphics::RenderStates::DisableDepthTesting(renderStateBits);
+				}
+				else if (!strcmp(i_key, "depth_writing"))
+				{
+					eae6320::Graphics::RenderStates::DisableDepthWriting(renderStateBits);
 				}
 				else if (!strcmp(i_key, "draw_both_triangle_sides"))
 				{

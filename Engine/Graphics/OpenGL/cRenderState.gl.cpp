@@ -16,58 +16,67 @@
 void eae6320::Graphics::cRenderState::Bind() const
 {
 	// Alpha Transparency
-	if ( IsAlphaTransparencyEnabled() )
+	if (IsAlphaTransparencyEnabled())
 	{
-		glEnable( GL_BLEND );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glEnable(GL_BLEND);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 		// result = ( source * source.a ) + ( destination * ( 1 - source.a ) )
-		glBlendEquation( GL_FUNC_ADD );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glBlendEquation(GL_FUNC_ADD);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	else
 	{
-		glDisable( GL_BLEND );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glDisable(GL_BLEND);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
-	// Depth Buffering
-	if ( IsDepthBufferingEnabled() )
+	// Depth Testing
+	if (IsDepthTestingEnabled())
 	{
 		// The new fragment becomes a pixel if its depth is less than what has previously been written
-		glEnable( GL_DEPTH_TEST );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		glDepthFunc( GL_LESS );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
-		// Write to the depth buffer
-		glDepthMask( GL_TRUE );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glEnable(GL_DEPTH_TEST);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+		glDepthFunc(GL_LESS);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	else
 	{
 		// Don't test the depth buffer
-		glDisable( GL_DEPTH_TEST );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glDisable(GL_DEPTH_TEST);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+		glDepthFunc(GL_ALWAYS);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	// Depth Testing
+	if (IsDepthWritingEnabled())
+	{
+		// Write to the depth buffer
+		glDepthMask(GL_TRUE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+	}
+	else
+	{
 		// Don't write to the depth buffer
-		glDepthMask( GL_FALSE );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glDepthMask(GL_FALSE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	// Draw Both Triangle Sides
-	if ( ShouldBothTriangleSidesBeDrawn() )
+	if (ShouldBothTriangleSidesBeDrawn())
 	{
 		// Don't cull any triangles
-		glDisable( GL_CULL_FACE );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glDisable(GL_CULL_FACE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	else
 	{
 		// Cull triangles that are facing backwards
-		glEnable( GL_CULL_FACE );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glEnable(GL_CULL_FACE);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 		// Triangles use right-handed winding order
 		// (opposite from Direct3D)
-		glFrontFace( GL_CCW );
-		EAE6320_ASSERT( glGetError() == GL_NO_ERROR );
+		glFrontFace(GL_CCW);
+		EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
 	}
 	// Draw Triangles In Wire Frame Mode
 	if (IsWireFrameModeEnabled())

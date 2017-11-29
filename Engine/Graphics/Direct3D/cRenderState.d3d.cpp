@@ -137,22 +137,41 @@ eae6320::cResult eae6320::Graphics::cRenderState::InitializeFromBits()
 			depthStateDescription.FrontFace.StencilPassOp = depthStateDescription.BackFace.StencilPassOp =
 			depthStateDescription.FrontFace.StencilFailOp = depthStateDescription.BackFace.StencilFailOp =
 			D3D11_STENCIL_OP_KEEP;
-		if (IsDepthBufferingEnabled())
+
+		depthStateDescription.DepthFunc =
+			(depthStateDescription.DepthEnable = static_cast<BOOL>(IsDepthTestingEnabled())) ?
+			// The new fragment becomes a pixel if its depth is less than what has previously been written
+			D3D11_COMPARISON_LESS :
+			// Don't test the depth buffer
+			D3D11_COMPARISON_ALWAYS;
+		/*if (IsDepthTestingEnabled())
 		{
 			// The new fragment becomes a pixel if its depth is less than what has previously been written
 			depthStateDescription.DepthEnable = TRUE;
 			depthStateDescription.DepthFunc = D3D11_COMPARISON_LESS;
-			// Write to the depth buffer
-			depthStateDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		}
 		else
 		{
 			// Don't test the depth buffer
 			depthStateDescription.DepthEnable = FALSE;
 			depthStateDescription.DepthFunc = D3D11_COMPARISON_ALWAYS;
+		}*/
+		depthStateDescription.DepthWriteMask =
+			IsDepthWritingEnabled() ?
+			// Write to the depth buffer
+			D3D11_DEPTH_WRITE_MASK_ALL :
+			// Don't write to the depth buffer
+			D3D11_DEPTH_WRITE_MASK_ZERO;
+		/*if (IsDepthWritingEnabled())
+		{
+			// Write to the depth buffer
+			depthStateDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+		}
+		else
+		{
 			// Don't write to the depth buffer
 			depthStateDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-		}
+		}*/
 		const auto d3DResult = direct3DDevice->CreateDepthStencilState(&depthStateDescription, &m_depthStencilState);
 		if (FAILED(d3DResult))
 		{

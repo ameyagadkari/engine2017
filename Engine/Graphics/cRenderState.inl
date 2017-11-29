@@ -10,43 +10,57 @@
 //==========
 
 // Alpha Transparency
-inline bool eae6320::Graphics::RenderStates::IsAlphaTransparencyEnabled( const uint8_t i_renderStateBits )
+inline bool eae6320::Graphics::RenderStates::IsAlphaTransparencyEnabled(const uint8_t i_renderStateBits)
 {
-	return ( i_renderStateBits & AlphaTransparency ) != 0;
+	return (i_renderStateBits & AlphaTransparency) != 0;
 }
-inline void eae6320::Graphics::RenderStates::EnableAlphaTransparency( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::EnableAlphaTransparency(uint8_t& io_renderStateBits)
 {
 	io_renderStateBits |= AlphaTransparency;
 }
-inline void eae6320::Graphics::RenderStates::DisableAlphaTransparency( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::DisableAlphaTransparency(uint8_t& io_renderStateBits)
 {
 	io_renderStateBits &= ~AlphaTransparency;
 }
 
-// Depth Buffering
-inline bool eae6320::Graphics::RenderStates::IsDepthBufferingEnabled( const uint8_t i_renderStateBits )
+// Depth Testing
+inline bool eae6320::Graphics::RenderStates::IsDepthTestingEnabled(const uint8_t i_renderStateBits)
 {
-	return ( i_renderStateBits & DepthBuffering ) != 0;
+	return (i_renderStateBits & DepthTesting) != 0;
 }
-inline void eae6320::Graphics::RenderStates::EnableDepthBuffering( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::EnableDepthTesting(uint8_t& io_renderStateBits)
 {
-	io_renderStateBits |= DepthBuffering;
+	io_renderStateBits |= DepthTesting;
 }
-inline void eae6320::Graphics::RenderStates::DisableDepthBuffering( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::DisableDepthTesting(uint8_t& io_renderStateBits)
 {
-	io_renderStateBits &= ~DepthBuffering;
+	io_renderStateBits &= ~DepthTesting;
+}
+
+// Depth Writing
+inline bool eae6320::Graphics::RenderStates::IsDepthWritingEnabled(const uint8_t i_renderStateBits)
+{
+	return (i_renderStateBits & DepthWriting) != 0;
+}
+inline void eae6320::Graphics::RenderStates::EnableDepthWriting(uint8_t& io_renderStateBits)
+{
+	io_renderStateBits |= DepthWriting;
+}
+inline void eae6320::Graphics::RenderStates::DisableDepthWriting(uint8_t& io_renderStateBits)
+{
+	io_renderStateBits &= ~DepthWriting;
 }
 
 // Draw Both Triangle Sides
-inline bool eae6320::Graphics::RenderStates::ShouldBothTriangleSidesBeDrawn( const uint8_t i_renderStateBits )
+inline bool eae6320::Graphics::RenderStates::ShouldBothTriangleSidesBeDrawn(const uint8_t i_renderStateBits)
 {
-	return ( i_renderStateBits & DrawBothTriangleSides ) != 0;
+	return (i_renderStateBits & DrawBothTriangleSides) != 0;
 }
-inline void eae6320::Graphics::RenderStates::EnableDrawingBothTriangleSides( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::EnableDrawingBothTriangleSides(uint8_t& io_renderStateBits)
 {
 	io_renderStateBits |= DrawBothTriangleSides;
 }
-inline void eae6320::Graphics::RenderStates::DisableDrawingBothTriangleSides( uint8_t& io_renderStateBits )
+inline void eae6320::Graphics::RenderStates::DisableDrawingBothTriangleSides(uint8_t& io_renderStateBits)
 {
 	io_renderStateBits &= ~DrawBothTriangleSides;
 }
@@ -70,17 +84,22 @@ inline void eae6320::Graphics::RenderStates::DisableWireFrameMode(uint8_t& io_re
 
 inline bool eae6320::Graphics::cRenderState::IsAlphaTransparencyEnabled() const
 {
-	return RenderStates::IsAlphaTransparencyEnabled( m_bits );
+	return RenderStates::IsAlphaTransparencyEnabled(m_bits);
 }
 
-inline bool eae6320::Graphics::cRenderState::IsDepthBufferingEnabled() const
+inline bool eae6320::Graphics::cRenderState::IsDepthTestingEnabled() const
 {
-	return RenderStates::IsDepthBufferingEnabled( m_bits );
+	return RenderStates::IsDepthTestingEnabled(m_bits);
+}
+
+inline bool eae6320::Graphics::cRenderState::IsDepthWritingEnabled() const
+{
+	return RenderStates::IsDepthWritingEnabled(m_bits);
 }
 
 inline bool eae6320::Graphics::cRenderState::ShouldBothTriangleSidesBeDrawn() const
 {
-	return RenderStates::ShouldBothTriangleSidesBeDrawn( m_bits );
+	return RenderStates::ShouldBothTriangleSidesBeDrawn(m_bits);
 }
 
 inline bool eae6320::Graphics::cRenderState::IsWireFrameModeEnabled() const

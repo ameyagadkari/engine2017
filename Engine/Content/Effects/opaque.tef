@@ -8,6 +8,7 @@ return
 	},
 	render_states = 
 	{
-		depth_buffering = true,
+		depth_testing = true,
+		depth_writing = true,
 	},
 }

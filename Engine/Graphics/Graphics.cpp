@@ -234,7 +234,7 @@ void eae6320::Graphics::RenderFrame()
 
 	// Bind and draw translucent 3d gameobjects
 	{
-		/*sort(s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.begin(), s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.end(),
+		sort(s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.begin(), s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.end(),
 			[](const auto& i_this, const auto& i_other)
 		{
 			const auto& transform_worldToCamera = s_dataBeingRenderedByRenderThread->constantData_perFrame.g_transform_worldToCamera;
@@ -243,7 +243,7 @@ void eae6320::Graphics::RenderFrame()
 			const auto& other_translationVectorInCameraSpace = transform_worldToCamera*i_other.second.g_transform_localToWorld.GetTranslation();
 
 			return this_translationVectorInCameraSpace.z < other_translationVectorInCameraSpace.z;
-		});*/
+		});
 		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.size();
 		for (size_t i = 0; i < length; i++)
 		{
@@ -271,24 +271,6 @@ void eae6320::Graphics::RenderFrame()
 	// should be cleaned up and cleared.
 	// so that the struct can be re-used (i.e. so that data for a new frame can be submitted to it)
 	s_dataBeingRenderedByRenderThread->CleanUp();
-	/*{
-		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.size();
-		for (size_t i = 0; i < length; i++)
-		{
-			// Clean up 3d gameobject
-			s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
-		}
-		s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.clear();
-	}
-	{
-		const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
-		for (size_t i = 0; i < length; i++)
-		{
-			// Clean up 2d gameobject
-			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
-		}
-		s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
-	}*/
 }
 
 // Initialization / Clean Up
@@ -402,58 +384,6 @@ eae6320::cResult eae6320::Graphics::CleanUp()
 	auto result = Results::success;
 	s_dataBeingSubmittedByApplicationThread->CleanUp();
 	s_dataBeingRenderedByRenderThread->CleanUp();
-	/*{
-		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.empty())
-		{
-			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.size();
-			for (size_t i = 0; i < length; i++)
-			{
-				// Clean up 3d gameobject
-				s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
-			}
-
-			s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.clear();
-		}
-
-		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.empty())
-		{
-			const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.size();
-			for (size_t i = 0; i < length; i++)
-			{
-				// Clean up 3d gameobject
-				s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame[i].first->DecrementReferenceCount();
-			}
-			s_dataBeingRenderedByRenderThread->gameobjects3D_opaque_perFrame.clear();
-		}
-	}*/
-	/*{
-		// Cleaning up the data submitted by application thread
-		if (!s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.empty())
-		{
-			const auto length = s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.size();
-			for (size_t i = 0; i < length; i++)
-			{
-				// Clean up 2d gameobject
-				s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
-			}
-
-			s_dataBeingSubmittedByApplicationThread->gameobjects2D_perFrame.clear();
-		}
-
-		// Cleaning up the data rendered by render thread
-		if (!s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.empty())
-		{
-			const auto length = s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.size();
-			for (size_t i = 0; i < length; i++)
-			{
-				// Clean up 2d gameobject
-				s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->DecrementReferenceCount();
-			}
-			s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame.clear();
-		}
-	}*/
 
 	{
 		const auto localResult = s_constantBuffer_perFrame.CleanUp();

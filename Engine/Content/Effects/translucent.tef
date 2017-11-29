@@ -9,6 +9,6 @@ return
 	render_states = 
 	{
 		alpha_transparency = true,
-		depth_buffering = true,
+		depth_testing = true,
 	},
 }

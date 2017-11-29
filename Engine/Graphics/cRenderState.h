@@ -31,23 +31,29 @@ namespace eae6320
 			{
 				// Set to enable alpha transparency
 				AlphaTransparency = 1 << 0,
-				// Set to enable both depth testing and writing to the depth buffer
-				DepthBuffering = 1 << 1,
+				// Set to enable depth testing
+				DepthTesting = 1 << 1,
+				// Set to enable depth writing
+				DepthWriting = 1 << 2,
 				// Set to draw triangles regardless of whether they are front-facing or back-facing
 				// (set to disable culling)
-				DrawBothTriangleSides = 1 << 2,
+				DrawBothTriangleSides = 1 << 3,
 				// Set to draw triangles in wire frame mode
-				DrawWireFrame = 1 << 3
+				DrawWireFrame = 1 << 4
 			};
 
 			// Alpha Transparency
 			bool IsAlphaTransparencyEnabled( const uint8_t i_renderStateBits );
 			void EnableAlphaTransparency( uint8_t& io_renderStateBits );
 			void DisableAlphaTransparency( uint8_t& io_renderStateBits );
-			// Depth Buffering
-			bool IsDepthBufferingEnabled( const uint8_t i_renderStateBits );
-			void EnableDepthBuffering( uint8_t& io_renderStateBits );
-			void DisableDepthBuffering( uint8_t& io_renderStateBits );
+			// Depth Testing
+			bool IsDepthTestingEnabled( const uint8_t i_renderStateBits );
+			void EnableDepthTesting( uint8_t& io_renderStateBits );
+			void DisableDepthTesting( uint8_t& io_renderStateBits );
+			// Depth Writing
+			bool IsDepthWritingEnabled(const uint8_t i_renderStateBits);
+			void EnableDepthWriting(uint8_t& io_renderStateBits);
+			void DisableDepthWriting(uint8_t& io_renderStateBits);
 			// Draw Both Triangle Sides
 			bool ShouldBothTriangleSidesBeDrawn( const uint8_t i_renderStateBits );
 			void EnableDrawingBothTriangleSides( uint8_t& io_renderStateBits );
@@ -92,7 +98,8 @@ namespace eae6320
 			//-------
 
 			bool IsAlphaTransparencyEnabled() const;
-			bool IsDepthBufferingEnabled() const;
+			bool IsDepthTestingEnabled() const;
+			bool IsDepthWritingEnabled() const;
 			bool ShouldBothTriangleSidesBeDrawn() const;
 			bool IsWireFrameModeEnabled() const;
 

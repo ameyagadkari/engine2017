@@ -191,7 +191,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		}
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d4_path", gameobject3D, Math::sVector(0.0f, 0.0f, 4.0f), "data/Meshes/capsule.bmf", "data/Materials/capsule2.bmaf", Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d4_path", gameobject3D, Math::sVector(0.0f, -2.0f, 4.0f), "data/Meshes/capsule.bmf", "data/Materials/capsule2.bmaf", Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
@@ -200,7 +200,7 @@ eae6320::cResult eae6320::cExampleGame::Initialize()
 		}
 		{
 			Gameobject::cGameobject3D* gameobject3D;
-			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d3_path", gameobject3D, Math::sVector(2.0f, 0.0f, 2.0f), "data/Meshes/capsule.bmf", "data/Materials/capsule.bmaf", Gameplay::NO_CONTROLLER))))
+			if (!((result = Gameobject::cGameobject3D::Load("fake_go3d3_path", gameobject3D, Math::sVector(2.0f, -2.0f, 0.0f), "data/Meshes/capsule.bmf", "data/Materials/capsule.bmaf", Gameplay::NO_CONTROLLER))))
 			{
 				EAE6320_ASSERT(false);
 				goto OnExit;
