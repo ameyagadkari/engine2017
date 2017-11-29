@@ -17,7 +17,9 @@
 #include <Engine/Gameobject/cGameobject2D.h>
 #include <Engine/Gameobject/cGameobject3D.h>
 #include <Engine/Camera/cbCamera.h>
+#include <algorithm>
 #include <utility>
+
 
 // Static Data Initialization
 //===========================
@@ -232,7 +234,16 @@ void eae6320::Graphics::RenderFrame()
 
 	// Bind and draw translucent 3d gameobjects
 	{
-		// TODO: Sorting is required
+		/*sort(s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.begin(), s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.end(),
+			[](const auto& i_this, const auto& i_other)
+		{
+			const auto& transform_worldToCamera = s_dataBeingRenderedByRenderThread->constantData_perFrame.g_transform_worldToCamera;
+
+			const auto& this_translationVectorInCameraSpace = transform_worldToCamera*i_this.second.g_transform_localToWorld.GetTranslation();
+			const auto& other_translationVectorInCameraSpace = transform_worldToCamera*i_other.second.g_transform_localToWorld.GetTranslation();
+
+			return this_translationVectorInCameraSpace.z < other_translationVectorInCameraSpace.z;
+		});*/
 		const auto length = s_dataBeingRenderedByRenderThread->gameobjects3D_translucent_perFrame.size();
 		for (size_t i = 0; i < length; i++)
 		{
