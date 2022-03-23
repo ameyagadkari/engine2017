@@ -18,6 +18,7 @@
 #include <Engine/Concurrency/cMutex.h>
 #include <Engine/Results/Results.h>
 #include <map>
+#include <string>
 #include <vector>
 
 // Interface
