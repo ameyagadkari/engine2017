@@ -15,19 +15,19 @@ This class builds the exported meshes from MAYA
 
 namespace eae6320
 {
-	namespace Assets
-	{
-		class cMeshBuilder : public cbBuilder
-		{
-			// Inherited Implementation
-			//=========================
+    namespace Assets
+    {
+        class cMeshBuilder : public cbBuilder
+        {
+            // Inherited Implementation
+            //=========================
 
-			// Build
-			//------
+            // Build
+            //------
 
-			cResult Build(const std::vector<std::string>& i_arguments) override;
-		};
-	}
+            cResult Build(const std::vector<std::string>& i_arguments) override;
+        };
+    }
 }
 
-#endif	// EAE6320_CMESHBUILDER_H
+#endif    // EAE6320_CMESHBUILDER_H

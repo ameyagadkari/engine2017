@@ -11,17 +11,17 @@
 //--------------------------
 
 eae6320::Transform::sTransform::sTransform() :
-	position(Math::sVector::zero),
-	orientation(Math::cQuaternion())
+    position(Math::sVector::zero),
+    orientation(Math::cQuaternion())
 {
-	UpdateLocalAxes();
+    UpdateLocalAxes();
 }
 
 eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const Math::cQuaternion i_orientation) :
-	position(i_position),
-	orientation(i_orientation)
+    position(i_position),
+    orientation(i_orientation)
 {
-	UpdateLocalAxes();
+    UpdateLocalAxes();
 }
 
 // Helper Functions Definition
@@ -29,8 +29,8 @@ eae6320::Transform::sTransform::sTransform(const Math::sVector i_position, const
 
 void eae6320::Transform::sTransform::UpdateLocalAxes()
 {
-	auto localToWorld = Math::cMatrixTransformation(orientation, position);
-	localAxes.forward = -localToWorld.GetBackDirection();
-	localAxes.right = localToWorld.GetRightDirection();
-	localAxes.up = localToWorld.GetUpDirection();
+    auto localToWorld = Math::cMatrixTransformation(orientation, position);
+    localAxes.forward = -localToWorld.GetBackDirection();
+    localAxes.right = localToWorld.GetRightDirection();
+    localAxes.up = localToWorld.GetUpDirection();
 }

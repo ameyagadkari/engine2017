@@ -1,5 +1,5 @@
 /*
-	This file can be used by any project that needs to use OpenGL extensions
+    This file can be used by any project that needs to use OpenGL extensions
 */
 
 #ifndef EAE6320_OPENGLEXTENSIONS_FUNCTIONS_H
@@ -14,7 +14,7 @@
 // The extension headers come from https://www.opengl.org/registry/
 #include "20170823/glext.h"
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include "20170817/wglext.h"
+    #include "20170817/wglext.h"
 #endif
 
 #include <Engine/Results/Results.h>
@@ -67,8 +67,8 @@ extern PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv;
 extern PFNGLUSEPROGRAMPROC glUseProgram;
 extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	extern PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
-	extern PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+    extern PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
+    extern PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
 #endif
 
 // Initialization
@@ -76,10 +76,10 @@ extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
 
 namespace eae6320
 {
-	namespace OpenGlExtensions
-	{
-		cResult Load( std::string* const o_errorMessage = nullptr );
-	}
+    namespace OpenGlExtensions
+    {
+        cResult Load( std::string* const o_errorMessage = nullptr );
+    }
 }
 
-#endif	// EAE6320_OPENGLEXTENSIONS_FUNCTIONS_H
+#endif    // EAE6320_OPENGLEXTENSIONS_FUNCTIONS_H

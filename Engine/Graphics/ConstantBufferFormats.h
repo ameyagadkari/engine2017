@@ -1,8 +1,8 @@
 /*
-	This file defines the layout of the constant data
-	that the CPU sends to the GPU
+    This file defines the layout of the constant data
+    that the CPU sends to the GPU
 
-	These must exactly match the constant buffer definitions in shader programs.
+    These must exactly match the constant buffer definitions in shader programs.
 */
 
 #ifndef EAE6320_GRAPHICS_CONSTANTBUFFERFORMATS_H
@@ -18,35 +18,35 @@
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		namespace ConstantBufferFormats
-		{
-			struct sPerFrame
-			{
-				Math::cMatrixTransformation g_transform_worldToCamera;
-				Math::cMatrixTransformation g_transform_cameraToProjected;
+    namespace Graphics
+    {
+        namespace ConstantBufferFormats
+        {
+            struct sPerFrame
+            {
+                Math::cMatrixTransformation g_transform_worldToCamera;
+                Math::cMatrixTransformation g_transform_cameraToProjected;
 
-				float g_elapsedSecondCount_systemTime = 0.0f;
-				float g_elapsedSecondCount_simulationTime = 0.0f;
-				float padding[2];	// For float4 alignment
-			};
+                float g_elapsedSecondCount_systemTime = 0.0f;
+                float g_elapsedSecondCount_simulationTime = 0.0f;
+                float padding[2];    // For float4 alignment
+            };
 
-			struct sPerMaterial
-			{
-				struct
-				{
-					float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
-				} g_color;
-			};
+            struct sPerMaterial
+            {
+                struct
+                {
+                    float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
+                } g_color;
+            };
 
-			struct sPerDrawCall
-			{
-				Math::cMatrixTransformation g_transform_localToWorld;
-				Math::cMatrixTransformation g_transform_localToProjected;
-			};
-		}
-	}
+            struct sPerDrawCall
+            {
+                Math::cMatrixTransformation g_transform_localToWorld;
+                Math::cMatrixTransformation g_transform_localToProjected;
+            };
+        }
+    }
 }
 
-#endif	// EAE6320_GRAPHICS_CONSTANTBUFFERFORMATS_H
+#endif    // EAE6320_GRAPHICS_CONSTANTBUFFERFORMATS_H

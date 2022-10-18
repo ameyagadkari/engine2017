@@ -1,6 +1,6 @@
 /*
-	This struct can be used to represent the state of a
-	rigid body in 3D space
+    This struct can be used to represent the state of a
+    rigid body in 3D space
 */
 
 #ifndef EAE6320_PHYSICS_SRIGIDBODYSTATE_H
@@ -17,11 +17,11 @@
 
 namespace eae6320
 {
-	namespace Transform
-	{
-		struct sTransform;
-		struct sPredictionTransform;
-	}
+    namespace Transform
+    {
+        struct sTransform;
+        struct sPredictionTransform;
+    }
 }
 
 // Struct Declaration
@@ -29,29 +29,29 @@ namespace eae6320
 
 namespace eae6320
 {
-	namespace Physics
-	{
-		struct sRigidBodyState
-		{
-			// Data
-			//=====
+    namespace Physics
+    {
+        struct sRigidBodyState
+        {
+            // Data
+            //=====
 
-			//Math::sVector position;	// In arbitrary units determined by the applicaton's convention
-			Math::sVector velocity;	// Distance per-second
-			//Math::sVector acceleration;	// Distance per-second^2
-			//Math::cQuaternion orientation;
-			Math::sVector angularVelocity_axis_local = Math::sVector(0.0f, 0.0f, 0.0f);	// In local space (not world space)
-			float angularSpeed = 0.5f;	// Radians per-second (positive values rotate right-handed, negative rotate left-handed)
+            //Math::sVector position;    // In arbitrary units determined by the applicaton's convention
+            Math::sVector velocity;    // Distance per-second
+            //Math::sVector acceleration;    // Distance per-second^2
+            //Math::cQuaternion orientation;
+            Math::sVector angularVelocity_axis_local = Math::sVector(0.0f, 0.0f, 0.0f);    // In local space (not world space)
+            float angularSpeed = 0.5f;    // Radians per-second (positive values rotate right-handed, negative rotate left-handed)
 
-			// Interface
-			//==========
+            // Interface
+            //==========
 
-			void UpdatePosition(const float i_secondCountToIntegrate, Transform::sTransform& io_transform) const;
-			void UpdateOrientation(const float i_secondCountToIntegrate, Transform::sTransform& io_transform) const;
-			Math::sVector PredictFuturePosition(const float i_secondCountToExtrapolate, Transform::sPredictionTransform& io_predictionTransform) const;
-			Math::cQuaternion PredictFutureOrientation(const float i_secondCountToExtrapolate, Transform::sPredictionTransform& io_predictionTransform) const;
-		};
-	}
+            void UpdatePosition(const float i_secondCountToIntegrate, Transform::sTransform& io_transform) const;
+            void UpdateOrientation(const float i_secondCountToIntegrate, Transform::sTransform& io_transform) const;
+            Math::sVector PredictFuturePosition(const float i_secondCountToExtrapolate, Transform::sPredictionTransform& io_predictionTransform) const;
+            Math::cQuaternion PredictFutureOrientation(const float i_secondCountToExtrapolate, Transform::sPredictionTransform& io_predictionTransform) const;
+        };
+    }
 }
 
-#endif	// EAE6320_PHYSICS_SRIGIDBODYSTATE_H
+#endif    // EAE6320_PHYSICS_SRIGIDBODYSTATE_H

@@ -1,5 +1,5 @@
 /*
-	This file manages time-related functionality
+    This file manages time-related functionality
 */
 
 #ifndef EAE6320_TIME_H
@@ -16,23 +16,23 @@
 
 namespace eae6320
 {
-	namespace Time
-	{
-		// Time
-		//-----
+    namespace Time
+    {
+        // Time
+        //-----
 
-		uint64_t GetCurrentSystemTimeTickCount();
+        uint64_t GetCurrentSystemTimeTickCount();
 
-		double ConvertTicksToSeconds( const uint64_t i_tickCount );
-		uint64_t ConvertSecondsToTicks( const double i_secondCount );
-		double ConvertRatePerSecondToRatePerTick( const double i_rate_perSecond );
+        double ConvertTicksToSeconds( const uint64_t i_tickCount );
+        uint64_t ConvertSecondsToTicks( const double i_secondCount );
+        double ConvertRatePerSecondToRatePerTick( const double i_rate_perSecond );
 
-		// Initialization / Clean Up
-		//--------------------------
+        // Initialization / Clean Up
+        //--------------------------
 
-		cResult Initialize();
-		cResult CleanUp();
-	}
+        cResult Initialize();
+        cResult CleanUp();
+    }
 }
 
-#endif	// EAE6320_TIME_H
+#endif    // EAE6320_TIME_H

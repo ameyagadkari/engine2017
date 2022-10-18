@@ -1,5 +1,5 @@
 /*
-	This class represents a rotation or an orientation
+    This class represents a rotation or an orientation
 */
 
 #ifndef EAE6320_MATH_CQUATERNION_H
@@ -10,10 +10,10 @@
 
 namespace eae6320
 {
-	namespace Math
-	{
-		struct sVector;
-	}
+    namespace Math
+    {
+        struct sVector;
+    }
 }
 
 // Class Declaration
@@ -21,83 +21,83 @@ namespace eae6320
 
 namespace eae6320
 {
-	namespace Math
-	{
-		class cQuaternion
-		{
-			// Interface
-			//==========
+    namespace Math
+    {
+        class cQuaternion
+        {
+            // Interface
+            //==========
 
-		public:
+        public:
 
-			// RotateVector
-			//-------------
+            // RotateVector
+            //-------------
 
-			sVector operator *(const sVector& i_rhs) const;
+            sVector operator *(const sVector& i_rhs) const;
 
-			// Multiplication
-			//---------------
+            // Multiplication
+            //---------------
 
-			cQuaternion operator *( const cQuaternion& i_rhs ) const;
+            cQuaternion operator *( const cQuaternion& i_rhs ) const;
 
-			// Inversion
-			//----------
+            // Inversion
+            //----------
 
-			void Invert();
-			cQuaternion GetInverse() const;
+            void Invert();
+            cQuaternion GetInverse() const;
 
-			// Normalization
-			//--------------
+            // Normalization
+            //--------------
 
-			void Normalize();
-			cQuaternion GetNormalized() const;
+            void Normalize();
+            cQuaternion GetNormalized() const;
 
-			// Products
-			//---------
+            // Products
+            //---------
 
-			friend float Dot( const cQuaternion& i_lhs, const cQuaternion& i_rhs );
+            friend float Dot( const cQuaternion& i_lhs, const cQuaternion& i_rhs );
 
-			// Access
-			//-------
+            // Access
+            //-------
 
-			// Calculating the forward direction involves a variation of calculating a full transformation matrix;
-			// if the transform is already available or will need to be calculated in the future
-			// it is more efficient to extract the forward direction from that
-			sVector CalculateForwardDirection() const;
+            // Calculating the forward direction involves a variation of calculating a full transformation matrix;
+            // if the transform is already available or will need to be calculated in the future
+            // it is more efficient to extract the forward direction from that
+            sVector CalculateForwardDirection() const;
 
-			// Initialization / Shut Down
-			//---------------------------
+            // Initialization / Shut Down
+            //---------------------------
 
-			cQuaternion() = default;	// Identity
-			cQuaternion( const float i_angleInRadians,	// A positive angle rotates counter-clockwise (right-handed) around the axis
-				const sVector& i_axisOfRotation_normalized );
+            cQuaternion() = default;    // Identity
+            cQuaternion( const float i_angleInRadians,    // A positive angle rotates counter-clockwise (right-handed) around the axis
+                const sVector& i_axisOfRotation_normalized );
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-		private:
+        private:
 
-			float m_w = 1.0f;
-			float m_x = 0.0f;
-			float m_y = 0.0f;
-			float m_z = 0.0f;
+            float m_w = 1.0f;
+            float m_x = 0.0f;
+            float m_y = 0.0f;
+            float m_z = 0.0f;
 
-			// Implementation
-			//===============
+            // Implementation
+            //===============
 
-			// Initialization / Shut Down
-			//---------------------------
+            // Initialization / Shut Down
+            //---------------------------
 
-			cQuaternion( const float i_w, const float i_x, const float i_y, const float i_z );
+            cQuaternion( const float i_w, const float i_x, const float i_y, const float i_z );
 
-			// Friends
-			//========
+            // Friends
+            //========
 
-			friend class cMatrixTransformation;
-		};
-	}
+            friend class cMatrixTransformation;
+        };
+    }
 }
 
 #include "cQuaternion.inl"
 
-#endif	// EAE6320_MATH_CQUATERNION_H
+#endif    // EAE6320_MATH_CQUATERNION_H

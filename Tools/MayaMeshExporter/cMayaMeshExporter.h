@@ -1,5 +1,5 @@
 /*
-	This class defines a Maya file translator
+    This class defines a Maya file translator
 */
 
 #ifndef EAE6320_CMAYAMESHEXPORTER_H
@@ -19,36 +19,36 @@
 
 namespace eae6320
 {
-	class cMayaMeshExporter : public MPxFileTranslator
-	{
-		// Inherited Interface
-		//====================
+    class cMayaMeshExporter : public MPxFileTranslator
+    {
+        // Inherited Interface
+        //====================
 
-	public:
+    public:
 
-		// The writer method is what exports the file
-		bool haveWriteMethod() const override { return true; }
-		MStatus writer( const MFileObject& i_file, const MString& i_options, FileAccessMode i_mode ) override;
+        // The writer method is what exports the file
+        bool haveWriteMethod() const override { return true; }
+        MStatus writer( const MFileObject& i_file, const MString& i_options, FileAccessMode i_mode ) override;
 
-		// We won't implement a Maya importer in our class.
-		// If you wanted to be able to import your mesh files into Maya
-		// you would have to return true from haveReadMethod()
-		// and then implement reader().
+        // We won't implement a Maya importer in our class.
+        // If you wanted to be able to import your mesh files into Maya
+        // you would have to return true from haveReadMethod()
+        // and then implement reader().
 
-		// You can choose what the default file extension of an exported mesh is
-		MString defaultExtension() const override { return "tmf"; }	// A string literal like "mesh" will convert automatically to an MString
+        // You can choose what the default file extension of an exported mesh is
+        MString defaultExtension() const override { return "tmf"; }    // A string literal like "mesh" will convert automatically to an MString
 
-		// Interface
-		//==========
+        // Interface
+        //==========
 
-	public:
+    public:
 
-		// This function is used by Maya to create an instance of the exporter (see registerFileTranslator() in EntryPoint.cpp)
-		static void* Create()
-		{
-			return new cMayaMeshExporter;
-		}
-	};
+        // This function is used by Maya to create an instance of the exporter (see registerFileTranslator() in EntryPoint.cpp)
+        static void* Create()
+        {
+            return new cMayaMeshExporter;
+        }
+    };
 }
 
-#endif	// EAE6320_CMAYAMESHEXPORTER_H
+#endif    // EAE6320_CMAYAMESHEXPORTER_H

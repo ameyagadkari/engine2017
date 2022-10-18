@@ -16,32 +16,32 @@ This file manages the postion and orientation of 3D game entities
 
 namespace eae6320
 {
-	namespace Transform
-	{
-		struct sTransform
-		{
-			// Interface
-			//==========
+    namespace Transform
+    {
+        struct sTransform
+        {
+            // Interface
+            //==========
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			sTransform();
-			sTransform(const Math::sVector i_position, const Math::cQuaternion i_orientation);
+            sTransform();
+            sTransform(const Math::sVector i_position, const Math::cQuaternion i_orientation);
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-			sLocalAxes localAxes;
-			Math::sVector position;
-			Math::cQuaternion orientation;
+            sLocalAxes localAxes;
+            Math::sVector position;
+            Math::cQuaternion orientation;
 
-			// Helper Functions Declaration
-			//-----------------------------
+            // Helper Functions Declaration
+            //-----------------------------
 
-			void UpdateLocalAxes();
-		};
-	}
+            void UpdateLocalAxes();
+        };
+    }
 }
 
-#endif	// EAE6320_STRANSFORM_H
+#endif    // EAE6320_STRANSFORM_H

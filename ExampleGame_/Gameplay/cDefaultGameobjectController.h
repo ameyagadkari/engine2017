@@ -9,40 +9,40 @@
 
 namespace eae6320
 {
-	namespace Gameplay
-	{
-		// Class Declaration
-		//==================
+    namespace Gameplay
+    {
+        // Class Declaration
+        //==================
 
-		class DefaultController final : cbController
-		{
-			// Initialization / Clean Up
-			//--------------------------
-		public:
-			static DefaultController* Initialize() { return new DefaultController(); }
-		private:
-			DefaultController()
-			{
-				m_rigidBodyState.angularSpeed = 1.0f;
-				m_rigidBodyState.angularVelocity_axis_local = Math::sVector(0.0f, 1.0f, 0.0f);
-			}
+        class DefaultController final : cbController
+        {
+            // Initialization / Clean Up
+            //--------------------------
+        public:
+            static DefaultController* Initialize() { return new DefaultController(); }
+        private:
+            DefaultController()
+            {
+                m_rigidBodyState.angularSpeed = 1.0f;
+                m_rigidBodyState.angularVelocity_axis_local = Math::sVector(0.0f, 1.0f, 0.0f);
+            }
 
-			//Data
-			//====
+            //Data
+            //====
 
-			Physics::sRigidBodyState m_rigidBodyState;
+            Physics::sRigidBodyState m_rigidBodyState;
 
-			// Interface
-			//==========
+            // Interface
+            //==========
 
-			void UpdatePosition(const float i_elapsedSecondCount_sinceLastUpdate, Transform::sTransform& io_transform) override;
-			void UpdateOrientation(const float i_elapsedSecondCount_sinceLastUpdate, Transform::sTransform& io_transform) override;
-			void UpdatePosition(const Transform::sTransform& i_transform) override;
-			void UpdateOrientation(const Transform::sTransform& i_transform) override;
-			void UpdatePosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform) override;
-			void UpdateOrientation(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform) override;
-		};
-	}
+            void UpdatePosition(const float i_elapsedSecondCount_sinceLastUpdate, Transform::sTransform& io_transform) override;
+            void UpdateOrientation(const float i_elapsedSecondCount_sinceLastUpdate, Transform::sTransform& io_transform) override;
+            void UpdatePosition(const Transform::sTransform& i_transform) override;
+            void UpdateOrientation(const Transform::sTransform& i_transform) override;
+            void UpdatePosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform) override;
+            void UpdateOrientation(const float i_elapsedSecondCount_sinceLastSimulationUpdate, Transform::sPredictionTransform& io_predictionTransform) override;
+        };
+    }
 }
 
 #endif // !EAE6320_DEFAULT_GAMEOBJECT_CONTROLLER_H

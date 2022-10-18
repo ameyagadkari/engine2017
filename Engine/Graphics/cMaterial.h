@@ -17,73 +17,73 @@ A material is an encapsulation for a texture, a constant buffer and an effect.
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		class cMaterial
-		{
-			// Interface
-			//==========
+    namespace Graphics
+    {
+        class cMaterial
+        {
+            // Interface
+            //==========
 
-		public:
-			// Assets
-			//-------
-			using Handle = Assets::cHandle<cMaterial>;
-			static Assets::cManager<cMaterial> s_manager;
+        public:
+            // Assets
+            //-------
+            using Handle = Assets::cHandle<cMaterial>;
+            static Assets::cManager<cMaterial> s_manager;
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			static cResult Load(const char* const i_path, cMaterial*& o_material);
+            static cResult Load(const char* const i_path, cMaterial*& o_material);
 
-			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMaterial);
+            EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cMaterial);
 
-			// Reference Counting
-			//-------------------
+            // Reference Counting
+            //-------------------
 
-			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+            EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
 
-			// Render
-			//-------
+            // Render
+            //-------
 
-			void Bind() const;
+            void Bind() const;
 
-			// Opaque Check
-			//-------------
+            // Opaque Check
+            //-------------
 
-			bool IsOpaque() const { return m_pEffect->IsOpaque(); }
+            bool IsOpaque() const { return m_pEffect->IsOpaque(); }
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-		private:
+        private:
 
-			cConstantBuffer m_constantBuffer_perMaterial;
-			struct
-			{
-				cTexture* m_pTexture = nullptr;
-				cTexture::Handle m_texture;
-				TextureUnit::eUnitNumber m_unitNumber = TextureUnit::UNKNOWN;
-			}m_maps[TextureUnit::COUNT];
-			cEffect::Handle m_effect;
-			cEffect* m_pEffect = nullptr;
-			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+            cConstantBuffer m_constantBuffer_perMaterial;
+            struct
+            {
+                cTexture* m_pTexture = nullptr;
+                cTexture::Handle m_texture;
+                TextureUnit::eUnitNumber m_unitNumber = TextureUnit::UNKNOWN;
+            }m_maps[TextureUnit::COUNT];
+            cEffect::Handle m_effect;
+            cEffect* m_pEffect = nullptr;
+            EAE6320_ASSETS_DECLAREREFERENCECOUNT();
 
-			// Implementation
-			//===============
+            // Implementation
+            //===============
 
-		private:
+        private:
 
-			// Initialization / Clean Up Platform Independent
-			//-----------------------------------------------
+            // Initialization / Clean Up Platform Independent
+            //-----------------------------------------------
 
-			cMaterial() :m_constantBuffer_perMaterial(ConstantBufferTypes::PerMaterial) {}
-			~cMaterial();
+            cMaterial() :m_constantBuffer_perMaterial(ConstantBufferTypes::PerMaterial) {}
+            ~cMaterial();
 
-			cResult Initialize(char const*const i_effectPath, char const*const*const i_texturepaths, void const*const i_data);
-			cResult CleanUp();
+            cResult Initialize(char const*const i_effectPath, char const*const*const i_texturepaths, void const*const i_data);
+            cResult CleanUp();
 
-		};
-	}
+        };
+    }
 }
 
-#endif	// EAE6320_GRAPHICS_CMATERIAL_H
+#endif    // EAE6320_GRAPHICS_CMATERIAL_H

@@ -12,15 +12,15 @@ This file contains representation for a half(half of float)
 
 namespace eae6320
 {
-	namespace Math
-	{
+    namespace Math
+    {
 
-		// Interface
-		//==========
+        // Interface
+        //==========
 
-		uint16_t MakeHalfFromFloat(const float i_value);
-		float MakeFloatFromHalf(const uint16_t i_value);
-	}
+        uint16_t MakeHalfFromFloat(const float i_value);
+        float MakeFloatFromHalf(const uint16_t i_value);
+    }
 }
 
 #endif //  EAE6320_MATH_HALF_H

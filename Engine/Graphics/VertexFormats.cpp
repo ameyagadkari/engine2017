@@ -8,11 +8,11 @@
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		namespace VertexFormats
-		{
-			eLayoutType g_layoutType;
-		}
-	}
+    namespace Graphics
+    {
+        namespace VertexFormats
+        {
+            eLayoutType g_layoutType;
+        }
+    }
 }

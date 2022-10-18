@@ -16,15 +16,15 @@ A gameobject 3d class is a representation for a 3D gameobject on screen
 
 namespace eae6320
 {
-	namespace Gameplay
-	{
-		class cbController;
-		enum eControllerType : uint8_t
-		{
-			NO_CONTROLLER,
-			DEFAULT_GAMEOBJECT_CONTROLLER
-		};
-	}
+    namespace Gameplay
+    {
+        class cbController;
+        enum eControllerType : uint8_t
+        {
+            NO_CONTROLLER,
+            DEFAULT_GAMEOBJECT_CONTROLLER
+        };
+    }
 }
 
 // Class Declaration
@@ -32,68 +32,68 @@ namespace eae6320
 
 namespace eae6320
 {
-	namespace Gameobject
-	{
-		class cGameobject3D
-		{
-			// Interface
-			//==========
+    namespace Gameobject
+    {
+        class cGameobject3D
+        {
+            // Interface
+            //==========
 
-		public:
+        public:
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_materialPath, const Gameplay::eControllerType i_controllerType);
+            static cResult Load(const char* const i_path, cGameobject3D*& o_gameobject3D, const Math::sVector& i_position, char const * const i_meshPath, char const * const i_materialPath, const Gameplay::eControllerType i_controllerType);
 
-			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject3D);
+            EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cGameobject3D);
 
-			// Reference Counting
-			//-------------------
+            // Reference Counting
+            //-------------------
 
-			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+            EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
 
-			cResult CleanUp();
+            cResult CleanUp();
 
-			//Update
-			//------
+            //Update
+            //------
 
-			void UpdateBasedOnSimulationInput() const;
-			void UpdateBasedOnSimulationTime(const float i_elapsedSecondCount_sinceLastUpdate);
-			void PredictSimulationBasedOnElapsedTime(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
+            void UpdateBasedOnSimulationInput() const;
+            void UpdateBasedOnSimulationTime(const float i_elapsedSecondCount_sinceLastUpdate);
+            void PredictSimulationBasedOnElapsedTime(const float i_elapsedSecondCount_sinceLastSimulationUpdate);
 
-			// Render
-			//-------
+            // Render
+            //-------
 
-			void BindAndDraw() const;
+            void BindAndDraw() const;
 
-			// Opaque Check
-			//-------------
+            // Opaque Check
+            //-------------
 
-			bool IsOpaque() const { return m_pMaterial->IsOpaque(); }
+            bool IsOpaque() const { return m_pMaterial->IsOpaque(); }
 
-		private:
+        private:
 
-			// Initialization / Clean Up
-			//--------------------------
-			explicit cGameobject3D(const Math::sVector& i_position, const Gameplay::eControllerType i_controllerType);
-			~cGameobject3D() { CleanUp(); }
+            // Initialization / Clean Up
+            //--------------------------
+            explicit cGameobject3D(const Math::sVector& i_position, const Gameplay::eControllerType i_controllerType);
+            ~cGameobject3D() { CleanUp(); }
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-		public:
-			Transform::sPredictionTransform m_predictionTransform;
-		private:
-			Transform::sTransform m_transform;
-			Gameplay::cbController* m_controller;
-			Graphics::cMesh::Handle m_mesh;
-			Graphics::cMaterial::Handle m_material;
-			Graphics::cMesh* m_pMesh = nullptr;
-			Graphics::cMaterial* m_pMaterial = nullptr;
-			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
-		};
-	}
+        public:
+            Transform::sPredictionTransform m_predictionTransform;
+        private:
+            Transform::sTransform m_transform;
+            Gameplay::cbController* m_controller;
+            Graphics::cMesh::Handle m_mesh;
+            Graphics::cMaterial::Handle m_material;
+            Graphics::cMesh* m_pMesh = nullptr;
+            Graphics::cMaterial* m_pMaterial = nullptr;
+            EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+        };
+    }
 }
 
 #endif // EAE6320_GAMEOBJECT_CGAMEOBJECT3D_H

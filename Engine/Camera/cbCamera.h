@@ -16,55 +16,55 @@ It also provides an interface to store multiple cameras
 
 namespace eae6320
 {
-	namespace Camera
-	{
-		// Class Declaration
-		//==================
+    namespace Camera
+    {
+        // Class Declaration
+        //==================
 
-		class cbCamera
-		{
-		public:
-			// Data
-			//=====
+        class cbCamera
+        {
+        public:
+            // Data
+            //=====
 
-			Math::cMatrixTransformation m_projectedTransformPerspective;
-			Transform::sPredictionTransform m_predictionTransform;
+            Math::cMatrixTransformation m_projectedTransformPerspective;
+            Transform::sPredictionTransform m_predictionTransform;
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			virtual ~cbCamera() = default;
+            virtual ~cbCamera() = default;
 
-			// Interface
-			//==========
+            // Interface
+            //==========
 
-			virtual void UpdatePosition(const float i_elapsedSecondCount_sinceLastUpdate) = 0;
-			virtual void UpdateOrientation(const float i_elapsedSecondCount_sinceLastUpdate) = 0;
-			virtual void UpdatePosition() = 0;
-			virtual void UpdateOrientation() = 0;
-			virtual void PredictPosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate) = 0;
-			virtual void PredictOrientation(const float i_elapsedSecondCount_sinceLastSimulationUpdate) = 0;
-		protected:
-			// Initialization / Clean Up
-			//--------------------------
+            virtual void UpdatePosition(const float i_elapsedSecondCount_sinceLastUpdate) = 0;
+            virtual void UpdateOrientation(const float i_elapsedSecondCount_sinceLastUpdate) = 0;
+            virtual void UpdatePosition() = 0;
+            virtual void UpdateOrientation() = 0;
+            virtual void PredictPosition(const float i_elapsedSecondCount_sinceLastSimulationUpdate) = 0;
+            virtual void PredictOrientation(const float i_elapsedSecondCount_sinceLastSimulationUpdate) = 0;
+        protected:
+            // Initialization / Clean Up
+            //--------------------------
 
-			explicit cbCamera(
-				const Math::sVector i_position,
-				const Math::cQuaternion i_orientation,
-				const float i_fieldOfView,
-				const float i_nearPlaneDistance,
-				const float i_farPlaneDistance);
+            explicit cbCamera(
+                const Math::sVector i_position,
+                const Math::cQuaternion i_orientation,
+                const float i_fieldOfView,
+                const float i_nearPlaneDistance,
+                const float i_farPlaneDistance);
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-			Transform::sTransform m_transform;
-			float m_fieldOfView;
-			float m_nearPlaneDistance;
-			float m_farPlaneDistance;
-			float m_aspectRatio;
-		};
-	}
+            Transform::sTransform m_transform;
+            float m_fieldOfView;
+            float m_nearPlaneDistance;
+            float m_farPlaneDistance;
+            float m_aspectRatio;
+        };
+    }
 }
 
-#endif	// EAE6320_APPLICATION_CBCAMERA_H
+#endif    // EAE6320_APPLICATION_CBCAMERA_H

@@ -13,4 +13,4 @@ extern bool g_isWindowInFocus;
 extern bool g_isMouseTracked;
 extern POINTS g_mousePoints;
 
-#endif	// EAE6320_APPLICATION_USERINPUT_WIN_H
+#endif    // EAE6320_APPLICATION_USERINPUT_WIN_H

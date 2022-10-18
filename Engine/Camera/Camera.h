@@ -16,25 +16,25 @@ They also provide methods to circulate through all the cameras and change the cu
 
 namespace eae6320
 {
-	namespace Camera
-	{
-		class cbCamera;
-	}
+    namespace Camera
+    {
+        class cbCamera;
+    }
 }
 
 namespace eae6320
 {
-	namespace Camera
-	{
+    namespace Camera
+    {
 
-		// Interface
-		//==========
+        // Interface
+        //==========
 
-		void ChangeCurrentCamera();
-		void AddNewCamera(cbCamera*const& i_camera);
-		cbCamera*const& GetCurrentCamera();
-		cResult CleanUp();
-	}
+        void ChangeCurrentCamera();
+        void AddNewCamera(cbCamera*const& i_camera);
+        cbCamera*const& GetCurrentCamera();
+        cResult CleanUp();
+    }
 }
 
 #endif // EAE6320_APPLICATION_CAMERA_H

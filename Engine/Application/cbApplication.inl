@@ -14,7 +14,7 @@
 
 inline void eae6320::Application::cbApplication::SetSimulationRate( const float i_simulationRate )
 {
-	m_simulationRate = i_simulationRate;
+    m_simulationRate = i_simulationRate;
 }
 
-#endif	// EAE6320_APPLICATION_CBAPPLICATION_INL
+#endif    // EAE6320_APPLICATION_CBAPPLICATION_INL

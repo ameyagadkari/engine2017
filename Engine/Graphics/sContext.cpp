@@ -18,6 +18,6 @@ eae6320::Graphics::sContext eae6320::Graphics::sContext::g_context;
 
 eae6320::Graphics::sContext::~sContext()
 {
-	const auto result = CleanUp();
-	EAE6320_ASSERT( result );
+    const auto result = CleanUp();
+    EAE6320_ASSERT( result );
 }

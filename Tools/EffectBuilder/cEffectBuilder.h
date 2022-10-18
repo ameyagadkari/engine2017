@@ -15,19 +15,19 @@ This class builds the effects
 
 namespace eae6320
 {
-	namespace Assets
-	{
-		class cEffectBuilder : public cbBuilder
-		{
-			// Inherited Implementation
-			//=========================
+    namespace Assets
+    {
+        class cEffectBuilder : public cbBuilder
+        {
+            // Inherited Implementation
+            //=========================
 
-			// Build
-			//------
+            // Build
+            //------
 
-			cResult Build(const std::vector<std::string>& i_arguments) override;
-		};
-	}
+            cResult Build(const std::vector<std::string>& i_arguments) override;
+        };
+    }
 }
 
-#endif	// EAE6320_CEFFECTBUILDER_H
+#endif    // EAE6320_CEFFECTBUILDER_H

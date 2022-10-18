@@ -1,5 +1,5 @@
 /*
-	This file lists external prebuilt libraries that this library depends on
+    This file lists external prebuilt libraries that this library depends on
 */
 
 #pragma once

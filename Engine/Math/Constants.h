@@ -1,5 +1,5 @@
 /*
-	This file contains math-related constants
+    This file contains math-related constants
 */
 
 #ifndef EAE6320_MATH_CONSTANTS_H
@@ -7,10 +7,10 @@
 
 namespace eae6320
 {
-	namespace Math
-	{
-		constexpr float pi = 3.141592654f;
-	}
+    namespace Math
+    {
+        constexpr float pi = 3.141592654f;
+    }
 }
 
-#endif	// EAE6320_MATH_CONSTANTS_H
+#endif    // EAE6320_MATH_CONSTANTS_H
