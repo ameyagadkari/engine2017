@@ -13,7 +13,7 @@
 // Entry Point
 //============
 
-int WINAPI WinMain(const HINSTANCE i_thisInstanceOfTheApplication, HINSTANCE, char* i_commandLineArguments, const int i_initialWindowDisplayState )
+int WINAPI WinMain(_In_ const HINSTANCE i_thisInstanceOfTheApplication, _In_opt_ HINSTANCE, _In_ char* i_commandLineArguments, _In_ const int i_initialWindowDisplayState )
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //_crtBreakAlloc = 305;

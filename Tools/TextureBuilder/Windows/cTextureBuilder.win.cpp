@@ -128,7 +128,7 @@ namespace
         // Textures used by the GPU have size restrictions that standard images don't
         DirectX::ScratchImage resizedImage;
         {
-            const auto flippedMetadata = flippedImage.GetMetadata();
+            const auto& flippedMetadata = flippedImage.GetMetadata();
             auto targetWidth = flippedMetadata.width;
             auto targetHeight = flippedMetadata.height;
             {

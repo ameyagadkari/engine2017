@@ -144,7 +144,7 @@ void eae6320::Application::cbApplication::UpdateUntilExit()
             }
             // Calculate the simulation time that has elapsed based on the simulation rate
             tickCount_toSimulate_elapsedSinceLastLoop =
-                static_cast<uint64_t>(static_cast<float>(tickCount_systemTime_elapsedSinceLastLoop * m_simulationRate));
+                static_cast<uint64_t>(tickCount_systemTime_elapsedSinceLastLoop * static_cast<double>(m_simulationRate));
         }
         // Update any application state that isn't part of the simulation
         {

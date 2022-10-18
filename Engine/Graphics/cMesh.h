@@ -77,7 +77,7 @@ namespace eae6320
             //=====
 
         private:
-            uint32_t m_numberOfIndices;
+            uint32_t m_numberOfIndices = 0;
 #if defined( EAE6320_PLATFORM_D3D )
             // A vertex buffer holds the data for each vertex
             ID3D11Buffer* m_vertexBuffer = nullptr;
@@ -88,7 +88,7 @@ namespace eae6320
             static ID3D11InputLayout* ms_vertexInputLayout;
 #elif defined( EAE6320_PLATFORM_GL )
             // A vertex array encapsulates the vertex data, index data and the vertex input layout
-            GLuint m_vertexArrayId;
+            GLuint m_vertexArrayId = 0;
 #ifdef EAE6320_GRAPHICS_ISDEVICEDEBUGINFOENABLED
             // OpenGL debuggers don't seem to support freeing the vertex buffer
             // and letting the vertex array object hold a reference to it,

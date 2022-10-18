@@ -29,7 +29,7 @@ namespace eae6320
 
                 float g_elapsedSecondCount_systemTime = 0.0f;
                 float g_elapsedSecondCount_simulationTime = 0.0f;
-                float padding[2];    // For float4 alignment
+                float padding[2] = { 0.0f,0.0f };    // For float4 alignment
             };
 
             struct sPerMaterial

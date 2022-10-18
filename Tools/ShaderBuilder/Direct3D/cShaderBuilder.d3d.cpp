@@ -81,7 +81,7 @@ eae6320::cResult eae6320::Assets::cShaderBuilder::Build(const Graphics::ShaderTy
             goto OnExit;
         }
         constexpr auto entryPoint = "main";
-        const char* targetProfile = nullptr;
+        const char* targetProfile = "";
         switch (i_shaderType)
         {
         case Graphics::ShaderTypes::Vertex:

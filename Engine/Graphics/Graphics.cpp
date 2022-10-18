@@ -45,7 +45,7 @@ namespace
         eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
         eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
         std::string screenShotPath_perFrame;
-        float clearDepth_perFrame;
+        float clearDepth_perFrame = 0.0f;
 
         void CleanUp()
         {
