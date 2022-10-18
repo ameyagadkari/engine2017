@@ -41,6 +41,7 @@ private:
 
     virtual const char* GetMainWindowName() const = 0;
     virtual const char* GetMainWindowClassName() const = 0;
+    virtual const char* GetExecutableDirectory() const = 0;
     virtual const WORD* GetLargeIconId() const { return nullptr; }
     virtual const WORD* GetSmallIconId() const { return nullptr; }
 

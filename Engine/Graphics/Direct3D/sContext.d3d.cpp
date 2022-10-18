@@ -9,6 +9,11 @@
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
 
+#include <External/DirectXTex/Includes.h>
+
+#include <codecvt>
+#include <sstream>
+
 // Helper Function Declarations
 //=============================
 
@@ -52,6 +57,12 @@ OnExit:
 eae6320::cResult eae6320::Graphics::sContext::CleanUp()
 {
     const auto result = Results::success;
+
+    if (backBuffer)
+    {
+        backBuffer->Release();
+        backBuffer = nullptr;
+    }
 
     if (renderTargetView)
     {
@@ -109,6 +120,43 @@ void eae6320::Graphics::sContext::BufferSwap() const
     constexpr unsigned int presentNextFrame = 0;
     const auto result = swapChain->Present(swapImmediately, presentNextFrame);
     EAE6320_ASSERT(SUCCEEDED(result));
+}
+
+// User actions
+//-------------
+void eae6320::Graphics::sContext::TakeScreenShot(const char* const i_filePath) const
+{
+    DirectX::ScratchImage image = {};
+
+    // Captures a Direct3D render target and returns an image
+    {
+        const auto d3DResult = DirectX::CaptureTexture(g_context.direct3DDevice, g_context.direct3DImmediateContext, backBuffer, image);
+        if (FAILED(d3DResult))
+        {
+            EAE6320_ASSERTF(false, "Couldn't copy the back buffer to cpu side memory (HRESULT %#010x)", d3DResult);
+            eae6320::Logging::OutputError("DirectXTex failed to copy the back buffer to cpu side memory (HRESULT %#010x)", d3DResult);
+            return;
+        }
+    }
+
+    // Saves a single image to a WIC-supported bitmap file
+    {
+        EAE6320_ASSERTF(image.GetImageCount() == 1, "There shouldn't be more than one image (mip) in back buffer since MSAA is disabled");
+        constexpr unsigned int imageIndex = 0;
+        constexpr DWORD useDefaultBehavior = DirectX::WIC_FLAGS_NONE;
+        const GUID saveImageAsPng = DirectX::GetWICCodec(DirectX::WIC_CODEC_PNG);
+
+        // DirectXTex uses wide strings
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> stringConverter;
+        const std::wstring path(stringConverter.from_bytes(i_filePath));
+
+        const auto d3DResult = DirectX::SaveToWICFile(image.GetImages()[imageIndex], useDefaultBehavior, saveImageAsPng, path.c_str());
+        if (FAILED(d3DResult))
+        {
+            EAE6320_ASSERTF(false, "Couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
+            eae6320::Logging::OutputError("WIC couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
+        }
+    }
 }
 
 // Helper Function Definitions
@@ -181,7 +229,6 @@ namespace
     {
         auto result = eae6320::Results::success;
 
-        ID3D11Texture2D* backBuffer = nullptr;
         ID3D11Texture2D* depthBuffer = nullptr;
 
         auto& g_context = eae6320::Graphics::sContext::g_context;
@@ -198,7 +245,7 @@ namespace
             // Get the back buffer from the swap chain
             {
                 constexpr unsigned int bufferIndex = 0;    // This must be 0 since the swap chain is discarded
-                const auto d3DResult = g_context.swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+                const auto d3DResult = g_context.swapChain->GetBuffer(bufferIndex, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&g_context.backBuffer));
                 if (FAILED(d3DResult))
                 {
                     result = eae6320::Results::Failure;
@@ -210,7 +257,7 @@ namespace
             // Create the view
             {
                 constexpr D3D11_RENDER_TARGET_VIEW_DESC* const accessAllSubResources = nullptr;
-                const auto d3DResult = direct3DDevice->CreateRenderTargetView(backBuffer, accessAllSubResources, &g_context.renderTargetView);
+                const auto d3DResult = direct3DDevice->CreateRenderTargetView(g_context.backBuffer, accessAllSubResources, &g_context.renderTargetView);
                 if (FAILED(d3DResult))
                 {
                     result = eae6320::Results::Failure;
@@ -289,13 +336,8 @@ namespace
 
     OnExit:
 
-        // Regardless of success or failure the two texture resources should be released
+        // Regardless of success or failure we release the depth buffer, the back buffer is used for screenshot ability later if requested
         // (if successful the views will hold internal references to the resources)
-        if (backBuffer)
-        {
-            backBuffer->Release();
-            backBuffer = nullptr;
-        }
         if (depthBuffer)
         {
             depthBuffer->Release();

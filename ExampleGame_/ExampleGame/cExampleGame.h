@@ -63,6 +63,8 @@ namespace eae6320
         // If you want to try creating your own a convenient website that will help is: http://icoconvert.com/
         const WORD* GetLargeIconId() const override { static constexpr WORD iconId_large = IDI_EAEALIEN; return &iconId_large; }
         const WORD* GetSmallIconId() const override { static constexpr WORD iconId_small = IDI_EAEALIEN; return &iconId_small; }
+        // Get the working directory of this application
+        const char* GetExecutableDirectory() const override;
 #endif
 
         // Run

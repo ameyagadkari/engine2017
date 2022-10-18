@@ -44,6 +44,7 @@ namespace
         std::vector<std::pair<eae6320::Gameobject::cGameobject3D*, eae6320::Graphics::ConstantBufferFormats::sPerDrawCall>> gameobjects3D_translucent_perFrame;
         eae6320::Graphics::ConstantBufferFormats::sPerFrame constantData_perFrame;
         eae6320::Graphics::ColorFormats::sColor clearColor_perFrame;
+        std::string screenShotPath_perFrame;
         float clearDepth_perFrame;
 
         void CleanUp()
@@ -75,6 +76,7 @@ namespace
                 }
                 gameobjects2D_perFrame.clear();
             }
+            screenShotPath_perFrame.clear();
         }
     };
     // In our class there will be two copies of the data required to render a frame:
@@ -160,6 +162,11 @@ void eae6320::Graphics::SubmitGameobject3D(Gameobject::cGameobject3D*const& i_ga
     i_gameObject3D->IsOpaque() ?
         s_dataBeingSubmittedByApplicationThread->gameobjects3D_opaque_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall)) :
         s_dataBeingSubmittedByApplicationThread->gameobjects3D_translucent_perFrame.push_back(std::make_pair(i_gameObject3D, constantData_perDrawCall));
+}
+
+void eae6320::Graphics::SubmitScreenShotName(const std::string& i_filePath)
+{
+    s_dataBeingSubmittedByApplicationThread->screenShotPath_perFrame = i_filePath;
 }
 
 eae6320::cResult eae6320::Graphics::WaitUntilDataForANewFrameCanBeSubmitted(const unsigned int i_timeToWait_inMilliseconds)
@@ -260,6 +267,12 @@ void eae6320::Graphics::RenderFrame()
         {
             s_dataBeingRenderedByRenderThread->gameobjects2D_perFrame[i]->BindAndDraw();
         }
+    }
+
+    // Take a screen shot if user requests it
+    if (!s_dataBeingRenderedByRenderThread->screenShotPath_perFrame.empty())
+    {
+        g_context.TakeScreenShot(s_dataBeingRenderedByRenderThread->screenShotPath_perFrame.c_str());
     }
 
     // Everything has been drawn to the "back buffer", which is just an image in memory.

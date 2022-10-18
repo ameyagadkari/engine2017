@@ -12,6 +12,7 @@
 #include <Engine/Results/Results.h>
 
 #include <cstdint>
+#include <string>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
 #include <Engine/Windows/Includes.h>
@@ -70,6 +71,7 @@ namespace eae6320
         void SubmitCamera(Camera::cbCamera*const& i_camera);
         void SubmitGameobject2D(Gameobject::cGameobject2D*const& i_gameObject2D);
         void SubmitGameobject3D(Gameobject::cGameobject3D*const& i_gameObject3D);
+        void SubmitScreenShotName(const std::string& i_filePath);
 
         // When the application is ready to submit data for a new frame
         // it should call this before submitting anything

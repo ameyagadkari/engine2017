@@ -93,6 +93,7 @@ namespace eae6320
 
             cResult GetCurrentResolution(uint16_t& o_width, uint16_t& o_height) const;
             void SetSimulationRate(const float i_simulationRate);
+            uint64_t GetCurrentSystemTime()const { return m_tickCount_systemTime_current; }
 
             // Run
             //------

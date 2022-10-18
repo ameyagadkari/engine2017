@@ -281,6 +281,9 @@
     <None Include="cRenderState.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\External\DirectXTex\DirectXTex.vcxproj">
+      <Project>{7c13076e-4d47-4949-9b1f-ee1e8e7cb01b}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\External\OpenGlExtensions\OpenGlExtensions.vcxproj">
       <Project>{433f6d20-943a-4d7b-bffe-bc9dfc932e6e}</Project>
     </ProjectReference>

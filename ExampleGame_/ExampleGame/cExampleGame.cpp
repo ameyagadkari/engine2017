@@ -4,14 +4,17 @@
 #include "cExampleGame.h"
 
 #include <Engine/Asserts/Asserts.h>
-#include <Engine/UserInput/UserInput.h>
+#include <Engine/Camera/Camera.h>
+#include <Engine/Camera/cFirstPersonCamera.h>
+#include <Engine/Camera/cbCamera.h>
 #include <Engine/Gameobject/cGameobject2D.h>
 #include <Engine/Gameobject/cGameobject3D.h>
 #include <Engine/Graphics/Graphics.h>
-#include <Engine/Camera/Camera.h>
-#include <Engine/Camera/cbCamera.h>
-#include <Engine/Camera/cFirstPersonCamera.h>
+#include <Engine/Logging/Logging.h>
+#include <Engine/Platform/Platform.h>
+#include <Engine/UserInput/UserInput.h>
 
+#include <sstream>
 #include <vector>
 
 namespace
@@ -22,10 +25,30 @@ namespace
     auto currentElapsedTime = 0.0f;
     size_t s_2D_GameObject_Size = 0;
     size_t s_3D_GameObject_Size = 0;
+    std::string s_executableDirectory = "";
+    auto s_wasExecutableDirectorySearched = false;
+    auto s_takeNextFrameScreenShot = false;
 }
 
 // Inherited Implementation
 //=========================
+
+// Configuration
+//--------------
+
+const char* eae6320::cExampleGame::GetExecutableDirectory() const
+{
+    if (!s_wasExecutableDirectorySearched)
+    {
+        s_wasExecutableDirectorySearched = true;
+        std::string errorMessage;
+        if (!Platform::GetCurrentWorkingDirectory(s_executableDirectory, &errorMessage))
+        {
+            eae6320::Logging::OutputError(errorMessage.c_str());
+        }
+    }
+    return s_executableDirectory.c_str();
+}
 
 // Run
 //----
@@ -45,6 +68,12 @@ void eae6320::cExampleGame::UpdateBasedOnInput()
     {
         s_isPaused = !s_isPaused;
         s_isPaused ? SetSimulationRate(0.0f) : SetSimulationRate(1.0f);
+    }
+
+    // Is the user pressing the L key?
+    if (UserInput::IsKeyPressedOnce(UserInput::KeyCodes::L))
+    {
+        s_takeNextFrameScreenShot = true;
     }
 }
 
@@ -155,6 +184,44 @@ void eae6320::cExampleGame::SubmitDataToBeRendered(const float i_elapsedSecondCo
         for (size_t i = 0; i < s_2D_GameObject_Size; i++)
         {
             Graphics::SubmitGameobject2D(s_2D_GameObject[i]);
+        }
+    }
+
+    // Generate and submit screenshot name if requested
+    {
+        if (s_takeNextFrameScreenShot)
+        {
+            s_takeNextFrameScreenShot = false;
+
+            constexpr char* const screenShotPrefix = "Screenshot_";
+            constexpr char* const screenShotExt = ".png";
+
+            std::stringstream screenShotFileName;
+            screenShotFileName << screenShotPrefix << GetCurrentSystemTime() << screenShotExt;
+
+            const std::string exeDir = GetExecutableDirectory();
+
+            if (!exeDir.empty())
+            {
+                std::stringstream screenShotPath;
+                constexpr char* const screenShotDirectory = "\\Screenshots\\";
+                screenShotPath << exeDir << screenShotDirectory;
+                std::string errorMessage;
+                if (Platform::CreateDirectoryIfItDoesntExist(screenShotPath.str(), &errorMessage))
+                {
+                    screenShotPath << screenShotFileName.str();
+                    Graphics::SubmitScreenShotName(screenShotPath.str());
+                }
+                else
+                {
+                    eae6320::Logging::OutputError("Unable to create screenshot directory: \"%s\", screenshots will be saved in the root directory of the executable", errorMessage.c_str());
+                    Graphics::SubmitScreenShotName(screenShotFileName.str());
+                }
+            }
+            else
+            {
+                Graphics::SubmitScreenShotName(screenShotFileName.str());
+            }
         }
     }
 }
@@ -269,6 +336,17 @@ eae6320::cResult eae6320::cExampleGame::CleanUp()
             s_3D_GameObject[i]->DecrementReferenceCount();
         }
         s_3D_GameObject.clear();
+    }
+
+    // Reset all globals
+    {
+        s_isPaused = false;
+        currentElapsedTime = 0.0f;
+        s_2D_GameObject_Size = 0;
+        s_3D_GameObject_Size = 0;
+        s_executableDirectory = "";
+        s_wasExecutableDirectorySearched = false;
+        s_takeNextFrameScreenShot = false;
     }
 
     return Results::success;

@@ -170,7 +170,7 @@ eae6320::cResult eae6320::Windows::CreateDirectoryIfItDoesntExist(const std::str
             {
                 if (o_errorMessage)
                 {
-                    *o_errorMessage = GetFormattedSystemMessage(result);
+                    *o_errorMessage = GetFormattedSystemMessage(windowsErrorCode);
                 }
                 result = Results::Failure;
                 goto OnExit;
@@ -190,6 +190,50 @@ eae6320::cResult eae6320::Windows::CreateDirectoryIfItDoesntExist(const std::str
 OnExit:
 
     return result;
+}
+
+eae6320::cResult eae6320::Windows::GetCurrentWorkingDirectory(std::string& o_filePath, std::string* const o_errorMessage)
+{
+    constexpr DWORD maxCharacterCount = MAX_PATH;
+    char buffer[maxCharacterCount];
+    {
+        // Ask Windows to get the path of the executable file of the current process
+        const auto characterCount = GetModuleFileName(NULL, buffer, maxCharacterCount);
+        if (characterCount > 0)
+        {
+            if (characterCount <= maxCharacterCount)
+            {
+                o_filePath = buffer;
+                // Remove the executable name from file path
+                const auto pos_slash = o_filePath.find_last_of("\\/");
+                o_filePath = o_filePath.substr(0, pos_slash);
+                return Results::success;
+            }
+            else
+            {
+                // If you're seeing this error you will need to increase maxCharacterCount
+                if (o_errorMessage)
+                {
+                    std::ostringstream errorMessage;
+                    errorMessage << "The current working directory requires " << characterCount <<
+                        " characters and the provided buffer only has room for " << maxCharacterCount;
+                    *o_errorMessage = errorMessage.str();
+                }
+                return Results::Failure;
+            }
+        }
+        else
+        {
+            if (o_errorMessage)
+            {
+                const auto windowsErrorMessage = GetLastSystemError();
+                std::ostringstream errorMessage;
+                errorMessage << "Windows failed to get the current working directory: " << windowsErrorMessage;
+                *o_errorMessage = errorMessage.str();
+            }
+            return Results::Failure;
+        }
+    }
 }
 
 bool eae6320::Windows::DoesFileExist(const char* const i_path, std::string* const o_errorMessage)

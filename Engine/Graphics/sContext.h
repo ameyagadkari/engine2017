@@ -31,6 +31,7 @@
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct IDXGISwapChain;
+struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 struct ID3D11DepthStencilView;
 #endif
@@ -72,6 +73,8 @@ namespace eae6320
             // that are rendered to in sequence,
             // with a single one being currently displayed
             IDXGISwapChain* swapChain = nullptr;
+            // The back buffer which is implicily created when the swap chain is created
+            ID3D11Texture2D* backBuffer = nullptr;
             // In Direct3D "views" are objects that allow a texture to be used a particular way:
             // A render target view allows a texture to have color rendered to it
             ID3D11RenderTargetView* renderTargetView = nullptr;
@@ -104,6 +107,10 @@ namespace eae6320
             void ClearImageBuffer(const ColorFormats::sColor i_color) const;
             void ClearDepthBuffer(const float i_depth) const;
             void BufferSwap() const;
+
+            // User actions
+            //-------------
+            void TakeScreenShot(const char* const i_filePath) const;
 
             // Implementation
             //===============

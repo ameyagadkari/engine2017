@@ -22,6 +22,11 @@ eae6320::cResult eae6320::Platform::CreateDirectoryIfItDoesntExist( const std::s
     return Windows::CreateDirectoryIfItDoesntExist( i_filePath, o_errorMessage );
 }
 
+eae6320::cResult eae6320::Platform::GetCurrentWorkingDirectory(std::string& o_filePath, std::string* const o_errorMessage)
+{
+    return Windows::GetCurrentWorkingDirectory( o_filePath, o_errorMessage );
+}
+
 bool eae6320::Platform::DoesFileExist( const char* const i_path, std::string* const o_errorMessage )
 {
     return Windows::DoesFileExist( i_path, o_errorMessage );

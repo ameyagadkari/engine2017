@@ -42,6 +42,7 @@ namespace eae6320
             const bool i_shouldFunctionFailIfTargetAlreadyExists = false, const bool i_shouldTargetFileTimeBeModified = false,
             std::string* o_errorMessage = nullptr );
         cResult CreateDirectoryIfItDoesntExist( const std::string& i_filePath, std::string* const o_errorMessage = nullptr );
+        cResult GetCurrentWorkingDirectory( std::string& o_filePath, std::string* const o_errorMessage = nullptr );
         bool DoesFileExist( const char* const i_path, std::string* const o_errorMessage = nullptr );
         cResult ExecuteCommand( const char* const i_command, DWORD* const o_exitCode = nullptr, std::string* const o_errorMessage = nullptr );
         cResult ExecuteCommand( const char* const i_path, const char* const i_optionalArguments = nullptr,
