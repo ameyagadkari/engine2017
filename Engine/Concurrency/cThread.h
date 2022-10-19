@@ -1,7 +1,7 @@
 /*
-	A thread executes code sequentially,
-	and using more than one thread in a program allows
-	more than one task to execute concurrently.
+    A thread executes code sequentially,
+    and using more than one thread in a program allows
+    more than one task to execute concurrently.
 */
 
 #ifndef EAE6320_CONCURRENCY_CTHREAD_H
@@ -16,7 +16,7 @@
 #include <functional>
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	#include <Engine/Windows/Includes.h>
+    #include <Engine/Windows/Includes.h>
 #endif
 
 // Forward Declarations
@@ -24,10 +24,10 @@
 
 namespace eae6320
 {
-	namespace Concurrency
-	{
-		class cThread;
-	}
+    namespace Concurrency
+    {
+        class cThread;
+    }
 }
 
 // Class Declaration
@@ -35,57 +35,57 @@ namespace eae6320
 
 namespace eae6320
 {
-	namespace Concurrency
-	{
-		// A thread executes a single user-provided function,
-		// and returns (stops executing) as soon as that user-provided function returns.
-		// A user-provided function takes a single void pointer as input,
-		// which allows shared data to be passed to the new thread.
-		using fThreadFunction = std::function<void(void* const)>;
+    namespace Concurrency
+    {
+        // A thread executes a single user-provided function,
+        // and returns (stops executing) as soon as that user-provided function returns.
+        // A user-provided function takes a single void pointer as input,
+        // which allows shared data to be passed to the new thread.
+        using fThreadFunction = std::function<void(void* const)>;
 
-		class cThread
-		{
-			// Interface
-			//==========
+        class cThread
+        {
+            // Interface
+            //==========
 
-		public:
+        public:
 
-			// Calling this function will cause the specified function to be called in a new thread with the specified user data as input
-			cResult Start( fThreadFunction const i_threadFunction, void* const io_userData = nullptr );
+            // Calling this function will cause the specified function to be called in a new thread with the specified user data as input
+            cResult Start( fThreadFunction const i_threadFunction, void* const io_userData = nullptr );
 
-			// This function will return as soon as any one of the following happens:
-			//	* The thread stops
-			//	* The thread has already stopped
-			//		* If the thread has already stopped when the function is called then it will return immediately
-			//	* The specified time-out period elapses
-			//		* If the caller doesn't specify a time-out period then the function will never return until the thread stops
-			//		* If the caller specifies a time-out period of zero then the function will return immediately
-			friend cResult WaitForThreadToStop( cThread& io_thread, const unsigned int i_timeToWait_inMilliseconds = Constants::dontTimeOut );
+            // This function will return as soon as any one of the following happens:
+            //    * The thread stops
+            //    * The thread has already stopped
+            //        * If the thread has already stopped when the function is called then it will return immediately
+            //    * The specified time-out period elapses
+            //        * If the caller doesn't specify a time-out period then the function will never return until the thread stops
+            //        * If the caller specifies a time-out period of zero then the function will return immediately
+            friend cResult WaitForThreadToStop( cThread& io_thread, const unsigned int i_timeToWait_inMilliseconds = Constants::dontTimeOut );
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			cThread();
-			~cThread();
+            cThread();
+            ~cThread();
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-		private:
+        private:
 
 #if defined( EAE6320_PLATFORM_WINDOWS )
-			HANDLE m_handle = nullptr;
+            HANDLE m_handle = nullptr;
 #endif
 
-			// Implementation
-			//===============
+            // Implementation
+            //===============
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			cResult CleanUp();
-		};
-	}
+            cResult CleanUp();
+        };
+    }
 }
 
-#endif	// EAE6320_CONCURRENCY_CTHREAD_H
+#endif    // EAE6320_CONCURRENCY_CTHREAD_H

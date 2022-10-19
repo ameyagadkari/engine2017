@@ -11,5 +11,5 @@
 
 eae6320::Graphics::cSamplerState::~cSamplerState()
 {
-	CleanUp();
+    CleanUp();
 }

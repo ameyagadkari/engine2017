@@ -1,5 +1,5 @@
 /*
-	This class builds shaders
+    This class builds shaders
 */
 
 #ifndef EAE6320_CSHADERBUILDER_H
@@ -18,27 +18,27 @@
 
 namespace eae6320
 {
-	namespace Assets
-	{
-		class cShaderBuilder : public cbBuilder
-		{
-			// Inherited Implementation
-			//=========================
+    namespace Assets
+    {
+        class cShaderBuilder : public cbBuilder
+        {
+            // Inherited Implementation
+            //=========================
 
-			// Build
-			//------
+            // Build
+            //------
 
-			cResult Build(const std::vector<std::string>& i_arguments) override;
+            cResult Build(const std::vector<std::string>& i_arguments) override;
 
-			// Implementation
-			//===============
+            // Implementation
+            //===============
 
-			// Build
-			//------
+            // Build
+            //------
 
-			cResult Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments) const;
-		};
-	}
+            cResult Build(const Graphics::ShaderTypes::eType i_shaderType, const std::vector<std::string>& i_arguments) const;
+        };
+    }
 }
 
-#endif	// EAE6320_CSHADERBUILDER_H
+#endif    // EAE6320_CSHADERBUILDER_H

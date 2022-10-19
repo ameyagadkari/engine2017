@@ -1,5 +1,5 @@
 /*
-	This file can be included by a project that wants to use Direct3D
+    This file can be included by a project that wants to use Direct3D
 */
 
 #ifndef EAE6320_ENGINE_GRAPHICS_D3D_INCLUDES_H
@@ -11,4 +11,4 @@
 #include <d3d11.h>
 #include <dxgi.h>
 
-#endif	// EAE6320_ENGINE_GRAPHICS_D3D_INCLUDES_H
+#endif    // EAE6320_ENGINE_GRAPHICS_D3D_INCLUDES_H

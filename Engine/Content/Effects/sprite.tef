@@ -1,0 +1,14 @@
+-- Effect File for Sprite
+return
+{
+	shaders = 
+	{
+		vertex = "Shaders/Vertex/sprite.tusl",
+		fragment = "Shaders/Fragment/sprite.tusl",
+	},
+	render_states = 
+	{
+		alpha_transparency = true,
+		draw_both_triangle_sides = true,
+	},
+}

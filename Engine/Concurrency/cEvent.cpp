@@ -13,6 +13,6 @@
 
 eae6320::Concurrency::cEvent::~cEvent()
 {
-	const auto result = CleanUp();
-	EAE6320_ASSERT( result );
+    const auto result = CleanUp();
+    EAE6320_ASSERT( result );
 }

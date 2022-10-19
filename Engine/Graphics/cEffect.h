@@ -15,76 +15,81 @@ An effect is an encapsulation for the shaders and the render state.
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		class cEffect
-		{
-			// Interface
-			//==========
+    namespace Graphics
+    {
+        class cEffect
+        {
+            // Interface
+            //==========
 
-		public:
-			// Assets
-			//-------
-			using Handle = Assets::cHandle<cEffect>;
-			static Assets::cManager<cEffect> s_manager;
+        public:
+            // Assets
+            //-------
+            using Handle = Assets::cHandle<cEffect>;
+            static Assets::cManager<cEffect> s_manager;
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			static cResult Load(const char* const i_path, cEffect*& o_effect, const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
+            static cResult Load(const char* const i_path, cEffect*& o_effect);
 
-			EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
+            EAE6320_ASSETS_DECLAREDELETEDREFERENCECOUNTEDFUNCTIONS(cEffect);
 
-			// Reference Counting
-			//-------------------
+            // Reference Counting
+            //-------------------
 
-			EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
+            EAE6320_ASSETS_DECLAREREFERENCECOUNTINGFUNCTIONS();
 
-			// Render
-			//-------
+            // Render
+            //-------
 
-			void Bind() const;
+            void Bind() const;
 
-			// Data
-			//=====
+            // Opaque Check
+            //-------------
 
-		private:		
+            bool IsOpaque() const { return !m_renderState.IsAlphaTransparencyEnabled(); }
+
+            // Data
+            //=====
+
+        private:        
 
 #if defined( EAE6320_PLATFORM_GL )
-			GLuint m_programId = 0;
+            GLuint m_programId = 0;
 #endif
-			cShader::Handle m_vertexShader;
-			cShader::Handle m_fragmentShader;
-			EAE6320_ASSETS_DECLAREREFERENCECOUNT();
-			cRenderState m_renderState;
+            cShader::Handle m_vertexShader;
+            cShader::Handle m_fragmentShader;
+            EAE6320_ASSETS_DECLAREREFERENCECOUNT();
+            cRenderState m_renderState;
 
-			// Implementation
-			//===============
+            // Implementation
+            //===============
 
-		private:
+        private:
 
-			// Initialization / Clean Up Platform Independent
-			//-----------------------------------------------
+            // Initialization / Clean Up Platform Independent
+            //-----------------------------------------------
 
-			cEffect() = default;
-			~cEffect();
+            cEffect() = default;
+            ~cEffect();
 
-			cResult Initialize(const std::string& i_vertexShaderName, const std::string& i_fragmentShaderName, const uint8_t i_renderState);
-			cResult CleanUp();
+            cResult Initialize(char const*const i_vertexShaderPath, char const*const i_fragmentShaderPath, const uint8_t i_renderState);
+            cResult CleanUp();
 
-			// Initialization / Clean Up Platform Dependent
-			//---------------------------------------------
+            // Initialization / Clean Up Platform Dependent
+            //---------------------------------------------
 
-			cResult InitializePlatformSpecific();
-			cResult CleanUpPlatformSpecific();
+            cResult InitializePlatformSpecific();
+            cResult CleanUpPlatformSpecific();
 
-			// Render
-			//-------
+            // Render
+            //-------
 
-			void BindPlatformSpecific() const;
+            void BindPlatformSpecific() const;
 
-		};
-	}
+        };
+    }
 }
 
-#endif	// EAE6320_GRAPHICS_CEFFECT_H
+#endif    // EAE6320_GRAPHICS_CEFFECT_H

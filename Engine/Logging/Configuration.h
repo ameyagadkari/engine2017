@@ -1,6 +1,6 @@
 /*
-	This file provides configurable settings
-	that can be used to control logging behavior
+    This file provides configurable settings
+    that can be used to control logging behavior
 */
 
 #ifndef EAE6320_LOGGING_CONFIGURATION_H
@@ -15,7 +15,7 @@
 // but it can be done after every message is output during development
 // if an application is crashing so that no messages are lost
 #ifdef _DEBUG
-	#define EAE6320_LOGGING_FLUSH_BUFFER_AFTER_EVERY_MESSAGE
+    #define EAE6320_LOGGING_FLUSH_BUFFER_AFTER_EVERY_MESSAGE
 #endif
 
-#endif	// EAE6320_LOGGING_CONFIGURATION_H
+#endif    // EAE6320_LOGGING_CONFIGURATION_H

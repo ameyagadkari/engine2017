@@ -3,18 +3,32 @@
 # ("ignore" meaning that they won't be included
 # in the git repository)
 
+# EAE6320 Temporary Files
+#========================
+
+/temp
+
 # Visual Studio
 #==============
 
 # Explicitly temporary files
+#---------------------------
+
 /.vs
 
-# User settings for a solution
+# Solution User Settings
+#-----------------------
+
 *.suo
-# User settings for a project
+
+# Project User Settings
+#----------------------
+
 *.vcxproj.user
 
 # Intellisense
+#-------------
+
 *.sdf
 *.opensdf
 /ipch
@@ -22,19 +36,17 @@
 *.VC.VC.opendb
 
 # Profiling
+#----------
+
 *.psess
 *.vsp
 *.vspx
 *.sap
 
-# Resource Editing
+# Resources
+#----------
+
 *.aps
-
-# Temporary Files
-#================
-
-# Generated files
-/temp
 
 # Windows
 #========
@@ -46,3 +58,8 @@ Thumbs.db
 #=====
 
 **/.mayaswatches
+
+# User-defined log files
+#=======================
+
+*.log

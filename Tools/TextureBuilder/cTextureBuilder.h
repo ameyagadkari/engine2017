@@ -1,5 +1,5 @@
 /*
-	This class builds hardware-ready textures from source images
+    This class builds hardware-ready textures from source images
 */
 
 #ifndef EAE6320_CTEXTUREBUILDER_H
@@ -15,19 +15,19 @@
 
 namespace eae6320
 {
-	namespace Assets
-	{
-		class cTextureBuilder : public cbBuilder
-		{
-			// Inherited Implementation
-			//=========================
+    namespace Assets
+    {
+        class cTextureBuilder : public cbBuilder
+        {
+            // Inherited Implementation
+            //=========================
 
-			// Build
-			//------
+            // Build
+            //------
 
-			cResult Build(const std::vector<std::string>& i_arguments) override;
-		};
-	}
+            cResult Build(const std::vector<std::string>& i_arguments) override;
+        };
+    }
 }
 
-#endif	// EAE6320_CTEXTUREBUILDER_H
+#endif    // EAE6320_CTEXTUREBUILDER_H

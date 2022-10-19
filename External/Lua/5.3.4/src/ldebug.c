@@ -31,11 +31,11 @@
 
 
 
-#define noLuaClosure(f)		((f) == NULL || (f)->c.tt == LUA_TCCL)
+#define noLuaClosure(f)        ((f) == NULL || (f)->c.tt == LUA_TCCL)
 
 
 /* Active Lua function (given call info) */
-#define ci_func(ci)		(clLvalue((ci)->func))
+#define ci_func(ci)        (clLvalue((ci)->func))
 
 
 static const char *funcnamefromcode (lua_State *L, CallInfo *ci,
@@ -629,19 +629,19 @@ const char *luaG_addinfo (lua_State *L, const char *msg, TString *src,
                                         int line) {
   char buff[
 #if defined( EAE6320_PLATFORM_WINDOWS )
-	  260
+      260
 #else
-	  LUA_IDSIZE
+      LUA_IDSIZE
 #endif
   ];
   if (src)
     luaO_chunkid(buff, getstr(src),
 #if defined( EAE6320_PLATFORM_WINDOWS )
-		260
+        260
 #else
-		LUA_IDSIZE
+        LUA_IDSIZE
 #endif
-	);
+    );
   else {  /* no source available; use "?" instead */
     buff[0] = '?'; buff[1] = '\0';
   }

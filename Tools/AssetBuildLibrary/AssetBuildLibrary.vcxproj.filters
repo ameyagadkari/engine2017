@@ -9,6 +9,6 @@
     <ClInclude Include="Functions.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AssetBuildFunctions.lua" />
+    <CustomBuild Include="AssetBuildFunctions.lua" />
   </ItemGroup>
 </Project>

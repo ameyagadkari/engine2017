@@ -1,0 +1,13 @@
+-- UnLit Material File for mesh
+return
+{
+	constant_buffer_data = 
+	{
+		g_color = {0.152941,1.0,0.054901,1.0},
+	},
+	effect = "Effects/opaque.tef",
+	textures = 
+	{
+		color_map = "Textures/default.tga",
+	}
+}

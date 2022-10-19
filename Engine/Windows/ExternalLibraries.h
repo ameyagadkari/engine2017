@@ -1,5 +1,5 @@
 /*
-	This file lists external prebuilt libraries that this library depends on
+    This file lists external prebuilt libraries that this library depends on
 */
 
 #pragma once
@@ -13,8 +13,8 @@
 
 #if defined( EAE6320_PLATFORM_GL )
 
-	#pragma comment( lib, "Gdi32.lib" )
-	#pragma comment( lib, "Opengl32.lib" )
-	#pragma comment( lib, "User32.lib" )
+    #pragma comment( lib, "Gdi32.lib" )
+    #pragma comment( lib, "Opengl32.lib" )
+    #pragma comment( lib, "User32.lib" )
 
 #endif

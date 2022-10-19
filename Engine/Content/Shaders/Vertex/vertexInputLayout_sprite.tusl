@@ -1,0 +1,32 @@
+#if defined( EAE6320_PLATFORM_D3D )
+
+/*
+	This vertex shader is used to create a Direct3D vertex input layout object for sprite
+*/
+
+#include <Shaders/shaders.inc>
+
+// Entry Point
+//============
+
+void main(
+
+	// Input
+	//======
+	
+	in const float2 i_position : POSITION,
+	in const float2 i_uvs : TEXCOORD,
+
+	// Output
+	//=======
+	
+	out float4 o_position : SV_POSITION,
+	out float2 o_uvs : TEXCOORD
+
+	)
+{
+	o_position = float4( i_position, 0.0, 1.0 );
+	o_uvs = i_uvs;
+}
+
+#endif

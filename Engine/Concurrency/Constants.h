@@ -1,5 +1,5 @@
 /*
-	This file contains concurrency-related constants
+    This file contains concurrency-related constants
 */
 
 #ifndef EAE6320_CONCURRENCY_CONSTANTS_H
@@ -7,13 +7,13 @@
 
 namespace eae6320
 {
-	namespace Concurrency
-	{
-		namespace Constants
-		{
-			constexpr auto dontTimeOut = ~unsigned int( 0u );
-		}
-	}
+    namespace Concurrency
+    {
+        namespace Constants
+        {
+            constexpr auto dontTimeOut = ~unsigned int( 0u );
+        }
+    }
 }
 
-#endif	// EAE6320_CONCURRENCY_CONSTANTS_H
+#endif    // EAE6320_CONCURRENCY_CONSTANTS_H

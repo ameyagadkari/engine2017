@@ -13,7 +13,7 @@
 
 namespace
 {
-	const void* GetGlFunctionAddress(const char* const i_functionName, std::string* const o_errorMessage);
+    const void* GetGlFunctionAddress(const char* const i_functionName, std::string* const o_errorMessage);
 }
 
 // Interface
@@ -70,95 +70,95 @@ PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
 
 eae6320::cResult eae6320::OpenGlExtensions::Load(std::string* const o_errorMessage)
 {
-	auto result = Results::success;
+    auto result = Results::success;
 
-	// Load a hidden window
-	// (The Windows OpenGL implementation requires an OpenGL window to be created
-	// before any of the functions can be called,
-	// and so we create a hidden window in order to load the extensions
-	// and then destroy it afterwards,
-	// all before doing anything with the main window)
-	HINSTANCE applicationInstance = NULL;
-	Windows::OpenGl::sHiddenWindowInfo hiddenWindowInfo;
-	if ((result = CreateHiddenContextWindow(applicationInstance, hiddenWindowInfo, o_errorMessage)))
-	{
-		EAE6320_ASSERTF(wglGetCurrentContext(), "OpenGL extensions can't be loaded without a current OpenGL context");
-	}
-	else
-	{
-		EAE6320_ASSERTF(false, o_errorMessage->c_str());
-		goto OnExit;
-	}
+    // Load a hidden window
+    // (The Windows OpenGL implementation requires an OpenGL window to be created
+    // before any of the functions can be called,
+    // and so we create a hidden window in order to load the extensions
+    // and then destroy it afterwards,
+    // all before doing anything with the main window)
+    HINSTANCE applicationInstance = NULL;
+    Windows::OpenGl::sHiddenWindowInfo hiddenWindowInfo;
+    if ((result = CreateHiddenContextWindow(applicationInstance, hiddenWindowInfo, o_errorMessage)))
+    {
+        EAE6320_ASSERTF(wglGetCurrentContext(), "OpenGL extensions can't be loaded without a current OpenGL context");
+    }
+    else
+    {
+        EAE6320_ASSERTF(false, o_errorMessage->c_str());
+        goto OnExit;
+    }
 
-	// Load each extension
-#define EAE6320_OPENGLEXTENSIONS_LOADFUNCTION( i_functionName, i_functionType )										\
-		i_functionName = static_cast<i_functionType>( GetGlFunctionAddress( #i_functionName, o_errorMessage ) );	\
-		if ( !i_functionName )																						\
-		{																											\
-			result = Results::Failure;																				\
-			goto OnExit;																							\
-		}
+    // Load each extension
+#define EAE6320_OPENGLEXTENSIONS_LOADFUNCTION( i_functionName, i_functionType )                                        \
+        i_functionName = static_cast<i_functionType>( GetGlFunctionAddress( #i_functionName, o_errorMessage ) );    \
+        if ( !i_functionName )                                                                                        \
+        {                                                                                                            \
+            result = Results::Failure;                                                                                \
+            goto OnExit;                                                                                            \
+        }
 
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glActiveTexture, PFNGLACTIVETEXTUREPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glAttachShader, PFNGLATTACHSHADERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindBuffer, PFNGLBINDBUFFERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindBufferBase, PFNGLBINDBUFFERBASEPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindSampler, PFNGLBINDSAMPLERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindVertexArray, PFNGLBINDVERTEXARRAYPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBlendEquation, PFNGLBLENDEQUATIONPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBufferData, PFNGLBUFFERDATAPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBufferSubData, PFNGLBUFFERSUBDATAPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCompileShader, PFNGLCOMPILESHADERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCreateProgram, PFNGLCREATEPROGRAMPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCreateShader, PFNGLCREATESHADERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteBuffers, PFNGLDELETEBUFFERSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteProgram, PFNGLDELETEPROGRAMPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteSamplers, PFNGLDELETESAMPLERSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteShader, PFNGLDELETESHADERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenBuffers, PFNGLGENBUFFERSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenSamplers, PFNGLGENSAMPLERSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetProgramiv, PFNGLGETPROGRAMIVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetShaderiv, PFNGLGETSHADERIVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glInvalidateBufferData, PFNGLINVALIDATEBUFFERDATAPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glLinkProgram, PFNGLLINKPROGRAMPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glSamplerParameteri, PFNGLSAMPLERPARAMETERIPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glShaderSource, PFNGLSHADERSOURCEPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform1fv, PFNGLUNIFORM1FVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform1i, PFNGLUNIFORM1IPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform2fv, PFNGLUNIFORM2FVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform3fv, PFNGLUNIFORM3FVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform4fv, PFNGLUNIFORM4FVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUseProgram, PFNGLUSEPROGRAMPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC);
-	EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glActiveTexture, PFNGLACTIVETEXTUREPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glAttachShader, PFNGLATTACHSHADERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindBuffer, PFNGLBINDBUFFERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindBufferBase, PFNGLBINDBUFFERBASEPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindSampler, PFNGLBINDSAMPLERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBindVertexArray, PFNGLBINDVERTEXARRAYPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBlendEquation, PFNGLBLENDEQUATIONPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBufferData, PFNGLBUFFERDATAPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glBufferSubData, PFNGLBUFFERSUBDATAPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCompileShader, PFNGLCOMPILESHADERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCompressedTexImage2D, PFNGLCOMPRESSEDTEXIMAGE2DPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCreateProgram, PFNGLCREATEPROGRAMPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glCreateShader, PFNGLCREATESHADERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteBuffers, PFNGLDELETEBUFFERSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteProgram, PFNGLDELETEPROGRAMPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteVertexArrays, PFNGLDELETEVERTEXARRAYSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteSamplers, PFNGLDELETESAMPLERSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glDeleteShader, PFNGLDELETESHADERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYARBPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenBuffers, PFNGLGENBUFFERSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenSamplers, PFNGLGENSAMPLERSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGenVertexArrays, PFNGLGENVERTEXARRAYSPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetProgramInfoLog, PFNGLGETPROGRAMINFOLOGPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetProgramiv, PFNGLGETPROGRAMIVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetShaderInfoLog, PFNGLGETSHADERINFOLOGPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetShaderiv, PFNGLGETSHADERIVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glGetUniformLocation, PFNGLGETUNIFORMLOCATIONPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glInvalidateBufferData, PFNGLINVALIDATEBUFFERDATAPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glLinkProgram, PFNGLLINKPROGRAMPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glSamplerParameteri, PFNGLSAMPLERPARAMETERIPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glShaderSource, PFNGLSHADERSOURCEPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform1fv, PFNGLUNIFORM1FVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform1i, PFNGLUNIFORM1IPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform2fv, PFNGLUNIFORM2FVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform3fv, PFNGLUNIFORM3FVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniform4fv, PFNGLUNIFORM4FVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniformBlockBinding, PFNGLUNIFORMBLOCKBINDINGPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUniformMatrix4fv, PFNGLUNIFORMMATRIX4FVPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glUseProgram, PFNGLUSEPROGRAMPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(glVertexAttribPointer, PFNGLVERTEXATTRIBPOINTERPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(wglChoosePixelFormatARB, PFNWGLCHOOSEPIXELFORMATARBPROC);
+    EAE6320_OPENGLEXTENSIONS_LOADFUNCTION(wglCreateContextAttribsARB, PFNWGLCREATECONTEXTATTRIBSARBPROC);
 
 #undef EAE6320_OPENGLEXTENSIONS_LOADFUNCTION
 
-	OnExit :
+    OnExit :
 
-	{
-		const auto localResult = FreeHiddenContextWindow(applicationInstance, hiddenWindowInfo, o_errorMessage);
-		if (!localResult)
-		{
-			EAE6320_ASSERTF(false, o_errorMessage->c_str());
-			if (result)
-			{
-				result = localResult;
-			}
-		}
-	}
+    {
+        const auto localResult = FreeHiddenContextWindow(applicationInstance, hiddenWindowInfo, o_errorMessage);
+        if (!localResult)
+        {
+            EAE6320_ASSERTF(false, o_errorMessage->c_str());
+            if (result)
+            {
+                result = localResult;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 // Helper Function Declarations
@@ -166,73 +166,73 @@ eae6320::cResult eae6320::OpenGlExtensions::Load(std::string* const o_errorMessa
 
 namespace
 {
-	const void* GetGlFunctionAddress(const char* const i_functionName, std::string* const o_errorMessage)
-	{
-		const auto* const address = static_cast<void*>(wglGetProcAddress(i_functionName));
-		// The documentation says that NULL will be returned if the function isn't found,
-		// but according to https://www.opengl.org/wiki/Load_OpenGL_Functions
-		// other values can be returned by some implementations
-		if (address
-			&& address != reinterpret_cast<void*>(1) && address != reinterpret_cast<void*>(2)
-			&& address != reinterpret_cast<void*>(3) && address != reinterpret_cast<void*>(-1))
-		{
-			return address;
-		}
-		std::string wglErrorMessage;
-		if (!address)
-		{
-			wglErrorMessage = eae6320::Windows::GetLastSystemError();
-			EAE6320_ASSERTF(false, "The OpenGL extension function \"%s\" wasn't found"
-				" (it will now be looked for in the non-extension Windows functions)", i_functionName);
-		}
-		// wglGetProcAddress() won't return the address of any 1.1 or earlier OpenGL functions
-		// that are built into Windows' Opengl32.dll
-		// but an attempt can be made to load those manually
-		// in case the user of this function has made a mistake
-		{
-			// This library should already be loaded,
-			// and so this function will just retrieve a handle to it
-			const auto glLibrary = LoadLibrary("Opengl32.dll");
-			if (glLibrary != nullptr)
-			{
-				// Look for an old OpenGL function
-				const auto* const address = static_cast<void*>(GetProcAddress(glLibrary, i_functionName));
-				// Decrement the library's reference count
-				FreeLibrary(glLibrary);
-				// Return an address if it was found
-				if (address)
-				{
-					return address;
-				}
-				else
-				{
-					const auto windowsErrorMessage = eae6320::Windows::GetLastSystemError();
-					if (wglErrorMessage.empty())
-					{
-						wglErrorMessage = windowsErrorMessage;
-					}
-				}
-			}
-			else
-			{
-				EAE6320_ASSERT(false);
-			}
-		}
+    const void* GetGlFunctionAddress(const char* const i_functionName, std::string* const o_errorMessage)
+    {
+        const auto* const address = static_cast<void*>(wglGetProcAddress(i_functionName));
+        // The documentation says that NULL will be returned if the function isn't found,
+        // but according to https://www.opengl.org/wiki/Load_OpenGL_Functions
+        // other values can be returned by some implementations
+        if (address
+            && address != reinterpret_cast<void*>(1) && address != reinterpret_cast<void*>(2)
+            && address != reinterpret_cast<void*>(3) && address != reinterpret_cast<void*>(-1))
+        {
+            return address;
+        }
+        std::string wglErrorMessage;
+        if (!address)
+        {
+            wglErrorMessage = eae6320::Windows::GetLastSystemError();
+            EAE6320_ASSERTF(false, "The OpenGL extension function \"%s\" wasn't found"
+                " (it will now be looked for in the non-extension Windows functions)", i_functionName);
+        }
+        // wglGetProcAddress() won't return the address of any 1.1 or earlier OpenGL functions
+        // that are built into Windows' Opengl32.dll
+        // but an attempt can be made to load those manually
+        // in case the user of this function has made a mistake
+        {
+            // This library should already be loaded,
+            // and so this function will just retrieve a handle to it
+            const auto glLibrary = LoadLibrary("Opengl32.dll");
+            if (glLibrary != nullptr)
+            {
+                // Look for an old OpenGL function
+                const auto* const address = static_cast<void*>(GetProcAddress(glLibrary, i_functionName));
+                // Decrement the library's reference count
+                FreeLibrary(glLibrary);
+                // Return an address if it was found
+                if (address)
+                {
+                    return address;
+                }
+                else
+                {
+                    const auto windowsErrorMessage = eae6320::Windows::GetLastSystemError();
+                    if (wglErrorMessage.empty())
+                    {
+                        wglErrorMessage = windowsErrorMessage;
+                    }
+                }
+            }
+            else
+            {
+                EAE6320_ASSERT(false);
+            }
+        }
 
-		// If this code is reached the OpenGL function wasn't found
-		EAE6320_ASSERTF(false, "Couldn't find the address of the OpenGL function \"%s\": %s", i_functionName,
-			!wglErrorMessage.empty() ? wglErrorMessage.c_str() : "Unknown error");
-		if (o_errorMessage)
-		{
-			std::ostringstream errorMessage;
-			errorMessage << "Windows failed to find the address of the OpenGL function \"" << i_functionName << "\"";
-			if (!wglErrorMessage.empty())
-			{
-				errorMessage << ": " << wglErrorMessage;
-			}
-			*o_errorMessage = errorMessage.str();
-		}
+        // If this code is reached the OpenGL function wasn't found
+        EAE6320_ASSERTF(false, "Couldn't find the address of the OpenGL function \"%s\": %s", i_functionName,
+            !wglErrorMessage.empty() ? wglErrorMessage.c_str() : "Unknown error");
+        if (o_errorMessage)
+        {
+            std::ostringstream errorMessage;
+            errorMessage << "Windows failed to find the address of the OpenGL function \"" << i_functionName << "\"";
+            if (!wglErrorMessage.empty())
+            {
+                errorMessage << ": " << wglErrorMessage;
+            }
+            *o_errorMessage = errorMessage.str();
+        }
 
-		return nullptr;
-	}
+        return nullptr;
+    }
 }

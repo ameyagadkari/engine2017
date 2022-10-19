@@ -1,6 +1,6 @@
 /*
-	This file manages user-configurable settings
-	(ones that the user can set in an INI file)
+    This file manages user-configurable settings
+    (ones that the user can set in an INI file)
 */
 
 #ifndef EAE6320_USERSETTINGS_H
@@ -17,11 +17,11 @@
 
 namespace eae6320
 {
-	namespace UserSettings
-	{
-		cResult GetDesiredInitialResolutionWidth(uint16_t& o_width);
-		cResult GetDesiredInitialResolutionHeight(uint16_t& o_height);
-	}
+    namespace UserSettings
+    {
+        cResult GetDesiredInitialResolutionWidth(uint16_t& o_width);
+        cResult GetDesiredInitialResolutionHeight(uint16_t& o_height);
+    }
 }
 
-#endif	// EAE6320_USERSETTINGS_H
+#endif    // EAE6320_USERSETTINGS_H

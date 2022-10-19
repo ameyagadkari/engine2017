@@ -1,5 +1,5 @@
 /*
-	Sampler state determines how textures are sampled in shaders
+    Sampler state determines how textures are sampled in shaders
 */
 
 #ifndef EAE6320_GRAPHICS_CSAMPLERSTATE_H
@@ -13,14 +13,14 @@
 #include <Engine/Results/Results.h>
 
 #if defined( EAE6320_PLATFORM_GL )
-	#include "OpenGL/Includes.h"
+    #include "OpenGL/Includes.h"
 #endif
 
 // Forward Declarations
 //=====================
 
 #if defined( EAE6320_PLATFORM_D3D )
-	struct ID3D11SamplerState;
+    struct ID3D11SamplerState;
 #endif
 
 // Class Declaration
@@ -28,42 +28,42 @@
 
 namespace eae6320
 {
-	namespace Graphics
-	{
-		class cSamplerState
-		{
-			// Interface
-			//==========
+    namespace Graphics
+    {
+        class cSamplerState
+        {
+            // Interface
+            //==========
 
-		public:
+        public:
 
-			// Render
-			//-------
+            // Render
+            //-------
 
-			void Bind() const;
+            void Bind() const;
 
-			// Initialization / Clean Up
-			//--------------------------
+            // Initialization / Clean Up
+            //--------------------------
 
-			cResult Initialize();
-			cResult CleanUp();
+            cResult Initialize();
+            cResult CleanUp();
 
-			cSamplerState() = default;
-			~cSamplerState();
+            cSamplerState() = default;
+            ~cSamplerState();
 
-			// Data
-			//=====
+            // Data
+            //=====
 
-		private:
+        private:
 
 #if defined( EAE6320_PLATFORM_D3D )
-			ID3D11SamplerState* m_samplerState = nullptr;
+            ID3D11SamplerState* m_samplerState = nullptr;
 #else
-			GLuint m_samplerStateId = 0;
+            GLuint m_samplerStateId = 0;
 #endif
 
-		};
-	}
+        };
+    }
 }
 
-#endif	// EAE6320_GRAPHICS_CSAMPLERSTATE_H
+#endif    // EAE6320_GRAPHICS_CSAMPLERSTATE_H
