@@ -3,15 +3,16 @@
 
 #include "../sContext.h"
 #include "../ColorFormats.h"
+#include "../Graphics.h"
 
 #include "Includes.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
+#include <Engine/Platform/Platform.h>
 
 #include <External/DirectXTex/Includes.h>
 
-#include <codecvt>
 #include <sstream>
 
 // Helper Function Declarations
@@ -124,7 +125,7 @@ void eae6320::Graphics::sContext::BufferSwap() const
 
 // User actions
 //-------------
-void eae6320::Graphics::sContext::TakeScreenShot(const char* const i_filePath) const
+void eae6320::Graphics::sContext::GetRawImageFromBackBuffer(Platform::sDataFromFile& o_rawImageData) const
 {
     DirectX::ScratchImage image = {};
 
@@ -139,24 +140,11 @@ void eae6320::Graphics::sContext::TakeScreenShot(const char* const i_filePath) c
         }
     }
 
-    // Saves a single image to a WIC-supported bitmap file
-    {
-        EAE6320_ASSERTF(image.GetImageCount() == 1, "There shouldn't be more than one image (mip) in back buffer since MSAA is disabled");
-        constexpr unsigned int imageIndex = 0;
-        constexpr DWORD useDefaultBehavior = DirectX::WIC_FLAGS_NONE;
-        const GUID saveImageAsPng = DirectX::GetWICCodec(DirectX::WIC_CODEC_PNG);
-
-        // DirectXTex uses wide strings
-        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> stringConverter;
-        const std::wstring path(stringConverter.from_bytes(i_filePath));
-
-        const auto d3DResult = DirectX::SaveToWICFile(image.GetImages()[imageIndex], useDefaultBehavior, saveImageAsPng, path.c_str());
-        if (FAILED(d3DResult))
-        {
-            EAE6320_ASSERTF(false, "Couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
-            eae6320::Logging::OutputError("WIC couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
-        }
-    }
+    EAE6320_ASSERTF(image.GetImageCount() == 1, "There shouldn't be more than one image (mip) in back buffer since MSAA is disabled");
+    constexpr unsigned int imageIndex = 0;
+    const DirectX::Image& backBufferImage = image.GetImages()[imageIndex];
+    EAE6320_ASSERTF(o_rawImageData.size == backBufferImage.slicePitch, "The slicePitch is the whole texture for a 2D image buffer");
+    memcpy_s(o_rawImageData.data, o_rawImageData.size, backBufferImage.pixels, backBufferImage.slicePitch);
 }
 
 // Helper Function Definitions

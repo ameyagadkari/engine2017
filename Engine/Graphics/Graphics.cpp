@@ -17,6 +17,10 @@
 #include <Engine/Gameobject/cGameobject2D.h>
 #include <Engine/Gameobject/cGameobject3D.h>
 #include <Engine/Camera/cbCamera.h>
+
+#include <External/DirectXTex/Includes.h>
+
+#include <codecvt>
 #include <algorithm>
 #include <utility>
 
@@ -95,6 +99,12 @@ namespace
     // and the application loop thread can start submitting data for the following frame
     // (the application loop thread waits for the signal)
     eae6320::Concurrency::cEvent s_whenDataForANewFrameCanBeSubmittedFromApplicationThread;
+
+    // Following variables help with the screenshot functionality
+    eae6320::Platform::sDataFromFile s_rawImageData = {};
+    uint16_t s_resolutionWidth = 0;
+    uint16_t s_resolutionHeight = 0;
+    bool s_isComInitialized = false;
 }
 
 // Interface
@@ -269,10 +279,39 @@ void eae6320::Graphics::RenderFrame()
         }
     }
 
-    // Take a screen shot if user requests it
-    if (!s_dataBeingRenderedByRenderThread->screenShotPath_perFrame.empty())
+    // Take a screen shot if user requests it and if the COM is initialzied and raw buffer successfully allocated
+    if (s_isComInitialized && s_rawImageData.data && !s_dataBeingRenderedByRenderThread->screenShotPath_perFrame.empty())
     {
-        g_context.TakeScreenShot(s_dataBeingRenderedByRenderThread->screenShotPath_perFrame.c_str());
+        g_context.GetRawImageFromBackBuffer(s_rawImageData);
+
+        // Populate the image struct manually
+        DirectX::Image image = {};
+        {
+            image.width = s_resolutionWidth;
+            image.height = s_resolutionHeight;
+            image.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            const size_t bytesPerPixel = DirectX::BitsPerPixel(image.format) / 8;
+            image.rowPitch = image.width * bytesPerPixel;
+            image.slicePitch = image.rowPitch * image.height;
+            image.pixels = static_cast<uint8_t*>(s_rawImageData.data);
+        }
+
+        // Saves a single image to a WIC-supported bitmap file
+        {
+            constexpr DWORD useDefaultBehavior = DirectX::WIC_FLAGS_NONE;
+            const GUID saveImageAsPng = DirectX::GetWICCodec(DirectX::WIC_CODEC_PNG);
+
+            // DirectXTex uses wide strings
+            std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> stringConverter;
+            const std::wstring path(stringConverter.from_bytes(s_dataBeingRenderedByRenderThread->screenShotPath_perFrame));
+
+            const auto d3DResult = DirectX::SaveToWICFile(image, useDefaultBehavior, saveImageAsPng, path.c_str());
+            if (FAILED(d3DResult))
+            {
+                EAE6320_ASSERTF(false, "Couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
+                eae6320::Logging::OutputError("WIC couldn't save the back buffer image (HRESULT %#010x)", d3DResult);
+            }
+        }
     }
 
     // Everything has been drawn to the "back buffer", which is just an image in memory.
@@ -298,6 +337,36 @@ eae6320::cResult eae6320::Graphics::Initialize(const sInitializationParameters& 
     {
         EAE6320_ASSERT(false);
         goto OnExit;
+    }
+    // Initialize COM
+    {
+        constexpr void* const thisMustBeNull = nullptr;
+        if (SUCCEEDED(CoInitialize(thisMustBeNull)))
+        {
+            s_isComInitialized = true;
+        }
+        else
+        {
+            Logging::OutputMessage("DirectXTex couldn't be used because COM couldn't be initiazed");
+        }
+    }
+    // Initialize COM and allocate the image buffer for screenshot functionality
+    if (s_isComInitialized)
+    {
+        constexpr size_t numberOfColorChannels = 4;
+
+        s_rawImageData.size = numberOfColorChannels * i_initializationParameters.resolutionWidth * i_initializationParameters.resolutionHeight;
+        s_rawImageData.data = malloc(s_rawImageData.size);
+        if (!s_rawImageData.data)
+        {
+            Logging::OutputMessage("Raw buffer not allocated, cannot take screenshots");
+            s_rawImageData.Free();
+        }
+        else
+        {
+            s_resolutionWidth = i_initializationParameters.resolutionWidth;
+            s_resolutionHeight = i_initializationParameters.resolutionHeight;
+        }
     }
     // Initialize the asset managers
     {
@@ -486,6 +555,14 @@ eae6320::cResult eae6320::Graphics::CleanUp()
             }
         }
     }
+    // Try to un-initialize com regardless of its initialization status
+    CoUninitialize();
+
+    // Reset raw image data buffer
+    s_rawImageData.Free();
+    s_resolutionWidth = 0;
+    s_resolutionHeight = 0;
+    s_isComInitialized = false;
     {
         const auto localResult = sContext::g_context.CleanUp();
         if (!localResult)

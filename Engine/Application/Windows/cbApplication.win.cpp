@@ -362,10 +362,9 @@ eae6320::cResult eae6320::Application::cbApplication::PopulateGraphicsInitializa
 {
     EAE6320_ASSERT(m_mainWindow != NULL);
     o_initializationParameters.mainWindow = m_mainWindow;
-#if defined( EAE6320_PLATFORM_D3D )
     o_initializationParameters.resolutionWidth = m_resolutionWidth;
     o_initializationParameters.resolutionHeight = m_resolutionHeight;
-#elif defined( EAE6320_PLATFORM_GL )
+#if defined( EAE6320_PLATFORM_GL )
     o_initializationParameters.thisInstanceOfTheApplication = m_thisInstanceOfTheApplication;
 #endif
     return Results::success;

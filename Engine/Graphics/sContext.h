@@ -11,8 +11,6 @@
 // Include Files
 //==============
 
-#include "Graphics.h"
-
 #include <Engine/Results/Results.h>
 #include "ColorFormats.h"
 
@@ -40,10 +38,19 @@ namespace eae6320
 {
     namespace Graphics
     {
+        struct sInitializationParameters;
         namespace ColorFormats
         {
             struct sColor;
         }
+    }
+}
+
+namespace eae6320
+{
+    namespace Platform
+    {
+        struct sDataFromFile;
     }
 }
 
@@ -83,6 +90,8 @@ namespace eae6320
 #elif defined( EAE6320_PLATFORM_GL )
             HDC deviceContext = nullptr;
             HGLRC openGlRenderingContext = nullptr;
+            uint16_t resolutionWidth = 0;
+            uint16_t resolutionHeight = 0;
 #endif
 
             // Interface
@@ -110,7 +119,7 @@ namespace eae6320
 
             // User actions
             //-------------
-            void TakeScreenShot(const char* const i_filePath) const;
+            void GetRawImageFromBackBuffer(Platform::sDataFromFile& o_rawImageData) const;
 
             // Implementation
             //===============

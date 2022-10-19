@@ -3,11 +3,16 @@
 
 #include "../sContext.h"
 #include "../ColorFormats.h"
+#include "../Graphics.h"
 
 #include <Engine/Asserts/Asserts.h>
 #include <Engine/Logging/Logging.h>
+#include <Engine/Platform/Platform.h>
 #include <Engine/Windows/Functions.h>
+
+#include <External/DirectXTex/Includes.h>
 #include <External/OpenGlExtensions/OpenGlExtensions.h>
+
 #include <sstream>
 #include <string>
 
@@ -30,6 +35,8 @@ eae6320::cResult eae6320::Graphics::sContext::Initialize(const sInitializationPa
     auto result = Results::success;
 
     windowBeingRenderedTo = i_initializationParameters.mainWindow;
+    resolutionWidth = i_initializationParameters.resolutionWidth;
+    resolutionHeight = i_initializationParameters.resolutionHeight;
 
     // Load any required OpenGL extensions
     {
@@ -134,6 +141,53 @@ void eae6320::Graphics::sContext::BufferSwap() const
     EAE6320_ASSERT(deviceContext != nullptr);
     const auto glResult = SwapBuffers(deviceContext);
     EAE6320_ASSERT(glResult != FALSE);
+}
+
+// User actions
+//-------------
+void eae6320::Graphics::sContext::GetRawImageFromBackBuffer(Platform::sDataFromFile& o_rawImageData) const
+{
+    // Fetch data from the default frame buffer
+    {
+        constexpr GLint originX = 0;
+        constexpr GLint originY = 0;
+        constexpr GLenum backBufferFormat = GL_RGBA;
+        constexpr GLenum rawImageBufferDataType = GL_UNSIGNED_BYTE;
+        glReadPixels(originX, originY, resolutionWidth, resolutionHeight, backBufferFormat, rawImageBufferDataType, o_rawImageData.data);
+        EAE6320_ASSERT(glGetError() == GL_NO_ERROR);
+    }
+
+    // Populate the image struct manually
+    DirectX::Image image = {};
+    {
+        image.width = resolutionWidth;
+        image.height = resolutionHeight;
+        image.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        const size_t bytesPerPixel = DirectX::BitsPerPixel(image.format) / 8;
+        image.rowPitch = image.width * bytesPerPixel;
+        image.slicePitch = image.rowPitch * image.height;
+        image.pixels = static_cast<uint8_t*>(o_rawImageData.data);
+    }
+
+    // OpenGL images are upside-down from what DirectXTex expects so flip it
+    DirectX::ScratchImage flippedImage = {};
+    {
+        constexpr DWORD flipVertically = DirectX::TEX_FR_FLIP_VERTICAL;
+        const auto d3DResult = DirectX::FlipRotate(image, flipVertically, flippedImage);
+        if (SUCCEEDED(d3DResult))
+        {
+            EAE6320_ASSERTF(flippedImage.GetImageCount() == 1, "There shouldn't be more than one image (mip) in back buffer since MSAA is disabled");
+            constexpr unsigned int imageIndex = 0;
+            const DirectX::Image& backBufferImage = flippedImage.GetImages()[imageIndex];
+            EAE6320_ASSERTF(o_rawImageData.size == backBufferImage.slicePitch, "The slicePitch is the whole texture for a 2D image buffer");
+            memcpy_s(o_rawImageData.data, o_rawImageData.size, backBufferImage.pixels, backBufferImage.slicePitch);
+        }
+        else
+        {
+            EAE6320_ASSERTF(false, "Couldn't flip the source image vertically (HRESULT %#010x)", d3DResult);
+            eae6320::Logging::OutputError("DirectXTex failed to flip the source image vertically (HRESULT %#010x)", d3DResult);
+        }
+    }
 }
 
 // Helper Function Declarations

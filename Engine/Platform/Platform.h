@@ -36,6 +36,8 @@ namespace eae6320
             void* data = nullptr;
             size_t size = 0;
 
+            sDataFromFile() = default;
+
             void Free()
             {
                 if ( data )
@@ -43,6 +45,34 @@ namespace eae6320
                     free( data );
                     data = nullptr;
                 }
+                size = 0;
+            }
+
+            ~sDataFromFile()
+            {
+                Free();
+            }
+
+            sDataFromFile( const sDataFromFile& ) = delete;
+            sDataFromFile( sDataFromFile&& io_movedFrom ) noexcept
+                :
+                data( io_movedFrom.data ), size( io_movedFrom.size )
+            {
+                io_movedFrom.data = nullptr;
+                io_movedFrom.size = 0;
+            }
+            sDataFromFile& operator =( const sDataFromFile& ) = delete;
+            sDataFromFile& operator =( sDataFromFile&& io_movedFrom ) noexcept
+            {
+                if ( &io_movedFrom != this )
+                {
+                    Free();
+                    data = io_movedFrom.data;
+                    io_movedFrom.data = nullptr;
+                    size = io_movedFrom.size;
+                    io_movedFrom.size = 0;
+                }
+                return *this;
             }
         };
 

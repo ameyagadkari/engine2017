@@ -97,9 +97,8 @@ namespace eae6320
         {
 #if defined( EAE6320_PLATFORM_WINDOWS )
             HWND mainWindow = nullptr;
-    #if defined( EAE6320_PLATFORM_D3D )
-                uint16_t resolutionWidth = 0, resolutionHeight = 0;
-    #elif defined( EAE6320_PLATFORM_GL )
+            uint16_t resolutionWidth = 0, resolutionHeight = 0;
+    #if defined( EAE6320_PLATFORM_GL )
                 HINSTANCE thisInstanceOfTheApplication = nullptr;
     #endif
 #endif

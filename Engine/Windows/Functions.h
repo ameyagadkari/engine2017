@@ -35,6 +35,7 @@ namespace eae6320
                     free( data );
                     data = nullptr;
                 }
+                size = 0;
             }
         };
 
